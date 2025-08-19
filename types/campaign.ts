@@ -1,0 +1,94 @@
+export interface Campaign {
+  id?: string
+  nombre: string
+  remitente_nombre: string
+  remitente_email: string
+  proveedor: "ses" | "sendgrid" | "postmark" | "smtp" | "zeptomail"
+  estado?: "borrador" | "en_ejecucion" | "pausada" | "finalizada"
+  tz: string
+  ritmo: {
+    quota: {
+      emails: number
+      horas: number
+    }
+    activo: {
+      dias: number[] // 1=Lunes..7=Domingo
+      franjas: string[][] // [["09:30","13:00"], ["15:30","19:00"]]
+    }
+    jitter_seg: {
+      min: number
+      max: number
+    }
+  }
+  audiencia: {
+    politica_email_por_empresa: "uno" | "todos"
+    excluir: {
+      lista_supresion: boolean
+      enviados_ultimos_dias?: number
+    }
+    limite_empresas?: number
+    filtro?: {
+      q?: string
+      has_sitio_web?: boolean
+      creadas_desde?: string
+      categoria_ids?: number[]
+      categoria_nombres?: string[]
+    }
+    muestreo?: {
+      seed: number
+    }
+  }
+  proximo_envio_at?: string
+  created_at?: string
+  updated_at?: string
+}
+
+export interface CampaignStats {
+  total_destinatarios: number
+  enviados: number
+  exitosos: number
+  fallidos: number
+  pendientes: number
+  tasa_exito: number
+}
+
+export interface Recipient {
+  dest_id: string
+  email: string
+  empresa?: string
+  nombre?: string
+  estado: "pendiente" | "enviado" | "exitoso" | "fallido"
+  token_baja: string
+  error?: string
+}
+
+export interface ApiResponse<T = any> {
+  ok: boolean
+  data?: T
+  error?: string
+  message?: string
+  campana_id?: string
+  proximo_envio_at?: string
+  insertados?: number
+  actualizadas?: number
+  audiencia_usada?: any
+}
+
+export interface Audiencia {
+  politica_email_por_empresa: "uno" | "todos"
+  excluir: {
+    lista_supresion: boolean
+    enviados_ultimos_dias?: number
+  }
+  limite_empresas?: number
+  filtro?: {
+    q?: string
+    has_sitio_web?: boolean
+    creadas_desde?: string
+    categoria_ids?: number[]
+    categoria_nombres?: string[]
+  }
+  muestreo?: {
+    seed: number
+  }
+}
