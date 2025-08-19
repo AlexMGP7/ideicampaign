@@ -1,15 +1,27 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState, useEffect } from "react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Badge } from "@/components/ui/badge"
-import { Separator } from "@/components/ui/separator"
-import { Alert, AlertDescription } from "@/components/ui/alert"
-import { Progress } from "@/components/ui/progress"
+import { useState, useEffect } from "react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Progress } from "@/components/ui/progress";
 import {
   Send,
   Mail,
@@ -24,26 +36,26 @@ import {
   FileText,
   Zap,
   Target,
-} from "lucide-react"
-import { useToast } from "@/hooks/use-toast"
-import { campaignService } from "@/services/campaignService"
-import { emailService } from "@/services/emailService"
-import type { Campaign, Recipient } from "@/types/campaign"
+} from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { campaignService } from "@/services/campaignService";
+import { emailService } from "@/services/emailService";
+import type { Campaign, Recipient } from "@/types/campaign";
 
 interface WorkflowStep {
-  id: string
-  name: string
-  description: string
-  icon: React.ReactNode
-  status: "pending" | "running" | "completed" | "error"
-  progress?: number
-  result?: any
-  error?: string
+  id: string;
+  name: string;
+  description: string;
+  icon: React.ReactNode;
+  status: "pending" | "running" | "completed" | "error";
+  progress?: number;
+  result?: any;
+  error?: string;
 }
 
 interface WorkflowFlowProps {
-  steps: WorkflowStep[]
-  isRunning: boolean
+  steps: WorkflowStep[];
+  isRunning: boolean;
 }
 
 function WorkflowFlow({ steps, isRunning }: WorkflowFlowProps) {
@@ -72,7 +84,9 @@ function WorkflowFlow({ steps, isRunning }: WorkflowFlowProps) {
           {steps.map((step, index) => (
             <div key={step.id} className="relative">
               {/* Connection Line */}
-              {index < steps.length - 1 && <div className="absolute left-6 top-16 w-0.5 h-8 bg-border"></div>}
+              {index < steps.length - 1 && (
+                <div className="absolute left-6 top-16 w-0.5 h-8 bg-border"></div>
+              )}
 
               {/* Step Card */}
               <div
@@ -80,10 +94,10 @@ function WorkflowFlow({ steps, isRunning }: WorkflowFlowProps) {
                   step.status === "running"
                     ? "border-blue-500 bg-blue-50 dark:bg-blue-950/20"
                     : step.status === "completed"
-                      ? "border-green-500 bg-green-50 dark:bg-green-950/20"
-                      : step.status === "error"
-                        ? "border-red-500 bg-red-50 dark:bg-red-950/20"
-                        : "border-border bg-card"
+                    ? "border-green-500 bg-green-50 dark:bg-green-950/20"
+                    : step.status === "error"
+                    ? "border-red-500 bg-red-50 dark:bg-red-950/20"
+                    : "border-border bg-card"
                 }`}
               >
                 {/* Step Icon */}
@@ -92,60 +106,75 @@ function WorkflowFlow({ steps, isRunning }: WorkflowFlowProps) {
                     step.status === "running"
                       ? "bg-blue-500 text-white animate-pulse"
                       : step.status === "completed"
-                        ? "bg-green-500 text-white"
-                        : step.status === "error"
-                          ? "bg-red-500 text-white"
-                          : "bg-muted text-muted-foreground"
+                      ? "bg-green-500 text-white"
+                      : step.status === "error"
+                      ? "bg-red-500 text-white"
+                      : "bg-muted text-muted-foreground"
                   }`}
                 >
-                  {step.status === "completed" ? <CheckCircle className="w-6 h-6" /> : step.icon}
+                  {step.status === "completed" ? (
+                    <CheckCircle className="w-6 h-6" />
+                  ) : (
+                    step.icon
+                  )}
                 </div>
 
                 {/* Step Content */}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between mb-2">
-                    <h4 className="font-semibold text-foreground">{step.name}</h4>
+                    <h4 className="font-semibold text-foreground">
+                      {step.name}
+                    </h4>
                     <div className="flex items-center space-x-2">
-                      {step.status === "running" && step.progress !== undefined && (
-                        <div className="w-24">
-                          <Progress value={step.progress} className="h-2" />
-                        </div>
-                      )}
+                      {step.status === "running" &&
+                        step.progress !== undefined && (
+                          <div className="w-24">
+                            <Progress value={step.progress} className="h-2" />
+                          </div>
+                        )}
                       <Badge
                         variant={
                           step.status === "completed"
                             ? "default"
                             : step.status === "running"
-                              ? "secondary"
-                              : step.status === "error"
-                                ? "destructive"
-                                : "outline"
+                            ? "secondary"
+                            : step.status === "error"
+                            ? "destructive"
+                            : "outline"
                         }
                       >
                         {step.status === "pending"
                           ? "Pendiente"
                           : step.status === "running"
-                            ? "Ejecutando"
-                            : step.status === "completed"
-                              ? "Completado"
-                              : "Error"}
+                          ? "Ejecutando"
+                          : step.status === "completed"
+                          ? "Completado"
+                          : "Error"}
                       </Badge>
                     </div>
                   </div>
 
-                  <p className="text-sm text-muted-foreground mb-2">{step.description}</p>
+                  <p className="text-sm text-muted-foreground mb-2">
+                    {step.description}
+                  </p>
 
                   {/* Step Results */}
                   {step.result && (
                     <div className="mt-3 p-3 bg-muted/50 rounded-md">
-                      <div className="text-xs font-medium text-muted-foreground mb-1">Resultado:</div>
+                      <div className="text-xs font-medium text-muted-foreground mb-1">
+                        Resultado:
+                      </div>
                       <div className="text-sm">
                         {typeof step.result === "object" ? (
                           <div className="space-y-1">
                             {Object.entries(step.result).map(([key, value]) => (
                               <div key={key} className="flex justify-between">
-                                <span className="capitalize">{key.replace("_", " ")}:</span>
-                                <span className="font-medium">{String(value)}</span>
+                                <span className="capitalize">
+                                  {key.replace("_", " ")}:
+                                </span>
+                                <span className="font-medium">
+                                  {String(value)}
+                                </span>
                               </div>
                             ))}
                           </div>
@@ -159,8 +188,12 @@ function WorkflowFlow({ steps, isRunning }: WorkflowFlowProps) {
                   {/* Error Message */}
                   {step.error && (
                     <div className="mt-3 p-3 bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-800 rounded-md">
-                      <div className="text-xs font-medium text-red-600 mb-1">Error:</div>
-                      <div className="text-sm text-red-700 dark:text-red-400">{step.error}</div>
+                      <div className="text-xs font-medium text-red-600 mb-1">
+                        Error:
+                      </div>
+                      <div className="text-sm text-red-700 dark:text-red-400">
+                        {step.error}
+                      </div>
                     </div>
                   )}
                 </div>
@@ -177,16 +210,16 @@ function WorkflowFlow({ steps, isRunning }: WorkflowFlowProps) {
         </div>
       </div>
     </div>
-  )
+  );
 }
 
 export function SendCampaign() {
-  const { toast } = useToast()
-  const [activeCampaign, setActiveCampaign] = useState<Campaign | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [campaignStats, setCampaignStats] = useState<any>(null)
+  const { toast } = useToast();
+  const [activeCampaign, setActiveCampaign] = useState<Campaign | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [campaignStats, setCampaignStats] = useState<any>(null);
 
-  const [workflowRunning, setWorkflowRunning] = useState(false)
+  const [workflowRunning, setWorkflowRunning] = useState(false);
   const [workflowSteps, setWorkflowSteps] = useState<WorkflowStep[]>([
     {
       id: "get-recipient",
@@ -216,49 +249,49 @@ export function SendCampaign() {
       icon: <Target className="w-6 h-6" />,
       status: "pending",
     },
-  ])
+  ]);
 
   useEffect(() => {
-    loadActiveCampaign()
-  }, [])
+    loadActiveCampaign();
+  }, []);
 
   const loadActiveCampaign = async () => {
-    setLoading(true)
+    setLoading(true);
     try {
-      const response = await campaignService.getActiveCampaign()
+      const response = await campaignService.getActiveCampaign();
       if (response.ok && response.data) {
-        setActiveCampaign(response.data)
+        setActiveCampaign(response.data);
         // Load campaign stats
-        loadCampaignStats(response.data.id!)
+        loadCampaignStats(response.data.id!);
       } else {
-        setActiveCampaign(null)
+        setActiveCampaign(null);
       }
     } catch (error) {
       toast({
         variant: "destructive",
         title: "Error",
         description: "No se pudo cargar la campaña activa",
-      })
+      });
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const loadCampaignStats = async (campaignId: string) => {
     try {
-      const response = await campaignService.getStatusSummary(campaignId)
+      const response = await campaignService.getStatusSummary(campaignId);
       if (response.ok) {
-        setCampaignStats(response.data)
+        setCampaignStats(response.data);
       }
     } catch (error) {
-      console.error("Error loading campaign stats:", error)
+      console.error("Error loading campaign stats:", error);
     }
-  }
+  };
 
   const handleSendNext = async () => {
-    if (!activeCampaign?.id) return
+    if (!activeCampaign?.id) return;
 
-    setWorkflowRunning(true)
+    setWorkflowRunning(true);
 
     // Reset workflow steps
     setWorkflowSteps((prev) =>
@@ -268,35 +301,98 @@ export function SendCampaign() {
         result: undefined,
         error: undefined,
         progress: undefined,
-      })),
-    )
+      }))
+    );
 
     try {
       // Step 1: Get next recipient
       setWorkflowSteps((prev) =>
         prev.map((step) =>
-          step.id === "get-recipient" ? { ...step, status: "running" as const, progress: 50 } : step,
-        ),
-      )
+          step.id === "get-recipient"
+            ? { ...step, status: "running" as const, progress: 50 }
+            : step
+        )
+      );
 
-      const recipientResponse = await campaignService.getNextRecipient(activeCampaign.id)
+      const recipientResponse = await campaignService.getNextRecipient(
+        activeCampaign.id
+      );
 
-      if (!recipientResponse.ok || !recipientResponse.data) {
+      const nextAtIso = (recipientResponse as any)?.next_at as
+        | string
+        | undefined;
+
+      if (!recipientResponse.ok) {
         setWorkflowSteps((prev) =>
           prev.map((step) =>
             step.id === "get-recipient"
-              ? { ...step, status: "error" as const, error: "No hay más destinatarios pendientes" }
-              : step,
-          ),
-        )
+              ? {
+                  ...step,
+                  status: "error" as const,
+                  error: recipientResponse.error || "Error al pedir siguiente",
+                }
+              : step
+          )
+        );
+        return;
+      }
+
+      if (!recipientResponse.data && nextAtIso) {
+        const dt = new Date(nextAtIso);
+        const tz = activeCampaign.tz || "UTC";
+        const fmtLocal = new Intl.DateTimeFormat("es-ES", {
+          dateStyle: "medium",
+          timeStyle: "short",
+          timeZone: tz,
+        }).format(dt);
+        const fmtUtc = new Intl.DateTimeFormat("es-ES", {
+          dateStyle: "medium",
+          timeStyle: "short",
+          timeZone: "UTC",
+        }).format(dt);
+
+        setWorkflowSteps((prev) =>
+          prev.map((step) =>
+            step.id === "get-recipient"
+              ? {
+                  ...step,
+                  status: "pending" as const,
+                  result: {
+                    proximo_intento: `${fmtLocal} (${tz}) · ${fmtUtc} (UTC)`,
+                  },
+                }
+              : step
+          )
+        );
+
+        toast({
+          title: "Sin destinatarios elegibles ahora",
+          description: `Próxima ventana/cuota: ${fmtLocal} (${tz})`,
+        });
+        return;
+      }
+
+      if (!recipientResponse.data) {
+        // ok pero realmente ya no quedan en cola
+        setWorkflowSteps((prev) =>
+          prev.map((step) =>
+            step.id === "get-recipient"
+              ? {
+                  ...step,
+                  status: "error" as const,
+                  error: "No hay más destinatarios pendientes",
+                }
+              : step
+          )
+        );
         toast({
           title: "No hay más destinatarios",
           description: "La campaña no tiene más emails pendientes por enviar",
-        })
-        return
+        });
+        return;
       }
 
-      const recipient = recipientResponse.data as Recipient
+      const recipient = recipientResponse.data as Recipient;
       setWorkflowSteps((prev) =>
         prev.map((step) =>
           step.id === "get-recipient"
@@ -309,16 +405,18 @@ export function SendCampaign() {
                   dest_id: recipient.dest_id,
                 },
               }
-            : step,
-        ),
-      )
+            : step
+        )
+      );
 
       // Step 2: Render email template
       setWorkflowSteps((prev) =>
         prev.map((step) =>
-          step.id === "render-template" ? { ...step, status: "running" as const, progress: 30 } : step,
-        ),
-      )
+          step.id === "render-template"
+            ? { ...step, status: "running" as const, progress: 30 }
+            : step
+        )
+      );
 
       const templateResponse = await emailService.renderTemplate({
         campana_id: activeCampaign.id,
@@ -330,22 +428,26 @@ export function SendCampaign() {
           telefono: "+34 600 000 000",
           ciudad: "",
         },
-      })
+      });
 
       if (!templateResponse.ok || !templateResponse.data) {
         setWorkflowSteps((prev) =>
           prev.map((step) =>
             step.id === "render-template"
-              ? { ...step, status: "error" as const, error: "No se pudo generar el contenido del email" }
-              : step,
-          ),
-        )
-        throw new Error("No se pudo generar el contenido del email")
+              ? {
+                  ...step,
+                  status: "error" as const,
+                  error: "No se pudo generar el contenido del email",
+                }
+              : step
+          )
+        );
+        throw new Error("No se pudo generar el contenido del email");
       }
 
-      const templateData = templateResponse.data
+      const templateData = templateResponse.data;
       if (!templateData) {
-        throw new Error("Respuesta de plantilla vacía")
+        throw new Error("Respuesta de plantilla vacía");
       }
 
       setWorkflowSteps((prev) =>
@@ -360,14 +462,18 @@ export function SendCampaign() {
                   text_length: templateData.text?.length || 0,
                 },
               }
-            : step,
-        ),
-      )
+            : step
+        )
+      );
 
       // Step 3: Send email
       setWorkflowSteps((prev) =>
-        prev.map((step) => (step.id === "send-email" ? { ...step, status: "running" as const, progress: 70 } : step)),
-      )
+        prev.map((step) =>
+          step.id === "send-email"
+            ? { ...step, status: "running" as const, progress: 70 }
+            : step
+        )
+      );
 
       const sendResponse = await emailService.sendEmail({
         to: recipient.email,
@@ -383,30 +489,38 @@ export function SendCampaign() {
         token_baja: recipient.token_baja,
         track_opens: true,
         track_clicks: true,
-      })
+      });
 
       setWorkflowSteps((prev) =>
         prev.map((step) =>
           step.id === "send-email"
             ? {
                 ...step,
-                status: sendResponse.ok ? ("completed" as const) : ("error" as const),
+                status: sendResponse.ok
+                  ? ("completed" as const)
+                  : ("error" as const),
                 result: sendResponse.ok
                   ? {
                       status: "Enviado exitosamente",
                       provider: activeCampaign.proveedor,
                     }
                   : undefined,
-                error: sendResponse.ok ? undefined : sendResponse.error || "Error al enviar email",
+                error: sendResponse.ok
+                  ? undefined
+                  : sendResponse.error || "Error al enviar email",
               }
-            : step,
-        ),
-      )
+            : step
+        )
+      );
 
       // Step 4: Mark result
       setWorkflowSteps((prev) =>
-        prev.map((step) => (step.id === "mark-result" ? { ...step, status: "running" as const, progress: 90 } : step)),
-      )
+        prev.map((step) =>
+          step.id === "mark-result"
+            ? { ...step, status: "running" as const, progress: 90 }
+            : step
+        )
+      );
 
       await campaignService.markRecipientResult([
         {
@@ -416,7 +530,7 @@ export function SendCampaign() {
           provider_response: sendResponse,
           campana_id: activeCampaign.id,
         },
-      ])
+      ]);
 
       setWorkflowSteps((prev) =>
         prev.map((step) =>
@@ -429,9 +543,9 @@ export function SendCampaign() {
                   status_code: sendResponse.ok ? 200 : 400,
                 },
               }
-            : step,
-        ),
-      )
+            : step
+        )
+      );
 
       if (sendResponse.ok) {
         toast({
@@ -442,55 +556,60 @@ export function SendCampaign() {
               <Rocket className="w-4 h-4 text-green-600" />
             </div>
           ),
-        })
+        });
         // Reload stats
-        loadCampaignStats(activeCampaign.id)
+        loadCampaignStats(activeCampaign.id);
       } else {
-        throw new Error(sendResponse.error || "Error al enviar email")
+        throw new Error(sendResponse.error || "Error al enviar email");
       }
     } catch (error) {
       toast({
         variant: "destructive",
         title: "Error en el flujo de envío",
-        description: error instanceof Error ? error.message : "Error desconocido",
-      })
+        description:
+          error instanceof Error ? error.message : "Error desconocido",
+      });
     } finally {
-      setWorkflowRunning(false)
+      setWorkflowRunning(false);
     }
-  }
+  };
 
   const handleChangeStatus = async (newStatus: string) => {
-    if (!activeCampaign?.id || !newStatus) return
+    if (!activeCampaign?.id || !newStatus) return;
 
     // Type assertion to ensure newStatus is valid Campaign estado
-    const validStatus = newStatus as Campaign["estado"]
+    const validStatus = newStatus as Campaign["estado"];
 
     try {
-      const response = await campaignService.changeStatus(activeCampaign.id, validStatus)
+      const response = await campaignService.changeStatus(
+        activeCampaign.id,
+        validStatus
+      );
       if (response.ok) {
         toast({
           title: "Estado actualizado",
           description: `La campaña ahora está ${validStatus}`,
-        })
-        loadActiveCampaign() // Reload campaign
+        });
+        loadActiveCampaign(); // Reload campaign
       } else {
-        throw new Error(response.error || "Error al cambiar estado")
+        throw new Error(response.error || "Error al cambiar estado");
       }
     } catch (error) {
       toast({
         variant: "destructive",
         title: "Error",
-        description: error instanceof Error ? error.message : "Error al cambiar estado",
-      })
+        description:
+          error instanceof Error ? error.message : "Error al cambiar estado",
+      });
     }
-  }
+  };
 
   if (loading) {
     return (
       <div className="flex items-center justify-center py-8">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
       </div>
-    )
+    );
   }
 
   if (!activeCampaign) {
@@ -499,7 +618,9 @@ export function SendCampaign() {
         <div className="flex items-center justify-between">
           <div>
             <h2 className="text-2xl font-bold">Enviar Campaña</h2>
-            <p className="text-muted-foreground">No hay campañas activas para enviar</p>
+            <p className="text-muted-foreground">
+              No hay campañas activas para enviar
+            </p>
           </div>
           <Button onClick={loadActiveCampaign} variant="outline">
             <RefreshCw className="w-4 h-4 mr-2" />
@@ -511,13 +632,17 @@ export function SendCampaign() {
           <CardContent className="py-8">
             <div className="text-center">
               <Mail className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-              <h3 className="text-lg font-semibold mb-2">No hay campañas activas</h3>
-              <p className="text-muted-foreground mb-4">Crea una nueva campaña para comenzar a enviar emails</p>
+              <h3 className="text-lg font-semibold mb-2">
+                No hay campañas activas
+              </h3>
+              <p className="text-muted-foreground mb-4">
+                Crea una nueva campaña para comenzar a enviar emails
+              </p>
             </div>
           </CardContent>
         </Card>
       </div>
-    )
+    );
   }
 
   return (
@@ -525,7 +650,9 @@ export function SendCampaign() {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold">Enviar Campaña</h2>
-          <p className="text-muted-foreground">Gestiona el envío de tu campaña activa</p>
+          <p className="text-muted-foreground">
+            Gestiona el envío de tu campaña activa
+          </p>
         </div>
         <Button onClick={loadActiveCampaign} variant="outline">
           <RefreshCw className="w-4 h-4 mr-2" />
@@ -542,7 +669,9 @@ export function SendCampaign() {
                 <Play className="w-5 h-5 mr-2" />
                 Flujo de Envío Visual
               </CardTitle>
-              <CardDescription>Visualización en tiempo real del proceso de envío de emails</CardDescription>
+              <CardDescription>
+                Visualización en tiempo real del proceso de envío de emails
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <WorkflowFlow steps={workflowSteps} isRunning={workflowRunning} />
@@ -565,26 +694,35 @@ export function SendCampaign() {
                   <div className="grid grid-cols-2 gap-4 text-sm">
                     <div>
                       <span className="font-medium">Remitente:</span>
-                      <p className="text-muted-foreground">{activeCampaign.remitente_nombre}</p>
+                      <p className="text-muted-foreground">
+                        {activeCampaign.remitente_nombre}
+                      </p>
                     </div>
                     <div>
                       <span className="font-medium">Email:</span>
-                      <p className="text-muted-foreground">{activeCampaign.remitente_email}</p>
+                      <p className="text-muted-foreground">
+                        {activeCampaign.remitente_email}
+                      </p>
                     </div>
                     <div>
                       <span className="font-medium">Proveedor:</span>
-                      <p className="text-muted-foreground">{activeCampaign.proveedor}</p>
+                      <p className="text-muted-foreground">
+                        {activeCampaign.proveedor}
+                      </p>
                     </div>
                     <div>
                       <span className="font-medium">Zona horaria:</span>
-                      <p className="text-muted-foreground">{activeCampaign.tz}</p>
+                      <p className="text-muted-foreground">
+                        {activeCampaign.tz}
+                      </p>
                     </div>
                   </div>
                   <Separator />
                   <div>
                     <span className="font-medium">Configuración de ritmo:</span>
                     <p className="text-sm text-muted-foreground mt-1">
-                      {activeCampaign.ritmo.quota.emails} emails cada {activeCampaign.ritmo.quota.horas} horas
+                      {activeCampaign.ritmo.quota.emails} emails cada{" "}
+                      {activeCampaign.ritmo.quota.horas} horas
                     </p>
                   </div>
                 </div>
@@ -593,20 +731,34 @@ export function SendCampaign() {
               {campaignStats && (
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   <div className="p-3 border rounded-lg text-center">
-                    <div className="text-2xl font-bold text-blue-600">{campaignStats.total_destinatarios || 0}</div>
+                    <div className="text-2xl font-bold text-blue-600">
+                      {campaignStats.total_destinatarios || 0}
+                    </div>
                     <div className="text-sm text-muted-foreground">Total</div>
                   </div>
                   <div className="p-3 border rounded-lg text-center">
-                    <div className="text-2xl font-bold text-orange-600">{campaignStats.pendientes || 0}</div>
-                    <div className="text-sm text-muted-foreground">Pendientes</div>
+                    <div className="text-2xl font-bold text-orange-600">
+                      {campaignStats.pendientes || 0}
+                    </div>
+                    <div className="text-sm text-muted-foreground">
+                      Pendientes
+                    </div>
                   </div>
                   <div className="p-3 border rounded-lg text-center">
-                    <div className="text-2xl font-bold text-green-600">{campaignStats.exitosos || 0}</div>
-                    <div className="text-sm text-muted-foreground">Enviados</div>
+                    <div className="text-2xl font-bold text-green-600">
+                      {campaignStats.exitosos || 0}
+                    </div>
+                    <div className="text-sm text-muted-foreground">
+                      Enviados
+                    </div>
                   </div>
                   <div className="p-3 border rounded-lg text-center">
-                    <div className="text-2xl font-bold text-red-600">{campaignStats.fallidos || 0}</div>
-                    <div className="text-sm text-muted-foreground">Fallidos</div>
+                    <div className="text-2xl font-bold text-red-600">
+                      {campaignStats.fallidos || 0}
+                    </div>
+                    <div className="text-sm text-muted-foreground">
+                      Fallidos
+                    </div>
                   </div>
                 </div>
               )}
@@ -619,13 +771,17 @@ export function SendCampaign() {
                 <Send className="w-5 h-5 mr-2" />
                 Control de Envío
               </CardTitle>
-              <CardDescription>Ejecuta el flujo completo de envío de email</CardDescription>
+              <CardDescription>
+                Ejecuta el flujo completo de envío de email
+              </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex space-x-4">
                 <Button
                   onClick={handleSendNext}
-                  disabled={workflowRunning || activeCampaign.estado !== "en_ejecucion"}
+                  disabled={
+                    workflowRunning || activeCampaign.estado !== "en_ejecucion"
+                  }
                   className="flex-1"
                   size="lg"
                 >
@@ -658,8 +814,8 @@ export function SendCampaign() {
                 <Alert>
                   <AlertTriangle className="h-4 w-4" />
                   <AlertDescription>
-                    La campaña está <strong>{activeCampaign.estado}</strong>. Cambia el estado a "En ejecución" para
-                    poder enviar emails.
+                    La campaña está <strong>{activeCampaign.estado}</strong>.
+                    Cambia el estado a "En ejecución" para poder enviar emails.
                   </AlertDescription>
                 </Alert>
               )}
@@ -677,21 +833,28 @@ export function SendCampaign() {
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between">
                   <span>Emails por cuota:</span>
-                  <span className="font-medium">{activeCampaign.ritmo.quota.emails}</span>
+                  <span className="font-medium">
+                    {activeCampaign.ritmo.quota.emails}
+                  </span>
                 </div>
                 <div className="flex justify-between">
                   <span>Horas por cuota:</span>
-                  <span className="font-medium">{activeCampaign.ritmo.quota.horas}</span>
+                  <span className="font-medium">
+                    {activeCampaign.ritmo.quota.horas}
+                  </span>
                 </div>
                 <div className="flex justify-between">
                   <span>Jitter:</span>
                   <span className="font-medium">
-                    {activeCampaign.ritmo.jitter_seg.min}-{activeCampaign.ritmo.jitter_seg.max}s
+                    {activeCampaign.ritmo.jitter_seg.min}-
+                    {activeCampaign.ritmo.jitter_seg.max}s
                   </span>
                 </div>
                 <div className="flex justify-between">
                   <span>Días activos:</span>
-                  <span className="font-medium">{activeCampaign.ritmo.activo.dias.length} días</span>
+                  <span className="font-medium">
+                    {activeCampaign.ritmo.activo.dias.length} días
+                  </span>
                 </div>
               </div>
             </CardContent>
@@ -705,11 +868,15 @@ export function SendCampaign() {
               <div className="space-y-3 text-sm">
                 <div className="flex items-center space-x-2">
                   <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                  <span className="font-mono text-xs">destinatarios.siguiente.php</span>
+                  <span className="font-mono text-xs">
+                    destinatarios.siguiente.php
+                  </span>
                 </div>
                 <div className="flex items-center space-x-2">
                   <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                  <span className="font-mono text-xs">plantillas.render.php</span>
+                  <span className="font-mono text-xs">
+                    plantillas.render.php
+                  </span>
                 </div>
                 <div className="flex items-center space-x-2">
                   <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
@@ -717,7 +884,9 @@ export function SendCampaign() {
                 </div>
                 <div className="flex items-center space-x-2">
                   <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
-                  <span className="font-mono text-xs">destinatarios.marcar_resultado.php</span>
+                  <span className="font-mono text-xs">
+                    destinatarios.marcar_resultado.php
+                  </span>
                 </div>
               </div>
             </CardContent>
@@ -739,5 +908,5 @@ export function SendCampaign() {
         </div>
       </div>
     </div>
-  )
+  );
 }

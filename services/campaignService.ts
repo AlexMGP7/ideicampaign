@@ -90,6 +90,36 @@ function normalizeChangeStatusResponse(raw: any): ApiResponse<{ actualizadas?: n
   return raw as ApiResponse<{ actualizadas?: number }>
 }
 
+function normalizeNextRecipientResponse(raw: any): ApiResponse<Recipient> & { next_at?: string } {
+  // Caso ideal: ya trae data
+  if (raw?.ok && raw?.data) return raw as ApiResponse<Recipient>;
+
+  // Compat backend: item | items[0]
+  const item = raw?.item ?? (Array.isArray(raw?.items) ? raw.items[0] : undefined);
+
+  if (raw?.ok && item) {
+    const mapped: any = {
+      dest_id: Number(item.dest_id ?? item.id),
+      email: item.email,
+      token_baja: item.token_baja,
+      // El backend envía "empresa"; la UI usa "empresa_nombre"
+      empresa_nombre: item.empresa_nombre ?? item.empresa ?? "",
+      sitio_web: item.sitio_web,
+      categoria: item.categoria,
+    };
+    return { ok: true, data: mapped, message: raw.message, next_at: raw.next_at };
+  }
+
+  // ok pero sin item: devolver next_at para que la UI informe ventana/cuota
+  if (raw?.ok) {
+    return { ok: true, data: undefined as any, message: raw.message ?? "sin_item", next_at: raw.next_at };
+  }
+
+  // error tal cual
+  return raw as ApiResponse<Recipient>;
+}
+
+
 export class CampaignService {
   async createCampaign(
     campaignData: Omit<Campaign, "id" | "created_at" | "updated_at">,
@@ -148,11 +178,12 @@ export class CampaignService {
     })
   }
 
-  async getNextRecipient(campaignId: number | string): Promise<ApiResponse<Recipient>> {
-    return apiService.post("/campana/destinatarios.siguiente.php", {
-      campana_id: typeof campaignId === "string" ? Number(campaignId) : campaignId,
-    })
-  }
+  async getNextRecipient(campaignId: number | string): Promise<ApiResponse<Recipient> & { next_at?: string }> {
+    const raw = await apiService.post<any>("/campana/destinatarios.siguiente.php", {
+    campana_id: typeof campaignId === "string" ? Number(campaignId) : campaignId,
+  });
+  return normalizeNextRecipientResponse(raw);
+}
 
   async markRecipientResult(results: RecipientResult[]): Promise<ApiResponse> {
     return apiService.post("/campana/destinatarios.marcar_resultado.php", results)
