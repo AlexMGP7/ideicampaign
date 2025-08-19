@@ -4,7 +4,7 @@ export interface Campaign {
   remitente_nombre: string
   remitente_email: string
   proveedor: "ses" | "sendgrid" | "postmark" | "smtp" | "zeptomail"
-  estado?: "borrador" | "en_ejecucion" | "pausada" | "finalizada"
+  estado?: "borrador" | "preparando" | "en_ejecucion" | "pausada" | "finalizada"
   tz: string
   ritmo: {
     quota: {
@@ -55,11 +55,55 @@ export interface CampaignStats {
 export interface Recipient {
   dest_id: string
   email: string
-  empresa?: string
+  empresa_nombre?: string
+  empresa_id?: number
   nombre?: string
   estado: "pendiente" | "enviado" | "exitoso" | "fallido"
-  token_baja: string
+  token_baja?: string
   error?: string
+}
+
+export interface RecipientResult {
+  dest_id: string
+  ok: boolean
+  status: number
+  provider_response?: any
+  campana_id: string
+}
+
+export interface TemplateRenderRequest {
+  campana_id: string
+  unsubscribe_base: string
+  allow_fallback: boolean
+  dest: { dest_id: string }
+  vars: {
+    agenda_url?: string
+    telefono?: string
+    ciudad?: string
+    [key: string]: any
+  }
+}
+
+export interface TemplateRenderResponse {
+  subject: string
+  html: string
+  text?: string
+}
+
+export interface EmailSendRequest {
+  to: string
+  to_name?: string
+  subject: string
+  html: string
+  text?: string
+  from_name: string
+  from_email: string
+  reply_to?: string
+  campana_id?: string
+  destinatario_id?: string
+  token_baja?: string
+  track_opens?: boolean
+  track_clicks?: boolean
 }
 
 export interface ApiResponse<T = any> {

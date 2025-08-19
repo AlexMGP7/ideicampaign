@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Switch } from "@/components/ui/switch"
 import { Checkbox } from "@/components/ui/checkbox"
-import { Send, Save, Users, Mail, Info, CheckCircle, Clock } from "lucide-react"
+import { Send, Save, Users, Mail, Info, CheckCircle, Clock, Loader2, Database } from "lucide-react"
 import type { Campaign } from "@/types/campaign"
 import { useToast } from "@/hooks/use-toast"
 import { campaignService } from "@/services/campaignService"
@@ -16,6 +16,11 @@ import { campaignService } from "@/services/campaignService"
 export function CampaignForm() {
   const { toast } = useToast()
   const [isLoading, setIsLoading] = useState(false)
+  const [populateProgress, setPopulateProgress] = useState<{
+    step: string
+    message: string
+    count?: number
+  } | null>(null)
 
   const [formData, setFormData] = useState<Omit<Campaign, "id" | "created_at" | "updated_at">>({
     nombre: "",
@@ -67,6 +72,7 @@ export function CampaignForm() {
     }
 
     setIsLoading(true)
+    setPopulateProgress(null)
 
     try {
       if (action === "save") {
@@ -90,16 +96,26 @@ export function CampaignForm() {
           throw new Error(response.error || "Error al guardar borrador")
         }
       } else {
-        // Crear y ejecutar campaña completa
+        setPopulateProgress({
+          step: "connecting",
+          message: "Creando campaña y poblando destinatarios...",
+        })
+
         const response = await campaignService.createAndStartCampaign({
           ...formData,
-          estado: "en_ejecucion",
+          estado: "borrador",
         })
 
         if (response.ok) {
+          setPopulateProgress({
+            step: "completed",
+            message: `Campaña creada y destinatarios poblados exitosamente`,
+            count: response.data?.insertados || 0,
+          })
+
           toast({
-            title: "Campaña creada y en ejecución",
-            description: `La campaña "${formData.nombre}" se creó exitosamente con ${response.insertados || 0} destinatarios`,
+            title: "Campaña creada exitosamente",
+            description: `La campaña "${formData.nombre}" se creó con ${response.data?.insertados || 0} destinatarios`,
             action: (
               <div className="flex items-center">
                 <CheckCircle className="w-4 h-4 text-green-600" />
@@ -107,10 +123,14 @@ export function CampaignForm() {
             ),
           })
         } else {
-          throw new Error(response.error || "Error al crear campaña")
+          throw new Error(response.error || "Error al crear y ejecutar campaña")
         }
       }
     } catch (error) {
+      setPopulateProgress({
+        step: "error",
+        message: error instanceof Error ? error.message : "Error desconocido",
+      })
       toast({
         variant: "destructive",
         title: "Error",
@@ -181,11 +201,34 @@ export function CampaignForm() {
             Guardar Borrador
           </Button>
           <Button onClick={() => handleSubmit("send")} disabled={isLoading}>
-            <Send className="w-4 h-4 mr-2" />
-            {isLoading ? "Creando..." : "Crear y Ejecutar"}
+            {isLoading ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Send className="w-4 h-4 mr-2" />}
+            {isLoading ? "Procesando..." : "Crear y Ejecutar"}
           </Button>
         </div>
       </div>
+
+      {populateProgress && (
+        <Card className="border-blue-200 bg-blue-50">
+          <CardContent className="pt-6">
+            <div className="flex items-center space-x-3">
+              {populateProgress.step === "connecting" && <Loader2 className="w-5 h-5 text-blue-600 animate-spin" />}
+              {populateProgress.step === "completed" && <CheckCircle className="w-5 h-5 text-green-600" />}
+              {populateProgress.step === "error" && <Database className="w-5 h-5 text-red-600" />}
+              <div>
+                <p className="font-medium text-blue-900">
+                  {populateProgress.step === "connecting" && "Creando Campaña"}
+                  {populateProgress.step === "completed" && "Campaña Creada"}
+                  {populateProgress.step === "error" && "Error al Crear"}
+                </p>
+                <p className="text-sm text-blue-700">
+                  {populateProgress.message}
+                  {populateProgress.count && ` (${populateProgress.count} destinatarios)`}
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Main Form */}
