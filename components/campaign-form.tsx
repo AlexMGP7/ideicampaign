@@ -25,7 +25,7 @@ export function CampaignForm() {
   const [formData, setFormData] = useState<Omit<Campaign, "id" | "created_at" | "updated_at">>({
     nombre: "",
     remitente_nombre: "Luis García",
-    remitente_email: "luisgarcia@ideidev.com",
+    remitente_email: "info@ideidev.com",
     proveedor: "zeptomail",
     tz: "Europe/Amsterdam",
     ritmo: {
@@ -267,7 +267,7 @@ export function CampaignForm() {
                   <Input
                     id="remitente_email"
                     type="email"
-                    placeholder="luisgarcia@ideidev.com"
+                    placeholder="info@ideidev.com"
                     value={formData.remitente_email}
                     onChange={(e) => handleInputChange("remitente_email", e.target.value)}
                   />
@@ -283,10 +283,6 @@ export function CampaignForm() {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="zeptomail">Zeptomail</SelectItem>
-                      <SelectItem value="ses">Amazon SES</SelectItem>
-                      <SelectItem value="sendgrid">SendGrid</SelectItem>
-                      <SelectItem value="postmark">Postmark</SelectItem>
-                      <SelectItem value="smtp">SMTP</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
