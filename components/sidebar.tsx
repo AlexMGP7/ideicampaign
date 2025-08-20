@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
-import { Home, Plus, BarChart3, Settings, Mail, Users, Send, LogOut, User } from "lucide-react"
+import { Home, Plus, BarChart3, Settings, Mail, Users, Send, LogOut, User, Eye } from "lucide-react"
 import Image from "next/image"
 
 interface SidebarProps {
@@ -14,9 +14,9 @@ interface SidebarProps {
 
 export function Sidebar({ activeTab, setActiveTab, user, onLogout }: SidebarProps) {
   const menuItems = [
-    // { id: "overview", label: "Dashboard", icon: Home },
+    { id: "overview", label: "Dashboard", icon: Home },
     { id: "create", label: "Nueva Campaña", icon: Plus },
-    { id: "send", label: "Ver Envío", icon: Send },
+    { id: "send", label: "Ver Envío", icon: Eye },
     // { id: "analytics", label: "Análisis", icon: BarChart3 },
     { id: "campaigns", label: "Campañas", icon: Mail },
     { id: "contacts", label: "Contactos", icon: Users },

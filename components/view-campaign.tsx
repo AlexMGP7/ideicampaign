@@ -478,8 +478,8 @@ export function SendCampaign() {
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-2xl font-bold">Enviar Campaña</h2>
-            <p className="text-muted-foreground">No hay campañas activas para enviar</p>
+            <h2 className="text-2xl font-bold">Ver envío de campaña</h2>
+            <p className="text-muted-foreground">No hay envíos activos ahora mismo</p>
           </div>
           <Button onClick={loadActiveCampaign} variant="outline">
             <RefreshCw className="w-4 h-4 mr-2" />
