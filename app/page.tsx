@@ -21,7 +21,7 @@ import {
 import { Mail, Send, TrendingUp, Eye, Clock, CheckCircle } from "lucide-react"
 import { CampaignForm } from "@/components/campaign-form"
 import { Sidebar } from "@/components/sidebar"
-import { SendCampaign } from "@/components/send-campaign"
+import { SendCampaign } from "@/components/view-campaign"
 import { Settings } from "@/components/settings"
 import { Login } from "@/components/login"
 import { Contacts } from "@/components/contacts"
@@ -235,8 +235,8 @@ export default function Dashboard() {
                           data={pieData}
                           cx="50%"
                           cy="50%"
-                          labelLine={false}
-                          label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                          labelLine={false} 
+                          label={({ name, percent }) => `${name} ${percent !== undefined ? (percent * 100).toFixed(0) : 'N/A'}%`}
                           outerRadius={80}
                           fill="#8884d8"
                           dataKey="value"

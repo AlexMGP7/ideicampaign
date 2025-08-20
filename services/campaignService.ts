@@ -1,21 +1,13 @@
 // services/campaignService.ts
 import { apiService } from "./api"
-import type {
-  Campaign,
-  CampaignStats,
-  ApiResponse,
-  Recipient,
-  RecipientResult,
-} from "../types/campaign"
+import type { Campaign, CampaignStats, ApiResponse, Recipient, RecipientResult } from "../types/campaign"
 
 /**
  * Normaliza respuestas que vienen "planas" del backend a { ok, data, ... }.
  * - Si encuentra campana_id o proximo_envio_at en el nivel raíz, los mapea a data.
  * - Preserva ok, message, error originales.
  */
-function normalizeCreateResponse(
-  raw: any,
-): ApiResponse<{ campana_id: number; proximo_envio_at?: string }> {
+function normalizeCreateResponse(raw: any): ApiResponse<{ campana_id: number; proximo_envio_at?: string }> {
   // Caso ideal: ya viene en formato { ok, data: { campana_id, ... } }
   if (raw && raw.ok && raw.data && typeof raw.data.campana_id !== "undefined") {
     return raw as ApiResponse<{ campana_id: number; proximo_envio_at?: string }>
@@ -92,10 +84,10 @@ function normalizeChangeStatusResponse(raw: any): ApiResponse<{ actualizadas?: n
 
 function normalizeNextRecipientResponse(raw: any): ApiResponse<Recipient> & { next_at?: string } {
   // Caso ideal: ya trae data
-  if (raw?.ok && raw?.data) return raw as ApiResponse<Recipient>;
+  if (raw?.ok && raw?.data) return raw as ApiResponse<Recipient>
 
   // Compat backend: item | items[0]
-  const item = raw?.item ?? (Array.isArray(raw?.items) ? raw.items[0] : undefined);
+  const item = raw?.item ?? (Array.isArray(raw?.items) ? raw.items[0] : undefined)
 
   if (raw?.ok && item) {
     const mapped: any = {
@@ -106,19 +98,18 @@ function normalizeNextRecipientResponse(raw: any): ApiResponse<Recipient> & { ne
       empresa_nombre: item.empresa_nombre ?? item.empresa ?? "",
       sitio_web: item.sitio_web,
       categoria: item.categoria,
-    };
-    return { ok: true, data: mapped, message: raw.message, next_at: raw.next_at };
+    }
+    return { ok: true, data: mapped, message: raw.message, next_at: raw.next_at }
   }
 
   // ok pero sin item: devolver next_at para que la UI informe ventana/cuota
   if (raw?.ok) {
-    return { ok: true, data: undefined as any, message: raw.message ?? "sin_item", next_at: raw.next_at };
+    return { ok: true, data: undefined as any, message: raw.message ?? "sin_item", next_at: raw.next_at }
   }
 
   // error tal cual
-  return raw as ApiResponse<Recipient>;
+  return raw as ApiResponse<Recipient>
 }
-
 
 export class CampaignService {
   async createCampaign(
@@ -180,10 +171,10 @@ export class CampaignService {
 
   async getNextRecipient(campaignId: number | string): Promise<ApiResponse<Recipient> & { next_at?: string }> {
     const raw = await apiService.post<any>("/campana/destinatarios.siguiente.php", {
-    campana_id: typeof campaignId === "string" ? Number(campaignId) : campaignId,
-  });
-  return normalizeNextRecipientResponse(raw);
-}
+      campana_id: typeof campaignId === "string" ? Number(campaignId) : campaignId,
+    })
+    return normalizeNextRecipientResponse(raw)
+  }
 
   async markRecipientResult(results: RecipientResult[]): Promise<ApiResponse> {
     return apiService.post("/campana/destinatarios.marcar_resultado.php", results)
@@ -201,21 +192,16 @@ export class CampaignService {
       const createResponse = await this.createCampaign(campaignData)
 
       // Fallback por si algún entorno devuelve plano y no pasó por normalize (defensa extra)
-      const topLevelId =
-        (createResponse as any)?.campana_id ??
-        (createResponse as any)?.data?.campana_id
+      const topLevelId = (createResponse as any)?.campana_id ?? (createResponse as any)?.data?.campana_id
 
       if (!createResponse.ok || typeof topLevelId === "undefined") {
         return {
           ok: false,
-          error:
-            (createResponse as any)?.error ||
-            "No se recibió campana_id al crear la campaña",
+          error: (createResponse as any)?.error || "No se recibió campana_id al crear la campaña",
         }
       }
 
-      const campaignId: number =
-        typeof topLevelId === "string" ? Number(topLevelId) : topLevelId
+      const campaignId: number = typeof topLevelId === "string" ? Number(topLevelId) : topLevelId
 
       // 2) Poblar destinatarios
       const populateResponse = await this.populateRecipients(campaignId, campaignData.audiencia)
@@ -287,6 +273,51 @@ export class CampaignService {
         })
       }, 500)
     })
+  }
+
+  async getCampaignStatus(campaignId: number | string, sinceId = 0, limit = 50): Promise<ApiResponse<any>> {
+    try {
+      const response = await apiService.post<any>("/campana/campanas.status.php", {
+        campana_id: typeof campaignId === "string" ? Number(campaignId) : campaignId,
+        since_id: sinceId,
+        limit: limit,
+      })
+
+      if (!response || typeof response !== "object") {
+        return {
+          ok: false,
+          error: "Respuesta inválida del servidor",
+        }
+      }
+
+      // Check if response has campaign data (successful response)
+      if (response.campana || response.resumen || response.progreso) {
+        return {
+          ok: true,
+          data: response,
+        }
+      }
+
+      // Check if response has error information
+      if (response.error) {
+        return {
+          ok: false,
+          error: response.error,
+        }
+      }
+
+      // If response structure is unexpected, wrap it as successful
+      return {
+        ok: true,
+        data: response,
+      }
+    } catch (error) {
+      console.error("[v0] getCampaignStatus error:", error)
+      return {
+        ok: false,
+        error: error instanceof Error ? error.message : "Error de conexión con el servidor",
+      }
+    }
   }
 }
 
