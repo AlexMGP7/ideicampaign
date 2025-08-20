@@ -108,7 +108,7 @@ export function Login({ onLogin }: LoginProps) {
                 className="w-full"
               />
             </div>
-            <Button type="submit" className="w-full bg-idei-blue hover:bg-idei-blue/90">
+            <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white">
               Iniciar Sesión
             </Button>
           </form>
