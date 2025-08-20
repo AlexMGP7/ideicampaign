@@ -14,13 +14,13 @@ interface SidebarProps {
 
 export function Sidebar({ activeTab, setActiveTab, user, onLogout }: SidebarProps) {
   const menuItems = [
-    { id: "overview", label: "Dashboard", icon: Home },
+    // { id: "overview", label: "Dashboard", icon: Home },
     { id: "create", label: "Nueva Campaña", icon: Plus },
-    { id: "send", label: "Enviar Campaña", icon: Send },
-    { id: "analytics", label: "Análisis", icon: BarChart3 },
+    { id: "send", label: "Ver Envío", icon: Send },
+    // { id: "analytics", label: "Análisis", icon: BarChart3 },
     { id: "campaigns", label: "Campañas", icon: Mail },
     { id: "contacts", label: "Contactos", icon: Users },
-    { id: "settings", label: "Configuración", icon: Settings },
+    // { id: "settings", label: "Configuración", icon: Settings },
   ]
 
   return (

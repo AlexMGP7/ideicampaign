@@ -1,5 +1,5 @@
 export interface Campaign {
-  id?: string
+  id?: number
   nombre: string
   remitente_nombre: string
   remitente_email: string
@@ -41,6 +41,18 @@ export interface Campaign {
   proximo_envio_at?: string
   created_at?: string
   updated_at?: string
+  ultimo_intento?: string | null
+  totales?: {
+    total: number
+    en_cola: number
+    procesando: number
+    enviado: number
+    rebotado: number
+    baja: number
+    bloqueado: number
+    error: number
+  }
+  progreso?: number
 }
 
 export interface CampaignStats {

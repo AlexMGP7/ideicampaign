@@ -25,6 +25,7 @@ import { SendCampaign } from "@/components/view-campaign"
 import { Settings } from "@/components/settings"
 import { Login } from "@/components/login"
 import { Contacts } from "@/components/contacts"
+import { CampaignsList } from "@/components/campaigns-list"
 
 // Mock data for demonstration
 const campaignStats = {
@@ -235,8 +236,10 @@ export default function Dashboard() {
                           data={pieData}
                           cx="50%"
                           cy="50%"
-                          labelLine={false} 
-                          label={({ name, percent }) => `${name} ${percent !== undefined ? (percent * 100).toFixed(0) : 'N/A'}%`}
+                          labelLine={false}
+                          label={({ name, percent }) =>
+                            `${name} ${percent !== undefined ? (percent * 100).toFixed(0) : "N/A"}%`
+                          }
                           outerRadius={80}
                           fill="#8884d8"
                           dataKey="value"
@@ -360,19 +363,7 @@ export default function Dashboard() {
             </TabsContent>
 
             <TabsContent value="campaigns">
-              <div className="space-y-6">
-                <Card className="border-0 shadow-lg">
-                  <CardHeader>
-                    <CardTitle className="text-xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-                      Gestión de Campañas
-                    </CardTitle>
-                    <CardDescription>Administra todas tus campañas de email marketing</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-muted-foreground">Funcionalidad de gestión de campañas en desarrollo...</p>
-                  </CardContent>
-                </Card>
-              </div>
+              <CampaignsList />
             </TabsContent>
 
             <TabsContent value="contacts">
