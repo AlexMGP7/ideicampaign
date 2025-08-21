@@ -1,6 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
+// ✅ usamos tu hook (API key queda dentro del hook)
+import { useCampaignStatus } from "@/hooks/useCampaignStatus";
+
 import {
   Card,
   CardContent,
@@ -26,7 +29,6 @@ import {
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { campaignService } from "@/services/campaignService";
-import { useCampaignStatus } from "@/hooks/useCampaignStatus";
 import type {
   Campaign,
   CampaignStatusData,
@@ -34,9 +36,42 @@ import type {
   WorkerActivity,
 } from "@/types/campaign";
 
+/* ------------------------- helpers ------------------------- */
+
+// Formato determinista (evita mismatch SSR/CSR)
+const DTF = new Intl.DateTimeFormat("es-ES", {
+  timeZone: "UTC",
+  dateStyle: "short",
+  timeStyle: "short",
+});
+const TTF = new Intl.DateTimeFormat("es-ES", {
+  timeZone: "UTC",
+  timeStyle: "medium",
+});
+
+// aceptan null/undefined
+const fmtDateTime = (v: string | number | Date | null | undefined) => {
+  if (v == null) return "Sin fecha";
+  try {
+    return DTF.format(new Date(v));
+  } catch {
+    return "Sin fecha";
+  }
+};
+const fmtTime = (v: string | number | Date | null | undefined) => {
+  if (v == null) return "—";
+  try {
+    return TTF.format(new Date(v));
+  } catch {
+    return "—";
+  }
+};
+
+/* ------------------------- subcomponentes ------------------------- */
+
 interface CampaignStatusProps {
   campaign: Campaign;
-  statusData: CampaignStatusData | null;
+  statusData: CampaignStatusData | null | undefined;
 }
 
 function CampaignStatus({ campaign, statusData }: CampaignStatusProps) {
@@ -140,30 +175,30 @@ function CampaignStatus({ campaign, statusData }: CampaignStatusProps) {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <div className="text-center p-3 border rounded-lg">
                 <div className="text-2xl font-bold text-blue-600">
-                  {(statusData.resumen.en_cola || 0) +
-                    (statusData.resumen.procesando || 0) +
-                    (statusData.resumen.enviados || 0) +
-                    (statusData.resumen.rebotados || 0) +
-                    (statusData.resumen.bajas || 0)}
+                  {(statusData.resumen?.en_cola || 0) +
+                    (statusData.resumen?.procesando || 0) +
+                    (statusData.resumen?.enviados || 0) +
+                    (statusData.resumen?.rebotados || 0) +
+                    (statusData.resumen?.bajas || 0)}
                 </div>
                 <div className="text-sm text-muted-foreground">Total</div>
               </div>
               <div className="text-center p-3 border rounded-lg">
                 <div className="text-2xl font-bold text-orange-600">
-                  {(statusData.resumen.en_cola || 0) +
-                    (statusData.resumen.procesando || 0)}
+                  {(statusData.resumen?.en_cola || 0) +
+                    (statusData.resumen?.procesando || 0)}
                 </div>
                 <div className="text-sm text-muted-foreground">Pendientes</div>
               </div>
               <div className="text-center p-3 border rounded-lg">
                 <div className="text-2xl font-bold text-green-600">
-                  {statusData.resumen.enviados || 0}
+                  {statusData.resumen?.enviados || 0}
                 </div>
                 <div className="text-sm text-muted-foreground">Enviados</div>
               </div>
               <div className="text-center p-3 border rounded-lg">
                 <div className="text-2xl font-bold text-red-600">
-                  {statusData.resumen.rebotados || 0}
+                  {statusData.resumen?.rebotados || 0}
                 </div>
                 <div className="text-sm text-muted-foreground">Rebotes</div>
               </div>
@@ -184,7 +219,7 @@ function CampaignStatus({ campaign, statusData }: CampaignStatusProps) {
               </div>
               <div className="text-center p-3 bg-gray-50 dark:bg-gray-900/30 rounded-lg">
                 <div className="text-2xl font-bold text-gray-600">
-                  {statusData.resumen.bajas || 0}
+                  {statusData.resumen?.bajas || 0}
                 </div>
                 <div className="text-sm text-muted-foreground">Bajas</div>
               </div>
@@ -201,30 +236,32 @@ function CampaignStatus({ campaign, statusData }: CampaignStatusProps) {
             <div className="grid grid-cols-3 md:grid-cols-6 gap-2 text-xs">
               <div className="text-center p-2 bg-muted rounded">
                 <div className="font-bold">
-                  {statusData.resumen.en_cola || 0}
+                  {statusData.resumen?.en_cola || 0}
                 </div>
                 <div className="text-muted-foreground">En cola</div>
               </div>
               <div className="text-center p-2 bg-blue-100 dark:bg-blue-900/30 rounded">
                 <div className="font-bold">
-                  {statusData.resumen.procesando || 0}
+                  {statusData.resumen?.procesando || 0}
                 </div>
                 <div className="text-muted-foreground">Procesando</div>
               </div>
               <div className="text-center p-2 bg-green-100 dark:bg-green-900/30 rounded">
                 <div className="font-bold">
-                  {statusData.resumen.enviados || 0}
+                  {statusData.resumen?.enviados || 0}
                 </div>
                 <div className="text-muted-foreground">Enviado</div>
               </div>
               <div className="text-center p-2 bg-yellow-100 dark:bg-yellow-900/30 rounded">
                 <div className="font-bold">
-                  {statusData.resumen.rebotados || 0}
+                  {statusData.resumen?.rebotados || 0}
                 </div>
                 <div className="text-muted-foreground">Rebote</div>
               </div>
               <div className="text-center p-2 bg-purple-100 dark:bg-purple-950/30 rounded">
-                <div className="font-bold">{statusData.resumen.bajas || 0}</div>
+                <div className="font-bold">
+                  {statusData.resumen?.bajas || 0}
+                </div>
                 <div className="text-muted-foreground">Baja</div>
               </div>
               <div className="text-center p-2 bg-orange-100 dark:bg-orange-900/30 rounded">
@@ -247,7 +284,7 @@ function RecentRecipients({ ultimos }: { ultimos: LastRecipient[] }) {
       case "enviado":
         return "text-green-600 bg-green-100 dark:text-green-400 dark:bg-green-900/30";
       case "rebote":
-      case "rebotado": // <--- añade este case
+      case "rebotado":
         return "text-yellow-600 bg-yellow-100 dark:text-yellow-400 dark:bg-yellow-900/30";
       case "error":
         return "text-red-600 bg-red-100 dark:text-red-400 dark:bg-red-950/30";
@@ -293,9 +330,7 @@ function RecentRecipients({ ultimos }: { ultimos: LastRecipient[] }) {
                       {evento.email || "Email no disponible"}
                     </div>
                     <div className="text-xs text-muted-foreground">
-                      {evento.actualizado_at
-                        ? new Date(evento.actualizado_at).toLocaleString()
-                        : "Sin fecha"}
+                      {fmtDateTime(evento.actualizado_at)}
                     </div>
                   </div>
                   <div className="flex items-center space-x-2">
@@ -375,7 +410,7 @@ function WorkerActivities({ actividades }: { actividades: WorkerActivity[] }) {
                         {a.email || (a.dest_id ? `dest#${a.dest_id}` : "—")}
                       </div>
                       <div className="text-xs text-muted-foreground">
-                        {a.ts ? new Date(a.ts).toLocaleString() : "Sin fecha"}
+                        {fmtDateTime(a.ts)}
                         {a.endpoint ? ` • ${a.endpoint}` : ""}
                         {typeof a.ms === "number" ? ` • ${a.ms} ms` : ""}
                         {typeof a.http_status === "number"
@@ -403,19 +438,15 @@ function WorkerActivities({ actividades }: { actividades: WorkerActivity[] }) {
   );
 }
 
+/* ------------------------- principal ------------------------- */
+
 export function SendCampaign() {
   const { toast } = useToast();
   const [activeCampaign, setActiveCampaign] = useState<Campaign | null>(null);
   const [loading, setLoading] = useState(true);
   const [statusChanging, setStatusChanging] = useState(false);
 
-  const {
-    data: statusData,
-    loading: statusLoading,
-    error: statusError,
-    refetch,
-  } = useCampaignStatus(activeCampaign?.id || null);
-
+  // Carga de campaña activa
   useEffect(() => {
     loadActiveCampaign();
   }, []);
@@ -440,6 +471,38 @@ export function SendCampaign() {
     }
   };
 
+  // ✅ usamos tu hook (polling con API key dentro)
+  const {
+    data: statusData,
+    loading: statusLoading,
+    error: statusError,
+    refetch,
+    startPolling,
+    stopPolling,
+  } = useCampaignStatus(activeCampaign?.id ?? null);
+
+  // Mantener última lista NO vacía para evitar “desaparecer” si la API devuelve []
+  const lastNonEmptyActsRef = useRef<WorkerActivity[]>([]);
+  const lastNonEmptyUltRef = useRef<LastRecipient[]>([]);
+
+  const rawActs: WorkerActivity[] =
+    (statusData?.actividades as WorkerActivity[]) ||
+    (statusData?.llamadas as WorkerActivity[]) ||
+    [];
+  const rawUlt: LastRecipient[] = statusData?.ultimos || [];
+
+  useEffect(() => {
+    if (rawActs && rawActs.length > 0) lastNonEmptyActsRef.current = rawActs;
+  }, [rawActs]);
+
+  useEffect(() => {
+    if (rawUlt && rawUlt.length > 0) lastNonEmptyUltRef.current = rawUlt;
+  }, [rawUlt]);
+
+  const actividadesEstables =
+    rawActs.length > 0 ? rawActs : lastNonEmptyActsRef.current;
+  const ultimosEstables = rawUlt.length > 0 ? rawUlt : lastNonEmptyUltRef.current;
+
   const handleChangeStatus = async (newStatus: string) => {
     if (!activeCampaign?.id || !newStatus) return;
 
@@ -461,7 +524,7 @@ export function SendCampaign() {
             "La campaña ha sido finalizada. No se procesarán más envíos.",
           borrador: "La campaña volvió a estado borrador.",
           preparando: "La campaña se está preparando para el envío.",
-        };
+        } as const;
 
         toast({
           title: "Estado actualizado",
@@ -476,7 +539,7 @@ export function SendCampaign() {
             ) : undefined,
         });
         loadActiveCampaign();
-        refetch();
+        refetch(); // fuerza refresh del hook
       } else {
         throw new Error(response.error || "Error al cambiar estado");
       }
@@ -560,10 +623,10 @@ export function SendCampaign() {
             <Clock className="h-4 w-4" />
             <AlertDescription>
               Próximo envío programado para:{" "}
-              {new Date(statusData.campana.proximo_envio_at).toLocaleString()}
-              {(statusData.resumen.en_cola || 0) > 0 && (
+              {fmtDateTime(statusData.campana.proximo_envio_at)}
+              {(statusData.resumen?.en_cola || 0) > 0 && (
                 <span className="ml-2 font-medium">
-                  ({statusData.resumen.en_cola} emails en cola esperando)
+                  ({statusData.resumen?.en_cola} emails en cola esperando)
                 </span>
               )}
             </AlertDescription>
@@ -602,10 +665,7 @@ export function SendCampaign() {
                       </Badge>
                       {statusData.worker.last_at && (
                         <span className="text-sm text-muted-foreground">
-                          Último latido:{" "}
-                          {new Date(
-                            statusData.worker.last_at
-                          ).toLocaleTimeString()}
+                          Último latido: {fmtTime(statusData.worker.last_at)}
                         </span>
                       )}
                       <span className="text-sm text-muted-foreground">
@@ -622,11 +682,11 @@ export function SendCampaign() {
                       </Alert>
                     )}
                     {statusData.worker.alive &&
-                      (statusData.resumen.en_cola || 0) > 0 &&
-                      (statusData.resumen.procesando || 0) === 0 && (
+                      (statusData.resumen?.en_cola || 0) > 0 &&
+                      (statusData.resumen?.procesando || 0) === 0 && (
                         <div className="mt-2 text-sm text-muted-foreground">
                           Worker operativo - esperando horario programado para
-                          procesar {statusData.resumen.en_cola} emails en cola
+                          procesar {statusData.resumen?.en_cola} emails en cola
                         </div>
                       )}
                   </div>
@@ -635,13 +695,9 @@ export function SendCampaign() {
             </Card>
           )}
 
-          {statusData && <RecentRecipients ultimos={statusData.ultimos} />}
-
-          {statusData && (
-            <WorkerActivities
-              actividades={statusData.actividades || statusData.llamadas || []}
-            />
-          )}
+          {/* FEEDS con listas estables */}
+          {statusData && <RecentRecipients ultimos={ultimosEstables} />}
+          <WorkerActivities actividades={actividadesEstables} />
         </div>
 
         {/* Sidebar */}
