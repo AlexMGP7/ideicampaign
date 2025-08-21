@@ -28,8 +28,7 @@ export function CampaignForm() {
       activo: {
         dias: [1, 2, 3, 4, 5], // Lunes a Viernes por defecto
         franjas: [
-          ["09:30", "13:00"],
-          ["15:30", "19:00"],
+          ["08:30", "21:00"],
         ],
       },
       jitter_seg: { min: 30, max: 240 },

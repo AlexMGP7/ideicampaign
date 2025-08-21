@@ -244,8 +244,8 @@ export class CampaignService {
         resolve({
           ok: true,
           data: [
-            {
-              id: "1",
+            { 
+              id: 1,
               nombre: "Prospección 2025-08-12",
               remitente_nombre: "Luis García",
               remitente_email: "luisgarcia@ideidev.com",
@@ -257,8 +257,7 @@ export class CampaignService {
                 activo: {
                   dias: [1, 2, 3, 4, 5],
                   franjas: [
-                    ["09:30", "13:00"],
-                    ["15:30", "19:00"],
+                    ["08:30", "21:00"],
                   ],
                 },
                 jitter_seg: { min: 30, max: 240 },
