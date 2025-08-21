@@ -552,34 +552,39 @@ export function Contacts() {
                   <h4 className="font-medium mb-2">Información de Contacto</h4>
                   <div className="space-y-2 text-sm">
                     {selectedEmpresa.emails.map((email, index) => (
-                      <div key={index} className="flex items-center">
-                        <Mail className="w-3 h-3 mr-2" />
-                        {email}
+                      <div key={index} className="flex items-center min-w-0">
+                        <Mail className="w-3 h-3 mr-2 flex-shrink-0" />
+                        <span className="truncate" title={email}>
+                          {email}
+                        </span>
                       </div>
                     ))}
                     {selectedEmpresa.telefono && (
                       <div className="flex items-center">
-                        <Phone className="w-3 h-3 mr-2" />
+                        <Phone className="w-3 h-3 mr-2 flex-shrink-0" />
                         {selectedEmpresa.telefono}
                       </div>
                     )}
                     {selectedEmpresa.sitio_web && (
-                      <div className="flex items-center">
-                        <Globe className="w-3 h-3 mr-2" />
+                      <div className="flex items-center min-w-0">
+                        <Globe className="w-3 h-3 mr-2 flex-shrink-0" />
                         <a
                           href={selectedEmpresa.sitio_web}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-blue-600 hover:underline"
+                          className="text-blue-600 hover:underline truncate block min-w-0"
+                          title={selectedEmpresa.sitio_web}
                         >
                           {selectedEmpresa.sitio_web}
                         </a>
                       </div>
                     )}
                     {selectedEmpresa.direccion && (
-                      <div className="flex items-center">
-                        <MapPin className="w-3 h-3 mr-2" />
-                        {selectedEmpresa.direccion}
+                      <div className="flex items-center min-w-0">
+                        <MapPin className="w-3 h-3 mr-2 flex-shrink-0" />
+                        <span className="truncate" title={selectedEmpresa.direccion}>
+                          {selectedEmpresa.direccion}
+                        </span>
                       </div>
                     )}
                   </div>
