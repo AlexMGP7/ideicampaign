@@ -19,7 +19,6 @@ import {
   Globe,
   MapPin,
   Building2,
-  CheckCircle,
   Eye,
   ChevronLeft,
   ChevronRight,
@@ -126,13 +125,9 @@ export function Contacts() {
 
       if (response.ok) {
         toast({
+          variant: "success", // Agregada variante success
           title: "Empresa actualizada",
           description: `Los datos de "${selectedEmpresa.titulo}" se actualizaron correctamente`,
-          action: (
-            <div className="flex items-center">
-              <CheckCircle className="w-4 h-4 text-green-600" />
-            </div>
-          ),
         })
         setEditDialogOpen(false)
         loadEmpresas() // Recargar la lista
@@ -177,46 +172,57 @@ export function Contacts() {
   const totalPages = Math.ceil(totalEmpresas / (filters.per_page || 50))
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-2xl font-bold">Contactos</h2>
-          <p className="text-muted-foreground">Gestiona tu base de datos de empresas y su estado de contacto</p>
+    <div className="space-y-8">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-6 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-xl border">
+        <div className="space-y-2">
+          <h2 className="text-3xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
+            Contactos
+          </h2>
+          <p className="text-gray-600 dark:text-gray-300 text-base">
+            Gestiona tu base de datos de empresas y su estado de contacto
+          </p>
         </div>
-        <div className="flex items-center space-x-2">
-          <Badge variant="outline" className="text-sm">
+        <div className="flex items-center gap-3">
+          <Badge variant="outline" className="text-sm px-3 py-1 bg-white dark:bg-gray-800">
+            <Building2 className="w-4 h-4 mr-2" />
             {totalEmpresas.toLocaleString()} empresas
           </Badge>
         </div>
       </div>
 
       {/* Filtros */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center">
-            <Filter className="w-5 h-5 mr-2" />
+      <Card className="card-gradient border-0 shadow-lg">
+        <CardHeader className="pb-6">
+          <CardTitle className="icon-text text-xl">
+            <div className="p-2 bg-blue-100 dark:bg-blue-900 rounded-lg">
+              <Filter className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+            </div>
             Filtros y Búsqueda
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div>
-              <Label htmlFor="search">Buscar</Label>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="form-group">
+              <Label htmlFor="search" className="text-sm font-medium">
+                Buscar
+              </Label>
               <div className="relative">
-                <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
                 <Input
                   id="search"
                   placeholder="Nombre, email, teléfono..."
-                  className="pl-10"
+                  className="pl-11 h-11 focus:ring-2 focus:ring-blue-500"
                   onChange={(e) => handleSearch(e.target.value)}
                 />
               </div>
             </div>
 
-            <div>
-              <Label htmlFor="contactada">Estado de Contacto</Label>
+            <div className="form-group">
+              <Label htmlFor="contactada" className="text-sm font-medium">
+                Estado de Contacto
+              </Label>
               <Select onValueChange={(value) => handleFilterChange("contactada", value === "all" ? undefined : value)}>
-                <SelectTrigger>
+                <SelectTrigger className="h-11">
                   <SelectValue placeholder="Todos" />
                 </SelectTrigger>
                 <SelectContent>
@@ -227,10 +233,12 @@ export function Contacts() {
               </Select>
             </div>
 
-            <div>
-              <Label htmlFor="order">Ordenar por</Label>
+            <div className="form-group">
+              <Label htmlFor="order" className="text-sm font-medium">
+                Ordenar por
+              </Label>
               <Select value={filters.order_by} onValueChange={(value) => handleFilterChange("order_by", value)}>
-                <SelectTrigger>
+                <SelectTrigger className="h-11">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -242,13 +250,15 @@ export function Contacts() {
               </Select>
             </div>
 
-            <div>
-              <Label htmlFor="per_page">Resultados por página</Label>
+            <div className="form-group">
+              <Label htmlFor="per_page" className="text-sm font-medium">
+                Resultados por página
+              </Label>
               <Select
                 value={filters.per_page?.toString()}
                 onValueChange={(value) => handleFilterChange("per_page", Number.parseInt(value))}
               >
-                <SelectTrigger>
+                <SelectTrigger className="h-11">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -263,43 +273,45 @@ export function Contacts() {
       </Card>
 
       {/* Tabla de empresas */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center">
-            <Building2 className="w-5 h-5 mr-2" />
+      <Card className="card-gradient border-0 shadow-lg">
+        <CardHeader className="pb-6">
+          <CardTitle className="icon-text text-xl">
+            <div className="p-2 bg-green-100 dark:bg-green-900 rounded-lg">
+              <Building2 className="w-5 h-5 text-green-600 dark:text-green-400" />
+            </div>
             Lista de Empresas
           </CardTitle>
-          <CardDescription>
+          <CardDescription className="text-base">
             Página {currentPage} de {totalPages} ({totalEmpresas.toLocaleString()} empresas total)
           </CardDescription>
         </CardHeader>
         <CardContent>
           {loading ? (
-            <div className="flex items-center justify-center py-8">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+            <div className="flex items-center justify-center py-12">
+              <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-primary"></div>
             </div>
           ) : (
             <>
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Empresa</TableHead>
-                    <TableHead>Contacto</TableHead>
-                    <TableHead>Estado</TableHead>
-                    <TableHead>Métricas</TableHead>
-                    <TableHead>Acciones</TableHead>
+                    <TableHead className="font-semibold">Empresa</TableHead>
+                    <TableHead className="font-semibold">Contacto</TableHead>
+                    <TableHead className="font-semibold">Estado</TableHead>
+                    <TableHead className="font-semibold">Métricas</TableHead>
+                    <TableHead className="font-semibold">Acciones</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {empresas.map((empresa) => (
-                    <TableRow key={empresa.id}>
+                    <TableRow key={empresa.id} className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
                       <TableCell>
-                        <div>
-                          <div className="font-medium">{empresa.titulo}</div>
-                          <div className="text-sm text-muted-foreground">
+                        <div className="space-y-1">
+                          <div className="font-semibold text-gray-900 dark:text-gray-100">{empresa.titulo}</div>
+                          <div className="text-sm text-gray-600 dark:text-gray-400">
                             {empresa.categoria.nombre && (
-                              <span className="inline-flex items-center">
-                                <Building2 className="w-3 h-3 mr-1" />
+                              <span className="icon-text">
+                                <Building2 className="w-3 h-3" />
                                 {empresa.categoria.nombre}
                               </span>
                             )}
@@ -308,51 +320,69 @@ export function Contacts() {
                       </TableCell>
 
                       <TableCell>
-                        <div className="space-y-1">
+                        <div className="space-y-2">
                           {empresa.emails.length > 0 && (
-                            <div className="flex items-center text-sm">
-                              <Mail className="w-3 h-3 mr-1" />
-                              {empresa.emails[0]}
+                            <div className="icon-text text-sm">
+                              <Mail className="w-4 h-4 text-blue-500" />
+                              <span>{empresa.emails[0]}</span>
                               {empresa.emails.length > 1 && (
-                                <Badge variant="outline" className="ml-1 text-xs">
+                                <Badge variant="outline" className="ml-2 text-xs px-2 py-0.5">
                                   +{empresa.emails.length - 1}
                                 </Badge>
                               )}
                             </div>
                           )}
                           {empresa.telefono && (
-                            <div className="flex items-center text-sm text-muted-foreground">
-                              <Phone className="w-3 h-3 mr-1" />
-                              {empresa.telefono}
+                            <div className="icon-text text-sm text-gray-600 dark:text-gray-400">
+                              <Phone className="w-4 h-4" />
+                              <span>{empresa.telefono}</span>
                             </div>
                           )}
                         </div>
                       </TableCell>
 
                       <TableCell>
-                        {getEstadoBadge(empresa)}
-                        {empresa.crm.notas && (
-                          <div className="text-xs text-muted-foreground mt-1 truncate max-w-32">
-                            {empresa.crm.notas}
-                          </div>
-                        )}
-                      </TableCell>
-
-                      <TableCell>
-                        <div className="text-sm space-y-1">
-                          <div>Enviados: {empresa.resumen_contacto.enviados}</div>
-                          <div>Aperturas: {empresa.resumen_contacto.aperturas}</div>
-                          <div>Clics: {empresa.resumen_contacto.clics}</div>
+                        <div className="space-y-2">
+                          {getEstadoBadge(empresa)}
+                          {empresa.crm.notas && (
+                            <div className="text-xs text-gray-600 dark:text-gray-400 truncate max-w-32">
+                              {empresa.crm.notas}
+                            </div>
+                          )}
                         </div>
                       </TableCell>
 
                       <TableCell>
-                        <div className="flex space-x-1">
-                          <Button variant="outline" size="sm" onClick={() => openDetailDialog(empresa)}>
-                            <Eye className="w-3 h-3" />
+                        <div className="text-sm space-y-1">
+                          <div className="text-blue-600 dark:text-blue-400">
+                            Enviados: {empresa.resumen_contacto.enviados}
+                          </div>
+                          <div className="text-green-600 dark:text-green-400">
+                            Aperturas: {empresa.resumen_contacto.aperturas}
+                          </div>
+                          <div className="text-orange-600 dark:text-orange-400">
+                            Clics: {empresa.resumen_contacto.clics}
+                          </div>
+                        </div>
+                      </TableCell>
+
+                      <TableCell>
+                        <div className="flex gap-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => openDetailDialog(empresa)}
+                            className="icon-button p-2"
+                          >
+                            <Eye className="w-4 h-4" />
                           </Button>
-                          <Button variant="outline" size="sm" onClick={() => openEditDialog(empresa)}>
-                            <Edit className="w-3 h-3" />
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => openEditDialog(empresa)}
+                            className="icon-button p-2"
+                          >
+                            <Edit className="w-4 h-4" />
                           </Button>
                         </div>
                       </TableCell>
@@ -361,19 +391,19 @@ export function Contacts() {
                 </TableBody>
               </Table>
 
-              {/* Paginación */}
-              <div className="flex items-center justify-between mt-4">
-                <div className="text-sm text-muted-foreground">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mt-8 pt-6 border-t">
+                <div className="text-sm text-gray-600 dark:text-gray-400">
                   Mostrando {(currentPage - 1) * (filters.per_page || 50) + 1} a{" "}
                   {Math.min(currentPage * (filters.per_page || 50), totalEmpresas)} de {totalEmpresas.toLocaleString()}{" "}
                   empresas
                 </div>
-                <div className="flex space-x-2">
+                <div className="flex gap-3">
                   <Button
                     variant="outline"
                     size="sm"
                     onClick={() => handlePageChange(currentPage - 1)}
                     disabled={currentPage <= 1}
+                    className="icon-button"
                   >
                     <ChevronLeft className="w-4 h-4" />
                     Anterior
@@ -383,6 +413,7 @@ export function Contacts() {
                     size="sm"
                     onClick={() => handlePageChange(currentPage + 1)}
                     disabled={currentPage >= totalPages}
+                    className="icon-button"
                   >
                     Siguiente
                     <ChevronRight className="w-4 h-4" />
@@ -396,20 +427,24 @@ export function Contacts() {
 
       {/* Dialog de edición */}
       <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
-        <DialogContent className="max-w-md">
-          <DialogHeader>
-            <DialogTitle>Editar Empresa</DialogTitle>
-            <DialogDescription>Actualiza el estado y datos de contacto de {selectedEmpresa?.titulo}</DialogDescription>
+        <DialogContent className="max-w-lg">
+          <DialogHeader className="space-y-3">
+            <DialogTitle className="text-xl">Editar Empresa</DialogTitle>
+            <DialogDescription className="text-base">
+              Actualiza el estado y datos de contacto de {selectedEmpresa?.titulo}
+            </DialogDescription>
           </DialogHeader>
 
-          <div className="space-y-4">
-            <div>
-              <Label htmlFor="estado">Estado</Label>
+          <div className="space-y-6 py-4">
+            <div className="form-group">
+              <Label htmlFor="estado" className="text-sm font-medium">
+                Estado
+              </Label>
               <Select
                 value={editForm.estado}
                 onValueChange={(value) => setEditForm((prev) => ({ ...prev, estado: value }))}
               >
-                <SelectTrigger>
+                <SelectTrigger className="h-11">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -423,42 +458,56 @@ export function Contacts() {
               </Select>
             </div>
 
-            <div>
-              <Label htmlFor="telefono">Teléfono</Label>
-              <Input
-                id="telefono"
-                value={editForm.telefono}
-                onChange={(e) => setEditForm((prev) => ({ ...prev, telefono: e.target.value }))}
-                placeholder="Teléfono de contacto"
-              />
+            <div className="form-row-2">
+              <div className="form-group">
+                <Label htmlFor="telefono" className="text-sm font-medium icon-text">
+                  <Phone className="w-4 h-4" />
+                  Teléfono
+                </Label>
+                <Input
+                  id="telefono"
+                  value={editForm.telefono}
+                  onChange={(e) => setEditForm((prev) => ({ ...prev, telefono: e.target.value }))}
+                  placeholder="Teléfono de contacto"
+                  className="h-11"
+                />
+              </div>
+              <div className="form-group">
+                <Label htmlFor="sitio_web" className="text-sm font-medium icon-text">
+                  <Globe className="w-4 h-4" />
+                  Sitio Web
+                </Label>
+                <Input
+                  id="sitio_web"
+                  value={editForm.sitio_web}
+                  onChange={(e) => setEditForm((prev) => ({ ...prev, sitio_web: e.target.value }))}
+                  placeholder="https://ejemplo.com"
+                  className="h-11"
+                />
+              </div>
             </div>
 
-            <div>
-              <Label htmlFor="sitio_web">Sitio Web</Label>
-              <Input
-                id="sitio_web"
-                value={editForm.sitio_web}
-                onChange={(e) => setEditForm((prev) => ({ ...prev, sitio_web: e.target.value }))}
-                placeholder="https://ejemplo.com"
-              />
-            </div>
-
-            <div>
-              <Label htmlFor="notas">Notas</Label>
+            <div className="form-group">
+              <Label htmlFor="notas" className="text-sm font-medium">
+                Notas
+              </Label>
               <Textarea
                 id="notas"
                 value={editForm.notas}
                 onChange={(e) => setEditForm((prev) => ({ ...prev, notas: e.target.value }))}
                 placeholder="Notas sobre el contacto..."
-                rows={3}
+                rows={4}
+                className="resize-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
 
-            <div className="flex justify-end space-x-2">
-              <Button variant="outline" onClick={() => setEditDialogOpen(false)}>
+            <div className="flex justify-end gap-3 pt-4 border-t">
+              <Button variant="outline" onClick={() => setEditDialogOpen(false)} className="px-6">
                 Cancelar
               </Button>
-              <Button onClick={handleUpdateEmpresa}>Guardar Cambios</Button>
+              <Button onClick={handleUpdateEmpresa} className="button-primary px-6">
+                Guardar Cambios
+              </Button>
             </div>
           </div>
         </DialogContent>

@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import Image from "next/image"
 import { useToast } from "@/hooks/use-toast"
-import { CheckCircle, AlertCircle } from "lucide-react"
+import { Mail, Lock } from "lucide-react"
 
 interface LoginProps {
   onLogin: (userData: { name: string; email: string }) => void
@@ -29,11 +29,6 @@ export function Login({ onLogin }: LoginProps) {
         variant: "destructive",
         title: "Error de validación",
         description: "El email es requerido",
-        action: (
-          <div className="flex items-center">
-            <AlertCircle className="w-4 h-4 text-red-600" />
-          </div>
-        ),
       })
       return
     }
@@ -43,23 +38,14 @@ export function Login({ onLogin }: LoginProps) {
         variant: "destructive",
         title: "Error de validación",
         description: "La contraseña es requerida",
-        action: (
-          <div className="flex items-center">
-            <AlertCircle className="w-4 h-4 text-red-600" />
-          </div>
-        ),
       })
       return
     }
 
     toast({
+      variant: "success",
       title: "Inicio de sesión exitoso",
       description: `Bienvenido al panel de campañas de IDEI WEB`,
-      action: (
-        <div className="flex items-center">
-          <CheckCircle className="w-4 h-4 text-green-600" />
-        </div>
-      ),
     })
 
     onLogin({
@@ -69,46 +55,64 @@ export function Login({ onLogin }: LoginProps) {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-idei-blue/5 to-idei-light/10 flex items-center justify-center p-4">
-      <Card className="w-full max-w-md">
-        <CardHeader className="text-center space-y-4">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-100 dark:from-gray-900 dark:via-gray-800 dark:to-blue-900 flex items-center justify-center p-6">
+      <Card className="w-full max-w-md card-gradient border-0 shadow-2xl">
+        <CardHeader className="text-center space-y-6 pb-8">
           <div className="flex justify-center">
-            <Image
-              src="/images/ideiweb-logo.png"
-              alt="IDEI WEB Logo"
-              width={150}
-              height={50}
-              className="object-contain"
-            />
+            <div className="p-4 bg-blue-100 dark:bg-blue-900 rounded-2xl">
+              <Image
+                src="/images/ideiweb-logo.png"
+                alt="IDEI WEB Logo"
+                width={120}
+                height={40}
+                className="object-contain"
+              />
+            </div>
           </div>
-          <CardTitle className="text-2xl font-bold text-gray-900">Iniciar Sesión</CardTitle>
-          <CardDescription>Accede a tu panel de campañas de IDEI WEB</CardDescription>
+          <div className="space-y-2">
+            <CardTitle className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
+              Iniciar Sesión
+            </CardTitle>
+            <CardDescription className="text-base text-gray-600 dark:text-gray-300">
+              Accede a tu panel de campañas de IDEI WEB
+            </CardDescription>
+          </div>
         </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="tu@email.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full"
-              />
+        <CardContent className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="form-group">
+              <Label htmlFor="email" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                Email
+              </Label>
+              <div className="relative">
+                <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="tu@email.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="pl-11 h-12 border-gray-200 focus:border-blue-500 focus:ring-blue-500 rounded-lg"
+                />
+              </div>
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="password">Contraseña</Label>
-              <Input
-                id="password"
-                type="password"
-                placeholder="••••••••"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full"
-              />
+            <div className="form-group">
+              <Label htmlFor="password" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                Contraseña
+              </Label>
+              <div className="relative">
+                <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <Input
+                  id="password"
+                  type="password"
+                  placeholder="••••••••"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="pl-11 h-12 border-gray-200 focus:border-blue-500 focus:ring-blue-500 rounded-lg"
+                />
+              </div>
             </div>
-            <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white">
+            <Button type="submit" className="w-full h-12 button-primary text-base font-medium rounded-lg">
               Iniciar Sesión
             </Button>
           </form>

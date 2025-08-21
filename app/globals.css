@@ -37,9 +37,13 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
-  /* Agregando colores personalizados de IDEI */
+  /* Mejorando colores personalizados de IDEI con mejor contraste */
   --color-idei-blue: #2563eb;
   --color-idei-light: #dbeafe;
+  --color-idei-dark: #1e40af;
+  --color-success: #10b981;
+  --color-warning: #f59e0b;
+  --color-error: #ef4444;
 }
 
 .dark {
@@ -75,9 +79,13 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(0.269 0 0);
   --sidebar-ring: oklch(0.439 0 0);
-  /* Agregando colores personalizados de IDEI */
-  --color-idei-blue: #2563eb;
-  --color-idei-light: #dbeafe;
+  /* Colores personalizados para modo oscuro */
+  --color-idei-blue: #3b82f6;
+  --color-idei-light: #1e3a8a;
+  --color-idei-dark: #60a5fa;
+  --color-success: #10b981;
+  --color-warning: #f59e0b;
+  --color-error: #ef4444;
 }
 
 @theme inline {
@@ -126,5 +134,48 @@
   }
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+/* Agregando clases utilitarias personalizadas para mejor UX */
+@layer utilities {
+  .form-section {
+    @apply space-y-6 p-6 bg-card rounded-lg border shadow-sm;
+  }
+
+  .form-group {
+    @apply space-y-3;
+  }
+
+  .form-row {
+    @apply grid gap-4;
+  }
+
+  .form-row-2 {
+    @apply grid grid-cols-1 md:grid-cols-2 gap-4;
+  }
+
+  .form-row-3 {
+    @apply grid grid-cols-1 md:grid-cols-3 gap-4;
+  }
+
+  .icon-button {
+    @apply inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg transition-all duration-200;
+  }
+
+  .icon-text {
+    @apply inline-flex items-center gap-2;
+  }
+
+  .card-gradient {
+    @apply bg-gradient-to-br from-white to-gray-50/50 dark:from-gray-900 dark:to-gray-800/50;
+  }
+
+  .button-primary {
+    @apply bg-blue-600 hover:bg-blue-700 text-white shadow-lg hover:shadow-xl transition-all duration-200;
+  }
+
+  .button-secondary {
+    @apply bg-gray-100 hover:bg-gray-200 text-gray-900 dark:bg-gray-800 dark:hover:bg-gray-700 dark:text-gray-100;
   }
 }
