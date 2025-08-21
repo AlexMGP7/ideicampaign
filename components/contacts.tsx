@@ -148,22 +148,29 @@ export function Contacts() {
 
     if (crm.estado) {
       const estadoColors = {
-        sin_contactar: "bg-gray-100 text-gray-800",
-        contactada: "bg-blue-100 text-blue-800",
-        interesada: "bg-green-100 text-green-800",
-        no_interesada: "bg-red-100 text-red-800",
-        pendiente: "bg-yellow-100 text-yellow-800",
-        bloqueada: "bg-red-100 text-red-800",
+        sin_contactar: "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200",
+        contactada: "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200",
+        interesada: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200",
+        no_interesada: "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200",
+        pendiente: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200",
+        bloqueada: "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200",
       }
       return (
-        <Badge className={estadoColors[crm.estado as keyof typeof estadoColors] || "bg-gray-100 text-gray-800"}>
+        <Badge
+          className={
+            estadoColors[crm.estado as keyof typeof estadoColors] ||
+            "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200"
+          }
+        >
           {crm.estado.replace("_", " ")}
         </Badge>
       )
     }
 
     if (resumen_contacto.contactada_por_campana) {
-      return <Badge className="bg-blue-100 text-blue-800">Contactada por campaña</Badge>
+      return (
+        <Badge className="bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">Contactada por campaña</Badge>
+      )
     }
 
     return <Badge variant="outline">Sin contactar</Badge>
@@ -304,7 +311,7 @@ export function Contacts() {
                 </TableHeader>
                 <TableBody>
                   {empresas.map((empresa) => (
-                    <TableRow key={empresa.id} className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+                    <TableRow key={empresa.id} className="hover:bg-muted/50 transition-colors">
                       <TableCell>
                         <div className="space-y-1">
                           <div className="font-semibold text-gray-900 dark:text-gray-100">{empresa.titulo}</div>
@@ -326,7 +333,7 @@ export function Contacts() {
                               <Mail className="w-4 h-4 text-blue-500" />
                               <span>{empresa.emails[0]}</span>
                               {empresa.emails.length > 1 && (
-                                <Badge variant="outline" className="ml-2 text-xs px-2 py-0.5">
+                                <Badge variant="outline" className="ml-2 text-xs px-2 py-0.5 bg-muted">
                                   +{empresa.emails.length - 1}
                                 </Badge>
                               )}

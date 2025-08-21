@@ -124,76 +124,66 @@ export default function Dashboard() {
             <TabsContent value="overview" className="space-y-6">
               {/* Stats Cards */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <Card className="border-0 bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-950 dark:to-blue-900">
+                <Card className="bg-card border shadow-sm">
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium text-blue-700 dark:text-blue-300">
-                      Total Campañas
-                    </CardTitle>
+                    <CardTitle className="text-sm font-medium text-card-foreground">Total Campañas</CardTitle>
                     <div className="p-2 bg-blue-500 rounded-lg">
                       <Mail className="h-4 w-4 text-white" />
                     </div>
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold text-blue-900 dark:text-blue-100">{campaignStats.total}</div>
-                    <p className="text-xs text-blue-600 dark:text-blue-400">+2 desde el mes pasado</p>
+                    <div className="text-2xl font-bold text-card-foreground">{campaignStats.total}</div>
+                    <p className="text-xs text-muted-foreground">+2 desde el mes pasado</p>
                   </CardContent>
                 </Card>
 
-                <Card className="border-0 bg-gradient-to-br from-green-50 to-green-100 dark:from-green-950 dark:to-green-900">
+                <Card className="bg-card border shadow-sm">
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium text-green-700 dark:text-green-300">
-                      Emails Enviados
-                    </CardTitle>
+                    <CardTitle className="text-sm font-medium text-card-foreground">Emails Enviados</CardTitle>
                     <div className="p-2 bg-green-500 rounded-lg">
                       <Send className="h-4 w-4 text-white" />
                     </div>
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold text-green-900 dark:text-green-100">
-                      {emailStats.sent.toLocaleString()}
-                    </div>
-                    <p className="text-xs text-green-600 dark:text-green-400">+12% desde el mes pasado</p>
+                    <div className="text-2xl font-bold text-card-foreground">{emailStats.sent.toLocaleString()}</div>
+                    <p className="text-xs text-muted-foreground">+12% desde el mes pasado</p>
                   </CardContent>
                 </Card>
 
-                <Card className="border-0 bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-950 dark:to-purple-900">
+                <Card className="bg-card border shadow-sm">
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium text-purple-700 dark:text-purple-300">
-                      Tasa de Apertura
-                    </CardTitle>
+                    <CardTitle className="text-sm font-medium text-card-foreground">Tasa de Apertura</CardTitle>
                     <div className="p-2 bg-purple-500 rounded-lg">
                       <Eye className="h-4 w-4 text-white" />
                     </div>
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold text-purple-900 dark:text-purple-100">
+                    <div className="text-2xl font-bold text-card-foreground">
                       {((emailStats.opened / emailStats.sent) * 100).toFixed(1)}%
                     </div>
-                    <p className="text-xs text-purple-600 dark:text-purple-400">+2.1% desde el mes pasado</p>
+                    <p className="text-xs text-muted-foreground">+2.1% desde el mes pasado</p>
                   </CardContent>
                 </Card>
 
-                <Card className="border-0 bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-950 dark:to-orange-900">
+                <Card className="bg-card border shadow-sm">
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium text-orange-700 dark:text-orange-300">
-                      Tasa de Click
-                    </CardTitle>
+                    <CardTitle className="text-sm font-medium text-card-foreground">Tasa de Click</CardTitle>
                     <div className="p-2 bg-orange-500 rounded-lg">
                       <TrendingUp className="h-4 w-4 text-white" />
                     </div>
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold text-orange-900 dark:text-orange-100">
+                    <div className="text-2xl font-bold text-card-foreground">
                       {((emailStats.clicked / emailStats.sent) * 100).toFixed(1)}%
                     </div>
-                    <p className="text-xs text-orange-600 dark:text-orange-400">+0.5% desde el mes pasado</p>
+                    <p className="text-xs text-muted-foreground">+0.5% desde el mes pasado</p>
                   </CardContent>
                 </Card>
               </div>
 
               {/* Charts */}
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <Card className="border-0 shadow-lg">
+                <Card className="bg-card border shadow-sm">
                   <CardHeader>
                     <CardTitle className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
                       Rendimiento Mensual
@@ -208,8 +198,9 @@ export default function Dashboard() {
                         <YAxis stroke="#64748b" />
                         <Tooltip
                           contentStyle={{
-                            backgroundColor: "#ffffff",
-                            border: "1px solid #e2e8f0",
+                            backgroundColor: "hsl(var(--popover))",
+                            color: "hsl(var(--popover-foreground))",
+                            border: "1px solid hsl(var(--border))",
                             borderRadius: "8px",
                             boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)",
                           }}
@@ -222,7 +213,7 @@ export default function Dashboard() {
                   </CardContent>
                 </Card>
 
-                <Card className="border-0 shadow-lg">
+                <Card className="bg-card border shadow-sm">
                   <CardHeader>
                     <CardTitle className="text-xl font-bold bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">
                       Distribución de Engagement
@@ -250,8 +241,9 @@ export default function Dashboard() {
                         </Pie>
                         <Tooltip
                           contentStyle={{
-                            backgroundColor: "#ffffff",
-                            border: "1px solid #e2e8f0",
+                            backgroundColor: "hsl(var(--popover))",
+                            color: "hsl(var(--popover-foreground))",
+                            border: "1px solid hsl(var(--border))",
                             borderRadius: "8px",
                             boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)",
                           }}
@@ -263,7 +255,7 @@ export default function Dashboard() {
               </div>
 
               {/* Recent Campaigns */}
-              <Card className="border-0 shadow-lg">
+              <Card className="bg-card border shadow-sm">
                 <CardHeader>
                   <CardTitle className="text-xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
                     Campañas Recientes
@@ -275,11 +267,11 @@ export default function Dashboard() {
                     {recentCampaigns.map((campaign) => (
                       <div
                         key={campaign.id}
-                        className="flex items-center justify-between p-4 border rounded-lg hover:shadow-md transition-shadow bg-gradient-to-r from-gray-50 to-white dark:from-gray-900 dark:to-gray-800"
+                        className="flex items-center justify-between p-4 border rounded-lg hover:shadow-md transition-shadow bg-muted/30 hover:bg-muted/50"
                       >
                         <div className="flex items-center space-x-4">
                           <div>
-                            <h4 className="font-semibold text-gray-900 dark:text-gray-100">{campaign.name}</h4>
+                            <h4 className="font-semibold text-card-foreground">{campaign.name}</h4>
                             <p className="text-sm text-muted-foreground">{campaign.date}</p>
                           </div>
                         </div>
@@ -310,7 +302,7 @@ export default function Dashboard() {
 
             <TabsContent value="analytics">
               <div className="space-y-6">
-                <Card className="border-0 shadow-lg">
+                <Card className="bg-card border shadow-sm">
                   <CardHeader>
                     <CardTitle className="text-xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
                       Análisis Detallado
@@ -325,8 +317,9 @@ export default function Dashboard() {
                         <YAxis stroke="#64748b" />
                         <Tooltip
                           contentStyle={{
-                            backgroundColor: "#ffffff",
-                            border: "1px solid #e2e8f0",
+                            backgroundColor: "hsl(var(--popover))",
+                            color: "hsl(var(--popover-foreground))",
+                            border: "1px solid hsl(var(--border))",
                             borderRadius: "8px",
                             boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)",
                           }}

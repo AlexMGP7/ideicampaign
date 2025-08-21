@@ -190,27 +190,27 @@ function CampaignStatus({ campaign, statusData }: CampaignStatusProps) {
             </div>
 
             <div className="grid grid-cols-3 md:grid-cols-6 gap-2 text-xs">
-              <div className="text-center p-2 bg-gray-100 rounded">
+              <div className="text-center p-2 bg-muted rounded">
                 <div className="font-bold">{statusData.resumen.en_cola}</div>
                 <div className="text-muted-foreground">En cola</div>
               </div>
-              <div className="text-center p-2 bg-blue-100 rounded">
+              <div className="text-center p-2 bg-blue-100 dark:bg-blue-900/30 rounded">
                 <div className="font-bold">{statusData.resumen.procesando}</div>
                 <div className="text-muted-foreground">Procesando</div>
               </div>
-              <div className="text-center p-2 bg-green-100 rounded">
+              <div className="text-center p-2 bg-green-100 dark:bg-green-900/30 rounded">
                 <div className="font-bold">{statusData.resumen.enviado}</div>
                 <div className="text-muted-foreground">Enviado</div>
               </div>
-              <div className="text-center p-2 bg-yellow-100 rounded">
+              <div className="text-center p-2 bg-yellow-100 dark:bg-yellow-900/30 rounded">
                 <div className="font-bold">{statusData.resumen.rebote}</div>
                 <div className="text-muted-foreground">Rebote</div>
               </div>
-              <div className="text-center p-2 bg-purple-100 rounded">
+              <div className="text-center p-2 bg-purple-100 dark:bg-purple-900/30 rounded">
                 <div className="font-bold">{statusData.resumen.baja}</div>
                 <div className="text-muted-foreground">Baja</div>
               </div>
-              <div className="text-center p-2 bg-red-100 rounded">
+              <div className="text-center p-2 bg-red-100 dark:bg-red-900/30 rounded">
                 <div className="font-bold">{statusData.resumen.error}</div>
                 <div className="text-muted-foreground">Error</div>
               </div>
@@ -275,9 +275,10 @@ function EventTimeline({ llamadas }: { llamadas: CampaignStatusData["llamadas"] 
               llamadas.map((llamada) => (
                 <div
                   key={llamada.id}
-                  className={`flex items-center space-x-3 p-2 rounded-lg border ${
-                    llamada.ok ? "bg-green-50 border-green-200" : "bg-red-50 border-red-200"
-                  }`}
+                  className={`flex items-center space-x-3 p-2 rounded-lg border ${llamada.ok
+                      ? "bg-green-50 border-green-200 dark:bg-green-950/30 dark:border-green-800"
+                      : "bg-red-50 border-red-200 dark:bg-red-950/30 dark:border-red-800"
+                    }`}
                 >
                   {getStageIcon(llamada.etapa)}
                   <div className="flex-1 min-w-0">
@@ -322,21 +323,21 @@ function RecentRecipients({ ultimos }: { ultimos: CampaignStatusData["ultimos"] 
   const getEstadoColor = (estado: string) => {
     switch (estado) {
       case "enviado":
-        return "text-green-600 bg-green-100"
+        return "text-green-600 bg-green-100 dark:text-green-400 dark:bg-green-900/30"
       case "rebote":
-        return "text-yellow-600 bg-yellow-100"
+        return "text-yellow-600 bg-yellow-100 dark:text-yellow-400 dark:bg-yellow-900/30"
       case "error":
-        return "text-red-600 bg-red-100"
+        return "text-red-600 bg-red-100 dark:text-red-400 dark:bg-red-900/30"
       case "baja":
-        return "text-purple-600 bg-purple-100"
+        return "text-purple-600 bg-purple-100 dark:text-purple-400 dark:bg-purple-900/30"
       case "en_cola":
-        return "text-blue-600 bg-blue-100"
+        return "text-blue-600 bg-blue-100 dark:text-blue-400 dark:bg-blue-900/30"
       case "procesando":
-        return "text-orange-600 bg-orange-100"
+        return "text-orange-600 bg-orange-100 dark:text-orange-400 dark:bg-orange-900/30"
       case "bloqueado":
-        return "text-gray-600 bg-gray-100"
+        return "text-gray-600 bg-gray-100 dark:text-gray-400 dark:bg-gray-800"
       default:
-        return "text-gray-600 bg-gray-100"
+        return "text-gray-600 bg-gray-100 dark:text-gray-400 dark:bg-gray-800"
     }
   }
 
@@ -431,17 +432,19 @@ export function SendCampaign() {
     try {
       const response = await campaignService.changeStatus(activeCampaign.id, validStatus)
       if (response.ok) {
+        // TO
         const statusMessages = {
           en_ejecucion:
             "La campaña está ahora en ejecución. El worker del backend comenzará a procesar los envíos automáticamente.",
           pausada: "La campaña ha sido pausada. El worker detendrá el procesamiento de nuevos envíos.",
           finalizada: "La campaña ha sido finalizada. No se procesarán más envíos.",
           borrador: "La campaña volvió a estado borrador.",
+          preparando: "La campaña se está preparando para el envío.", // Add this line
         }
 
         toast({
           title: "Estado actualizado",
-          description: statusMessages[validStatus] || `La campaña ahora está ${validStatus}`,
+          description: statusMessages[validStatus!] || `La campaña ahora está ${validStatus}`,
           action:
             validStatus === "en_ejecucion" ? (
               <div className="flex items-center">

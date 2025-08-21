@@ -328,15 +328,15 @@ export function CampaignsList() {
   const getStatusColor = (estado: string) => {
     switch (estado) {
       case "en_ejecucion":
-        return "bg-green-100 text-green-800"
+        return "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
       case "pausada":
-        return "bg-yellow-100 text-yellow-800"
+        return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200"
       case "finalizada":
-        return "bg-blue-100 text-blue-800"
+        return "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200"
       case "borrador":
-        return "bg-gray-100 text-gray-800"
+        return "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200"
       default:
-        return "bg-gray-100 text-gray-800"
+        return "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200"
     }
   }
 
@@ -578,7 +578,7 @@ export function CampaignsList() {
           ) : (
             <div className="space-y-4">
               {campaigns.map((campaign) => (
-                <div key={campaign.id} className="border rounded-lg p-4 hover:bg-gray-50 transition-colors">
+                <div key={campaign.id} className="border rounded-lg p-4 hover:bg-muted/50 transition-colors">
                   <div className="flex items-center justify-between">
                     <div className="flex-1">
                       <div className="flex items-center space-x-3 mb-2">
@@ -598,19 +598,19 @@ export function CampaignsList() {
                           </div>
                           <div className="text-sm">
                             <span className="text-muted-foreground">Enviados:</span>
-                            <span className="font-medium ml-1 text-green-600">
+                            <span className="font-medium ml-1 text-green-600 dark:text-green-400">
                               {campaign.totales.enviado.toLocaleString()}
                             </span>
                           </div>
                           <div className="text-sm">
                             <span className="text-muted-foreground">En Cola:</span>
-                            <span className="font-medium ml-1 text-blue-600">
+                            <span className="font-medium ml-1 text-blue-600 dark:text-blue-400">
                               {campaign.totales.en_cola.toLocaleString()}
                             </span>
                           </div>
                           <div className="text-sm">
                             <span className="text-muted-foreground">Errores:</span>
-                            <span className="font-medium ml-1 text-red-600">
+                            <span className="font-medium ml-1 text-red-600 dark:text-red-400">
                               {(campaign.totales.rebotado + campaign.totales.error).toLocaleString()}
                             </span>
                           </div>
@@ -687,7 +687,7 @@ export function CampaignsList() {
                                 {selectedCampaign.ritmo && (
                                   <div>
                                     <Label>Configuración de Ritmo</Label>
-                                    <pre className="text-xs bg-gray-100 p-2 rounded mt-1">
+                                    <pre className="text-xs bg-muted p-2 rounded mt-1">
                                       {JSON.stringify(selectedCampaign.ritmo, null, 2)}
                                     </pre>
                                   </div>

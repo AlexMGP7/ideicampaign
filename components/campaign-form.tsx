@@ -156,12 +156,12 @@ export function CampaignForm() {
 
   return (
     <div className="space-y-8">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-6 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-xl border">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-6 bg-muted/50 rounded-xl border">
         <div className="space-y-2">
           <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
             Nueva Campaña
           </h2>
-          <p className="text-gray-600 dark:text-gray-300 text-base">
+          <p className="text-muted-foreground text-base">
             Configura tu campaña - el contenido será generado automáticamente por IA
           </p>
         </div>
@@ -180,10 +180,10 @@ export function CampaignForm() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Main Form */}
         <div className="lg:col-span-2 space-y-8">
-          <Card className="card-gradient border-0 shadow-lg">
+          <Card className="bg-card border shadow-sm">
             <CardHeader className="pb-6">
               <CardTitle className="icon-text text-xl">
-                <div className="p-2 bg-blue-100 dark:bg-blue-900 rounded-lg">
+                <div className="p-2 bg-muted rounded-lg">
                   <Mail className="w-5 h-5 text-blue-600 dark:text-blue-400" />
                 </div>
                 Información Básica
@@ -269,10 +269,10 @@ export function CampaignForm() {
             </CardContent>
           </Card>
 
-          <Card className="card-gradient border-0 shadow-lg">
+          <Card className="bg-card border shadow-sm">
             <CardHeader className="pb-6">
               <CardTitle className="icon-text text-xl">
-                <div className="p-2 bg-orange-100 dark:bg-orange-900 rounded-lg">
+                <div className="p-2 bg-muted rounded-lg">
                   <Clock className="w-5 h-5 text-orange-600 dark:text-orange-400" />
                 </div>
                 Configuración de Ritmo
@@ -319,7 +319,7 @@ export function CampaignForm() {
                   {diasSemana.map((dia) => (
                     <div
                       key={dia.value}
-                      className="flex flex-col items-center space-y-2 p-3 rounded-lg border hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                      className="flex flex-col items-center space-y-2 p-3 rounded-lg border hover:bg-muted/50 transition-colors"
                     >
                       <Checkbox
                         id={`dia-${dia.value}`}
@@ -364,14 +364,14 @@ export function CampaignForm() {
                 </div>
               </div>
 
-              <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-6">
+              <div className="bg-muted/50 border rounded-xl p-6">
                 <div className="flex items-start gap-4">
-                  <div className="p-2 bg-blue-100 dark:bg-blue-900 rounded-lg flex-shrink-0">
+                  <div className="p-2 bg-muted rounded-lg flex-shrink-0">
                     <Info className="w-5 h-5 text-blue-600 dark:text-blue-400" />
                   </div>
                   <div className="space-y-2">
-                    <h4 className="font-semibold text-blue-900 dark:text-blue-100">Configuración de Ritmo</h4>
-                    <p className="text-sm text-blue-700 dark:text-blue-300 leading-relaxed">
+                    <h4 className="font-semibold text-card-foreground">Configuración de Ritmo</h4>
+                    <p className="text-sm text-muted-foreground leading-relaxed">
                       Se enviarán {formData.ritmo.quota.emails} emails cada {formData.ritmo.quota.horas} horas, con una
                       pausa aleatoria de {formData.ritmo.jitter_seg.min}-{formData.ritmo.jitter_seg.max} segundos entre
                       envíos.
@@ -385,10 +385,10 @@ export function CampaignForm() {
 
         {/* Sidebar */}
         <div className="space-y-8">
-          <Card className="card-gradient border-0 shadow-lg">
+          <Card className="bg-card border shadow-sm">
             <CardHeader className="pb-6">
               <CardTitle className="icon-text text-xl">
-                <div className="p-2 bg-green-100 dark:bg-green-900 rounded-lg">
+                <div className="p-2 bg-muted rounded-lg">
                   <Users className="w-5 h-5 text-green-600 dark:text-green-400" />
                 </div>
                 Configuración de Audiencia
@@ -430,14 +430,12 @@ export function CampaignForm() {
                   />
                 </div>
 
-                <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                <div className="flex items-center justify-between p-4 bg-muted/50 rounded-lg">
                   <div className="space-y-1">
                     <Label htmlFor="lista_supresion" className="text-sm font-medium cursor-pointer">
                       Excluir lista de supresión
                     </Label>
-                    <p className="text-xs text-gray-600 dark:text-gray-400">
-                      Evita enviar a contactos que se han dado de baja
-                    </p>
+                    <p className="text-xs text-muted-foreground">Evita enviar a contactos que se han dado de baja</p>
                   </div>
                   <Switch
                     id="lista_supresion"
@@ -454,33 +452,33 @@ export function CampaignForm() {
             </CardContent>
           </Card>
 
-          <Card className="card-gradient border-0 shadow-lg">
+          <Card className="bg-card border shadow-sm">
             <CardHeader className="pb-4">
               <CardTitle className="text-lg font-semibold">Vista Previa de Configuración</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-3">
-                <div className="flex justify-between items-center py-2 border-b border-gray-100 dark:border-gray-700">
-                  <span className="text-sm text-gray-600 dark:text-gray-400">Empresas objetivo:</span>
+                <div className="flex justify-between items-center py-2 border-b border-border">
+                  <span className="text-sm text-muted-foreground">Empresas objetivo:</span>
                   <span className="font-semibold text-blue-600 dark:text-blue-400">
                     {formData.audiencia.limite_empresas?.toLocaleString() || "Sin límite"}
                   </span>
                 </div>
-                <div className="flex justify-between items-center py-2 border-b border-gray-100 dark:border-gray-700">
-                  <span className="text-sm text-gray-600 dark:text-gray-400">Ritmo:</span>
+                <div className="flex justify-between items-center py-2 border-b border-border">
+                  <span className="text-sm text-muted-foreground">Ritmo:</span>
                   <span className="font-semibold text-orange-600 dark:text-orange-400">
                     {formData.ritmo.quota.emails}/{formData.ritmo.quota.horas}h
                   </span>
                 </div>
-                <div className="flex justify-between items-center py-2 border-b border-gray-100 dark:border-gray-700">
-                  <span className="text-sm text-gray-600 dark:text-gray-400">Días activos:</span>
+                <div className="flex justify-between items-center py-2 border-b border-border">
+                  <span className="text-sm text-muted-foreground">Días activos:</span>
                   <span className="font-semibold text-green-600 dark:text-green-400">
                     {formData.ritmo.activo.dias.length} días
                   </span>
                 </div>
                 <div className="flex justify-between items-center py-2">
-                  <span className="text-sm text-gray-600 dark:text-gray-400">Zona horaria:</span>
-                  <span className="font-semibold text-gray-900 dark:text-gray-100">{formData.tz}</span>
+                  <span className="text-sm text-muted-foreground">Zona horaria:</span>
+                  <span className="font-semibold text-card-foreground">{formData.tz}</span>
                 </div>
               </div>
             </CardContent>

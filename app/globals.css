@@ -168,11 +168,11 @@
   }
 
   .card-gradient {
-    @apply bg-gradient-to-br from-white to-gray-50/50 dark:from-gray-900 dark:to-gray-800/50;
+    @apply bg-gradient-to-br from-white to-gray-50/50 dark:from-card dark:to-muted/30;
   }
 
   .button-primary {
-    @apply bg-blue-600 hover:bg-blue-700 text-white shadow-lg hover:shadow-xl transition-all duration-200;
+    @apply bg-blue-600 hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-500 text-white shadow-lg hover:shadow-xl transition-all duration-200;
   }
 
   .button-secondary {
