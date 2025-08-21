@@ -7,71 +7,11 @@ import { Badge } from "@/components/ui/badge"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Progress } from "@/components/ui/progress"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import {
-  Mail,
-  Rocket,
-  RefreshCw,
-  CheckCircle,
-  Clock,
-  Pause,
-  Activity,
-  Heart,
-  AlertCircle,
-  Send,
-  Eye,
-  Settings,
-  CheckSquare,
-} from "lucide-react"
+import { Mail, Rocket, RefreshCw, CheckCircle, Clock, Pause, Activity, Heart, AlertCircle } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { campaignService } from "@/services/campaignService"
 import { useCampaignStatus } from "@/hooks/useCampaignStatus"
-import type { Campaign } from "@/types/campaign"
-
-interface CampaignStatusData {
-  campana: {
-    id: number
-    nombre: string
-    estado: string
-    tz: string
-    proximo_envio_at: string | null
-    created_at: string
-    started_at: string | null
-    finished_at: string | null
-  } | null
-  resumen: {
-    en_cola: number
-    bloqueado: number
-    procesando: number
-    enviado: number
-    rebote: number
-    baja: number
-    error: number
-  }
-  progreso: number
-  ultimos: Array<{
-    id: number
-    email: string
-    estado: string
-    actualizado_at: string
-    intentos: number
-  }>
-  worker: {
-    alive: boolean
-    last_at: string | null
-    seconds_since: number
-  }
-  llamadas: Array<{
-    id: number
-    ts: string
-    etapa: string
-    ok: number
-    http_status: number
-    ms: number
-    error: string | null
-    dest_id: number
-  }>
-  next_cursor: number
-}
+import type { Campaign, CampaignStatusData } from "@/types/campaign"
 
 interface CampaignStatusProps {
   campaign: Campaign
@@ -124,7 +64,7 @@ function CampaignStatus({ campaign, statusData }: CampaignStatusProps) {
     }
   }
 
-  const progressPercentage = statusData?.progreso || 0
+  const progressPercentage = statusData?.progreso?.porcentaje || 0
 
   return (
     <Card className={`border-2 ${getStatusColor(campaign.estado)}`}>
@@ -162,158 +102,77 @@ function CampaignStatus({ campaign, statusData }: CampaignStatusProps) {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <div className="text-center p-3 border rounded-lg">
                 <div className="text-2xl font-bold text-blue-600">
-                  {statusData.resumen.en_cola +
-                    statusData.resumen.procesando +
-                    statusData.resumen.enviado +
-                    statusData.resumen.rebote +
-                    statusData.resumen.baja +
-                    statusData.resumen.error}
+                  {(statusData.resumen.en_cola || 0) +
+                    (statusData.resumen.procesando || 0) +
+                    (statusData.resumen.enviados || 0) +
+                    (statusData.resumen.rebotados || 0) +
+                    (statusData.resumen.bajas || 0)}
                 </div>
                 <div className="text-sm text-muted-foreground">Total</div>
               </div>
               <div className="text-center p-3 border rounded-lg">
                 <div className="text-2xl font-bold text-orange-600">
-                  {statusData.resumen.en_cola + statusData.resumen.procesando}
+                  {(statusData.resumen.en_cola || 0) + (statusData.resumen.procesando || 0)}
                 </div>
                 <div className="text-sm text-muted-foreground">Pendientes</div>
               </div>
               <div className="text-center p-3 border rounded-lg">
-                <div className="text-2xl font-bold text-green-600">{statusData.resumen.enviado}</div>
+                <div className="text-2xl font-bold text-green-600">{statusData.resumen.enviados || 0}</div>
                 <div className="text-sm text-muted-foreground">Enviados</div>
               </div>
               <div className="text-center p-3 border rounded-lg">
-                <div className="text-2xl font-bold text-red-600">
-                  {statusData.resumen.rebote + statusData.resumen.error}
-                </div>
-                <div className="text-sm text-muted-foreground">Fallidos</div>
+                <div className="text-2xl font-bold text-red-600">{statusData.resumen.rebotados || 0}</div>
+                <div className="text-sm text-muted-foreground">Rebotes</div>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="text-center p-3 bg-purple-50 dark:bg-purple-900/30 rounded-lg">
+                <div className="text-2xl font-bold text-purple-600">{statusData.metricas?.abiertos_unicos || 0}</div>
+                <div className="text-sm text-muted-foreground">Abiertos</div>
+              </div>
+              <div className="text-center p-3 bg-orange-50 dark:bg-orange-900/30 rounded-lg">
+                <div className="text-2xl font-bold text-orange-600">{statusData.metricas?.clic_unicos || 0}</div>
+                <div className="text-sm text-muted-foreground">Clics</div>
+              </div>
+              <div className="text-center p-3 bg-gray-50 dark:bg-gray-900/30 rounded-lg">
+                <div className="text-2xl font-bold text-gray-600">{statusData.resumen.bajas || 0}</div>
+                <div className="text-sm text-muted-foreground">Bajas</div>
+              </div>
+              <div className="text-center p-3 bg-blue-50 dark:bg-blue-900/30 rounded-lg">
+                <div className="text-2xl font-bold text-blue-600">{statusData.metricas?.open_rate_uni_pct || 0}%</div>
+                <div className="text-sm text-muted-foreground">Tasa Apertura</div>
               </div>
             </div>
 
             <div className="grid grid-cols-3 md:grid-cols-6 gap-2 text-xs">
               <div className="text-center p-2 bg-muted rounded">
-                <div className="font-bold">{statusData.resumen.en_cola}</div>
+                <div className="font-bold">{statusData.resumen.en_cola || 0}</div>
                 <div className="text-muted-foreground">En cola</div>
               </div>
               <div className="text-center p-2 bg-blue-100 dark:bg-blue-900/30 rounded">
-                <div className="font-bold">{statusData.resumen.procesando}</div>
+                <div className="font-bold">{statusData.resumen.procesando || 0}</div>
                 <div className="text-muted-foreground">Procesando</div>
               </div>
               <div className="text-center p-2 bg-green-100 dark:bg-green-900/30 rounded">
-                <div className="font-bold">{statusData.resumen.enviado}</div>
+                <div className="font-bold">{statusData.resumen.enviados || 0}</div>
                 <div className="text-muted-foreground">Enviado</div>
               </div>
               <div className="text-center p-2 bg-yellow-100 dark:bg-yellow-900/30 rounded">
-                <div className="font-bold">{statusData.resumen.rebote}</div>
+                <div className="font-bold">{statusData.resumen.rebotados || 0}</div>
                 <div className="text-muted-foreground">Rebote</div>
               </div>
-              <div className="text-center p-2 bg-purple-100 dark:bg-purple-900/30 rounded">
-                <div className="font-bold">{statusData.resumen.baja}</div>
+              <div className="text-center p-2 bg-purple-100 dark:bg-purple-950/30 rounded">
+                <div className="font-bold">{statusData.resumen.bajas || 0}</div>
                 <div className="text-muted-foreground">Baja</div>
               </div>
-              <div className="text-center p-2 bg-red-100 dark:bg-red-900/30 rounded">
-                <div className="font-bold">{statusData.resumen.error}</div>
-                <div className="text-muted-foreground">Error</div>
+              <div className="text-center p-2 bg-orange-100 dark:bg-orange-900/30 rounded">
+                <div className="font-bold">{statusData.metricas?.clic_unicos || 0}</div>
+                <div className="text-muted-foreground">Clics</div>
               </div>
             </div>
           </div>
         )}
-      </CardContent>
-    </Card>
-  )
-}
-
-function EventTimeline({ llamadas }: { llamadas: CampaignStatusData["llamadas"] }) {
-  const getStageIcon = (etapa: string) => {
-    switch (etapa) {
-      case "siguiente":
-        return <Eye className="w-4 h-4 text-blue-500" />
-      case "render":
-        return <Settings className="w-4 h-4 text-purple-500" />
-      case "enviar":
-        return <Send className="w-4 h-4 text-green-500" />
-      case "ack":
-        return <CheckSquare className="w-4 h-4 text-orange-500" />
-      case "finalizar":
-        return <CheckCircle className="w-4 h-4 text-gray-500" />
-      default:
-        return <Activity className="w-4 h-4 text-gray-400" />
-    }
-  }
-
-  const getStageDescription = (etapa: string) => {
-    switch (etapa) {
-      case "siguiente":
-        return "Obteniendo destinatario"
-      case "render":
-        return "Renderizando plantilla"
-      case "enviar":
-        return "Enviando email"
-      case "ack":
-        return "Marcando resultado"
-      case "finalizar":
-        return "Intentando cerrar campaña"
-      default:
-        return etapa
-    }
-  }
-
-  return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center">
-          <Activity className="w-5 h-5 mr-2" />
-          Timeline de Eventos
-        </CardTitle>
-        <CardDescription>Últimas actividades del worker</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <ScrollArea className="h-64">
-          <div className="space-y-2">
-            {llamadas.length === 0 ? (
-              <div className="text-center text-muted-foreground py-4">No hay eventos recientes</div>
-            ) : (
-              llamadas.map((llamada) => (
-                <div
-                  key={llamada.id}
-                  className={`flex items-center space-x-3 p-2 rounded-lg border ${llamada.ok
-                      ? "bg-green-50 border-green-200 dark:bg-green-950/30 dark:border-green-800"
-                      : "bg-red-50 border-red-200 dark:bg-red-950/30 dark:border-red-800"
-                    }`}
-                >
-                  {getStageIcon(llamada.etapa)}
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium">{getStageDescription(llamada.etapa)}</span>
-                      <div className="flex items-center space-x-2 text-xs text-muted-foreground">
-                        <span>{new Date(llamada.ts).toLocaleTimeString()}</span>
-                        <span>•</span>
-                        <span>{llamada.ms}ms</span>
-                        {llamada.http_status && (
-                          <>
-                            <span>•</span>
-                            <span className={llamada.http_status === 200 ? "text-green-600" : "text-red-600"}>
-                              {llamada.http_status}
-                            </span>
-                          </>
-                        )}
-                      </div>
-                    </div>
-                    <div className="flex items-center space-x-2 text-xs text-muted-foreground">
-                      <span>Destinatario ID {llamada.dest_id}</span>
-                      {!llamada.ok && (
-                        <>
-                          <span>•</span>
-                          <span className="text-red-600">Error</span>
-                        </>
-                      )}
-                    </div>
-                    {llamada.error && <div className="text-xs text-red-600 mt-1">{llamada.error}</div>}
-                  </div>
-                </div>
-              ))
-            )}
-          </div>
-        </ScrollArea>
       </CardContent>
     </Card>
   )
@@ -327,9 +186,9 @@ function RecentRecipients({ ultimos }: { ultimos: CampaignStatusData["ultimos"] 
       case "rebote":
         return "text-yellow-600 bg-yellow-100 dark:text-yellow-400 dark:bg-yellow-900/30"
       case "error":
-        return "text-red-600 bg-red-100 dark:text-red-400 dark:bg-red-900/30"
+        return "text-red-600 bg-red-100 dark:text-red-400 dark:bg-red-950/30"
       case "baja":
-        return "text-purple-600 bg-purple-100 dark:text-purple-400 dark:bg-purple-900/30"
+        return "text-purple-600 bg-purple-100 dark:text-purple-400 dark:bg-purple-950/30"
       case "en_cola":
         return "text-blue-600 bg-blue-100 dark:text-blue-400 dark:bg-blue-900/30"
       case "procesando":
@@ -346,33 +205,40 @@ function RecentRecipients({ ultimos }: { ultimos: CampaignStatusData["ultimos"] 
       <CardHeader>
         <CardTitle className="flex items-center">
           <Mail className="w-5 h-5 mr-2" />
-          Destinatarios Recientes
+          Feed de Eventos
         </CardTitle>
-        <CardDescription>Lista de destinatarios y su estado actual</CardDescription>
+        <CardDescription>Últimas interacciones de los destinatarios</CardDescription>
       </CardHeader>
       <CardContent>
         <ScrollArea className="h-64">
           <div className="space-y-2">
             {ultimos.length === 0 ? (
-              <div className="text-center text-muted-foreground py-4">No hay destinatarios</div>
+              <div className="text-center text-muted-foreground py-4">No hay eventos recientes</div>
             ) : (
-              ultimos.map((destinatario) => (
-                <div key={destinatario.id} className="flex items-center justify-between p-2 border rounded-lg">
+              ultimos.map((evento) => (
+                <div key={evento.id} className="flex items-center justify-between p-2 border rounded-lg">
                   <div className="flex-1 min-w-0">
-                    <div className="text-sm font-medium truncate">{destinatario.email}</div>
+                    <div className="text-sm font-medium truncate">{evento.email || "Email no disponible"}</div>
                     <div className="text-xs text-muted-foreground">
-                      {destinatario.actualizado_at
-                        ? new Date(destinatario.actualizado_at).toLocaleString()
-                        : "En cola - sin procesar"}
+                      {evento.actualizado_at
+                        ? new Date(evento.actualizado_at).toLocaleString()
+                        : evento.created_at
+                          ? new Date(evento.created_at).toLocaleString()
+                          : "Sin fecha"}
                     </div>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <Badge className={`text-xs ${getEstadoColor(destinatario.estado)}`}>
-                      {destinatario.estado.replace("_", " ")}
+                    <Badge className={`text-xs ${getEstadoColor(evento.estado || evento.tipo)}`}>
+                      {evento.estado || evento.tipo}
                     </Badge>
-                    {destinatario.intentos > 1 && (
+                    {evento.aperturas > 0 && (
                       <Badge variant="outline" className="text-xs">
-                        {destinatario.intentos} intentos
+                        {evento.aperturas} aperturas
+                      </Badge>
+                    )}
+                    {evento.clics > 0 && (
+                      <Badge variant="outline" className="text-xs">
+                        {evento.clics} clics
                       </Badge>
                     )}
                   </div>
@@ -432,14 +298,13 @@ export function SendCampaign() {
     try {
       const response = await campaignService.changeStatus(activeCampaign.id, validStatus)
       if (response.ok) {
-        // TO
         const statusMessages = {
           en_ejecucion:
             "La campaña está ahora en ejecución. El worker del backend comenzará a procesar los envíos automáticamente.",
           pausada: "La campaña ha sido pausada. El worker detendrá el procesamiento de nuevos envíos.",
           finalizada: "La campaña ha sido finalizada. No se procesarán más envíos.",
           borrador: "La campaña volvió a estado borrador.",
-          preparando: "La campaña se está preparando para el envío.", // Add this line
+          preparando: "La campaña se está preparando para el envío.",
         }
 
         toast({
@@ -527,7 +392,7 @@ export function SendCampaign() {
           <Clock className="h-4 w-4" />
           <AlertDescription>
             Próximo envío programado para: {new Date(statusData.campana.proximo_envio_at).toLocaleString()}
-            {statusData.resumen.en_cola > 0 && (
+            {(statusData.resumen.en_cola || 0) > 0 && (
               <span className="ml-2 font-medium">({statusData.resumen.en_cola} emails en cola esperando)</span>
             )}
           </AlertDescription>
@@ -572,8 +437,8 @@ export function SendCampaign() {
                       </Alert>
                     )}
                     {statusData.worker.alive &&
-                      statusData.resumen.en_cola > 0 &&
-                      statusData.resumen.procesando === 0 && (
+                      (statusData.resumen.en_cola || 0) > 0 &&
+                      (statusData.resumen.procesando || 0) === 0 && (
                         <div className="mt-2 text-sm text-muted-foreground">
                           Worker operativo - esperando horario programado para procesar {statusData.resumen.en_cola}{" "}
                           emails en cola
@@ -584,8 +449,6 @@ export function SendCampaign() {
               </CardContent>
             </Card>
           )}
-
-          {statusData && <EventTimeline llamadas={statusData.llamadas} />}
 
           {statusData && <RecentRecipients ultimos={statusData.ultimos} />}
         </div>

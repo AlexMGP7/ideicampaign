@@ -55,16 +55,23 @@ interface CampaignListItem extends Campaign {
   created_at: string
   updated_at: string
   totales: {
-    total: number
+    total_destinatarios: number
     en_cola: number
     procesando: number
-    enviado: number
-    rebotado: number
-    baja: number
-    bloqueado: number
-    error: number
+    enviados: number
+    rebotados: number
+    bajas: number
+    abiertos: number
+    clicados: number
+    entregados_eventos: number
+    spam_eventos: number
+    error_eventos: number
   }
-  progreso: number
+  progreso: {
+    procesados: number
+    total: number
+    porcentaje: number
+  }
 }
 
 interface CampaignDetail {
@@ -591,15 +598,17 @@ export function CampaignsList() {
                       </div>
 
                       {campaign.totales && (
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-3">
+                        <div className="grid grid-cols-2 md:grid-cols-6 gap-4 mb-3">
                           <div className="text-sm">
                             <span className="text-muted-foreground">Total:</span>
-                            <span className="font-medium ml-1">{campaign.totales.total.toLocaleString()}</span>
+                            <span className="font-medium ml-1">
+                              {campaign.totales.total_destinatarios.toLocaleString()}
+                            </span>
                           </div>
                           <div className="text-sm">
                             <span className="text-muted-foreground">Enviados:</span>
                             <span className="font-medium ml-1 text-green-600 dark:text-green-400">
-                              {campaign.totales.enviado.toLocaleString()}
+                              {campaign.totales.enviados.toLocaleString()}
                             </span>
                           </div>
                           <div className="text-sm">
@@ -609,22 +618,34 @@ export function CampaignsList() {
                             </span>
                           </div>
                           <div className="text-sm">
-                            <span className="text-muted-foreground">Errores:</span>
+                            <span className="text-muted-foreground">Abiertos:</span>
+                            <span className="font-medium ml-1 text-purple-600 dark:text-purple-400">
+                              {campaign.totales.abiertos.toLocaleString()}
+                            </span>
+                          </div>
+                          <div className="text-sm">
+                            <span className="text-muted-foreground">Clics:</span>
+                            <span className="font-medium ml-1 text-orange-600 dark:text-orange-400">
+                              {campaign.totales.clicados.toLocaleString()}
+                            </span>
+                          </div>
+                          <div className="text-sm">
+                            <span className="text-muted-foreground">Rebotes:</span>
                             <span className="font-medium ml-1 text-red-600 dark:text-red-400">
-                              {(campaign.totales.rebotado + campaign.totales.error).toLocaleString()}
+                              {campaign.totales.rebotados.toLocaleString()}
                             </span>
                           </div>
                         </div>
                       )}
 
-                      {typeof campaign.progreso === "number" && (
+                      {campaign.progreso && (
                         <div className="flex items-center space-x-4 mb-2">
                           <div className="flex-1">
                             <div className="flex justify-between text-sm mb-1">
                               <span>Progreso</span>
-                              <span>{Math.round(campaign.progreso)}%</span>
+                              <span>{Math.round(campaign.progreso.porcentaje)}%</span>
                             </div>
-                            <Progress value={campaign.progreso} className="h-2" />
+                            <Progress value={campaign.progreso.porcentaje} className="h-2" />
                           </div>
                         </div>
                       )}

@@ -43,16 +43,23 @@ export interface Campaign {
   updated_at?: string
   ultimo_intento?: string | null
   totales?: {
-    total: number
+    total_destinatarios: number
     en_cola: number
     procesando: number
-    enviado: number
-    rebotado: number
-    baja: number
-    bloqueado: number
-    error: number
+    enviados: number
+    rebotados: number
+    bajas: number
+    abiertos: number
+    clicados: number
+    entregados_eventos: number
+    spam_eventos: number
+    error_eventos: number
   }
-  progreso?: number
+  progreso?: {
+    procesados: number
+    total: number
+    porcentaje: number
+  }
 }
 
 export interface CampaignStats {
@@ -147,4 +154,69 @@ export interface Audiencia {
   muestreo?: {
     seed: number
   }
+}
+
+export type EventoTipo = "apertura" | "clic" | "rebote"
+
+export interface Evento {
+  id: number
+  created_at: string
+  tipo: EventoTipo
+  proveedor_evento_id: string
+  dest_id: number | null
+  email: string | null
+  estado: string | null
+  actualizado_at?: string
+  estado_dest: string | null
+  aperturas: number
+  clics: number
+}
+
+export interface CampaignStatusData {
+  ok: boolean
+  campana: {
+    id: number
+    nombre: string
+    proveedor: string
+    estado: string
+    created_at: string
+    updated_at: string
+    proximo_envio_at?: string
+  }
+  resumen: {
+    total: number
+    en_cola: number
+    procesando: number
+    enviados: number
+    rebotados: number
+    bajas: number
+    abiertos: number
+    clicados: number
+  }
+  metricas: {
+    abiertos_unicos: number
+    clic_unicos: number
+    open_rate_uni_pct: number
+    apertura: number
+    clic: number
+    rebote: number
+  }
+  progreso: {
+    procesados: number
+    total: number
+    porcentaje: number
+  }
+  ultimos: Evento[]
+  worker: any | null
+  llamadas: any[]
+  next_cursor: number | null
+}
+
+export interface Destinatario {
+  id: number
+  email: string
+  estado: string
+  actualizado_at?: string
+  intentos: number
+  dest_id: number
 }

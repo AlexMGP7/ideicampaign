@@ -299,104 +299,121 @@ export function Contacts() {
             </div>
           ) : (
             <>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="font-semibold">Empresa</TableHead>
-                    <TableHead className="font-semibold">Contacto</TableHead>
-                    <TableHead className="font-semibold">Estado</TableHead>
-                    <TableHead className="font-semibold">Métricas</TableHead>
-                    <TableHead className="font-semibold">Acciones</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {empresas.map((empresa) => (
-                    <TableRow key={empresa.id} className="hover:bg-muted/50 transition-colors">
-                      <TableCell>
-                        <div className="space-y-1">
-                          <div className="font-semibold text-gray-900 dark:text-gray-100">{empresa.titulo}</div>
-                          <div className="text-sm text-gray-600 dark:text-gray-400">
+              <div className="w-full overflow-hidden rounded-lg border">
+                <Table className="table-fixed w-full">
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="font-semibold w-[35%]">Empresa</TableHead>
+                      <TableHead className="font-semibold w-[25%]">Contacto</TableHead>
+                      <TableHead className="font-semibold w-[15%]">Estado</TableHead>
+                      <TableHead className="font-semibold w-[15%]">Métricas</TableHead>
+                      <TableHead className="font-semibold w-[10%]">Acciones</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {empresas.map((empresa) => (
+                      <TableRow key={empresa.id} className="hover:bg-muted/50 transition-colors">
+                        <TableCell className="w-[35%] p-4">
+                          <div className="space-y-1 min-w-0">
+                            <div
+                              className="font-semibold text-gray-900 dark:text-gray-100 truncate cursor-pointer hover:text-blue-600 transition-colors"
+                              title={empresa.titulo}
+                              onClick={() => openDetailDialog(empresa)}
+                            >
+                              {empresa.titulo}
+                            </div>
                             {empresa.categoria.nombre && (
-                              <span className="icon-text">
-                                <Building2 className="w-3 h-3" />
-                                {empresa.categoria.nombre}
-                              </span>
+                              <div className="flex items-center gap-1 text-sm text-gray-600 dark:text-gray-400 min-w-0">
+                                <Building2 className="w-3 h-3 flex-shrink-0" />
+                                <span className="truncate" title={empresa.categoria.nombre}>
+                                  {empresa.categoria.nombre}
+                                </span>
+                              </div>
                             )}
                           </div>
-                        </div>
-                      </TableCell>
+                        </TableCell>
 
-                      <TableCell>
-                        <div className="space-y-2">
-                          {empresa.emails.length > 0 && (
-                            <div className="icon-text text-sm">
-                              <Mail className="w-4 h-4 text-blue-500" />
-                              <span>{empresa.emails[0]}</span>
-                              {empresa.emails.length > 1 && (
-                                <Badge variant="outline" className="ml-2 text-xs px-2 py-0.5 bg-muted">
-                                  +{empresa.emails.length - 1}
-                                </Badge>
-                              )}
-                            </div>
-                          )}
-                          {empresa.telefono && (
-                            <div className="icon-text text-sm text-gray-600 dark:text-gray-400">
-                              <Phone className="w-4 h-4" />
-                              <span>{empresa.telefono}</span>
-                            </div>
-                          )}
-                        </div>
-                      </TableCell>
-
-                      <TableCell>
-                        <div className="space-y-2">
-                          {getEstadoBadge(empresa)}
-                          {empresa.crm.notas && (
-                            <div className="text-xs text-gray-600 dark:text-gray-400 truncate max-w-32">
-                              {empresa.crm.notas}
-                            </div>
-                          )}
-                        </div>
-                      </TableCell>
-
-                      <TableCell>
-                        <div className="text-sm space-y-1">
-                          <div className="text-blue-600 dark:text-blue-400">
-                            Enviados: {empresa.resumen_contacto.enviados}
+                        <TableCell className="w-[25%] p-4">
+                          <div className="space-y-2 min-w-0">
+                            {empresa.emails.length > 0 && (
+                              <div className="flex items-center gap-1 text-sm min-w-0">
+                                <Mail className="w-4 h-4 text-blue-500 flex-shrink-0" />
+                                <span className="truncate flex-1" title={empresa.emails[0]}>
+                                  {empresa.emails[0]}
+                                </span>
+                                {empresa.emails.length > 1 && (
+                                  <Badge variant="outline" className="text-xs px-1.5 py-0.5 flex-shrink-0">
+                                    +{empresa.emails.length - 1}
+                                  </Badge>
+                                )}
+                              </div>
+                            )}
+                            {empresa.telefono && (
+                              <div className="flex items-center gap-1 text-sm text-gray-600 dark:text-gray-400 min-w-0">
+                                <Phone className="w-4 h-4 flex-shrink-0" />
+                                <span className="truncate" title={empresa.telefono}>
+                                  {empresa.telefono}
+                                </span>
+                              </div>
+                            )}
                           </div>
-                          <div className="text-green-600 dark:text-green-400">
-                            Aperturas: {empresa.resumen_contacto.aperturas}
-                          </div>
-                          <div className="text-orange-600 dark:text-orange-400">
-                            Clics: {empresa.resumen_contacto.clics}
-                          </div>
-                        </div>
-                      </TableCell>
+                        </TableCell>
 
-                      <TableCell>
-                        <div className="flex gap-2">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => openDetailDialog(empresa)}
-                            className="icon-button p-2"
-                          >
-                            <Eye className="w-4 h-4" />
-                          </Button>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => openEditDialog(empresa)}
-                            className="icon-button p-2"
-                          >
-                            <Edit className="w-4 h-4" />
-                          </Button>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+                        <TableCell className="w-[15%] p-4">
+                          <div className="space-y-2 min-w-0">
+                            {getEstadoBadge(empresa)}
+                            {empresa.crm.notas && (
+                              <div
+                                className="text-xs text-gray-600 dark:text-gray-400 truncate cursor-help"
+                                title={empresa.crm.notas}
+                              >
+                                {empresa.crm.notas}
+                              </div>
+                            )}
+                          </div>
+                        </TableCell>
+
+                        <TableCell className="w-[15%] p-4">
+                          <div className="text-sm space-y-1 min-w-0">
+                            <div className="text-blue-600 dark:text-blue-400 truncate">
+                              Env: {empresa.resumen_contacto.enviados}
+                            </div>
+                            <div className="text-green-600 dark:text-green-400 truncate">
+                              Apt: {empresa.resumen_contacto.aperturas}
+                            </div>
+                            <div className="text-orange-600 dark:text-orange-400 truncate">
+                              Clc: {empresa.resumen_contacto.clics}
+                            </div>
+                          </div>
+                        </TableCell>
+
+                        <TableCell className="w-[10%] p-4">
+                          <div className="flex gap-1 justify-center">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => openDetailDialog(empresa)}
+                              className="p-2 h-8 w-8"
+                              title="Ver detalles"
+                            >
+                              <Eye className="w-3 h-3" />
+                            </Button>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => openEditDialog(empresa)}
+                              className="p-2 h-8 w-8"
+                              title="Editar"
+                            >
+                              <Edit className="w-3 h-3" />
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
 
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mt-8 pt-6 border-t">
                 <div className="text-sm text-gray-600 dark:text-gray-400">

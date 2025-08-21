@@ -1,53 +1,7 @@
 "use client"
 
 import { useState, useEffect, useRef } from "react"
-import { campaignService } from "../services/campaignService"
-
-interface CampaignStatusData {
-  campana: {
-    id: number
-    nombre: string
-    estado: string
-    tz: string
-    proximo_envio_at: string | null
-    created_at: string
-    started_at: string | null
-    finished_at: string | null
-  } | null
-  resumen: {
-    en_cola: number
-    bloqueado: number
-    procesando: number
-    enviado: number
-    rebote: number
-    baja: number
-    error: number
-  }
-  progreso: number
-  ultimos: Array<{
-    id: number
-    email: string
-    estado: string
-    actualizado_at: string
-    intentos: number
-  }>
-  worker: {
-    alive: boolean
-    last_at: string | null
-    seconds_since: number
-  }
-  llamadas: Array<{
-    id: number
-    ts: string
-    etapa: string
-    ok: number
-    http_status: number
-    ms: number
-    error: string | null
-    dest_id: number
-  }>
-  next_cursor: number
-}
+import type { CampaignStatusData } from "../types/campaign"
 
 export function useCampaignStatus(campaignId: string | number | null) {
   const [data, setData] = useState<CampaignStatusData | null>(null)
@@ -66,28 +20,47 @@ export function useCampaignStatus(campaignId: string | number | null) {
 
       console.log("[v0] Fetching campaign status:", { campaignId, currentCursor, isIncremental })
 
-      const response = await campaignService.getCampaignStatus(campaignId, currentCursor, 50)
+      const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL
+      const apiKey = process.env.NEXT_PUBLIC_API_KEY
 
-      console.log("[v0] Raw campaign status response:", {
-        response,
-        responseType: typeof response,
-        responseKeys: response ? Object.keys(response) : "null",
-        ok: response?.ok,
-        error: response?.error,
-        data: response?.data,
+      if (!apiBaseUrl || !apiKey) {
+        throw new Error("Configuración de API faltante")
+      }
+
+      const response = await fetch(`${apiBaseUrl}/campana/campanas.status.php`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-API-KEY": apiKey,
+        },
+        body: JSON.stringify({
+          campana_id: campaignId,
+          limit: 50,
+          since_id: currentCursor,
+        }),
       })
 
-      if (response.ok && response.data) {
-        const newData = response.data as CampaignStatusData
+      const responseData = await response.json()
+
+      console.log("[v0] Raw campaign status response:", {
+        response: responseData,
+        responseType: typeof responseData,
+        responseKeys: responseData ? Object.keys(responseData) : "null",
+        ok: responseData?.ok,
+        error: responseData?.error,
+      })
+
+      if (responseData.ok) {
+        const newData = responseData as CampaignStatusData
 
         console.log("[v0] Processed campaign data:", newData)
 
-        if (isIncremental) {
+        if (isIncremental && data) {
           setData((prev) =>
             prev
               ? {
                   ...newData,
-                  llamadas: [...prev.llamadas, ...newData.llamadas],
+                  ultimos: [...prev.ultimos, ...newData.ultimos],
                 }
               : newData,
           )
@@ -102,11 +75,11 @@ export function useCampaignStatus(campaignId: string | number | null) {
 
         setError(null)
       } else {
-        const errorMessage = response?.error || "Error desconocido al obtener el estado de la campaña"
+        const errorMessage = responseData?.error || "Error desconocido al obtener el estado de la campaña"
         console.error("[v0] Campaign status error:", {
-          error: response?.error,
-          errorType: typeof response?.error,
-          fullResponse: response,
+          error: responseData?.error,
+          errorType: typeof responseData?.error,
+          fullResponse: responseData,
           fallbackMessage: errorMessage,
         })
         setError(errorMessage)
