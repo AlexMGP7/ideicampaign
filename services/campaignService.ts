@@ -163,23 +163,6 @@ export class CampaignService {
     })
   }
 
-  async finalizeCampaignIfEmpty(campaignId: number | string): Promise<ApiResponse> {
-    return apiService.post("/campana/campanas.finalizar_si_vacia.php", {
-      campana_id: typeof campaignId === "string" ? Number(campaignId) : campaignId,
-    })
-  }
-
-  async getNextRecipient(campaignId: number | string): Promise<ApiResponse<Recipient> & { next_at?: string }> {
-    const raw = await apiService.post<any>("/campana/destinatarios.siguiente.php", {
-      campana_id: typeof campaignId === "string" ? Number(campaignId) : campaignId,
-    })
-    return normalizeNextRecipientResponse(raw)
-  }
-
-  async markRecipientResult(results: RecipientResult[]): Promise<ApiResponse> {
-    return apiService.post("/campana/destinatarios.marcar_resultado.php", results)
-  }
-
   /**
    * Flujo Crear → Poblar → Cambiar a "en_ejecucion"
    * Robusto a respuestas planas (top-level) y normalizadas (con data).

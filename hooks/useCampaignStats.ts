@@ -15,7 +15,7 @@ export function useCampaignStats(campaignId?: string) {
     setLoading(true)
     setError(null)
     try {
-      const response = await campaignService.getCampaignStats(id)
+      const response = await campaignService.getCampaignStatus(id)
       if (response.ok && response.data) {
         setStats(response.data)
       } else {

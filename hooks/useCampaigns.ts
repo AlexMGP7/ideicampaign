@@ -32,9 +32,9 @@ export function useCampaigns() {
   // Cargar campaña activa
   const loadActiveCampaign = async () => {
     try {
-      const response = await campaignService.getActiveCampaign()
-      if (response.ok && response.data?.campana) {
-        setActiveCampaign(response.data.campana)
+      const response = await campaignService.getActiveCampaign();
+      if (response.ok && response.data) {
+        setActiveCampaign(response.data);
       }
     } catch (err) {
       console.error("[v0] Error loading active campaign:", err)
