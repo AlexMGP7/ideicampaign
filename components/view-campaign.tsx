@@ -27,7 +27,12 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { campaignService } from "@/services/campaignService";
 import { useCampaignStatus } from "@/hooks/useCampaignStatus";
-import type { Campaign, CampaignStatusData } from "@/types/campaign";
+import type {
+  Campaign,
+  CampaignStatusData,
+  LastRecipient,
+  WorkerActivity,
+} from "@/types/campaign";
 
 interface CampaignStatusProps {
   campaign: Campaign;
@@ -236,16 +241,13 @@ function CampaignStatus({ campaign, statusData }: CampaignStatusProps) {
   );
 }
 
-function RecentRecipients({
-  ultimos,
-}: {
-  ultimos: CampaignStatusData["ultimos"];
-}) {
+function RecentRecipients({ ultimos }: { ultimos: LastRecipient[] }) {
   const getEstadoColor = (estado: string) => {
     switch (estado) {
       case "enviado":
         return "text-green-600 bg-green-100 dark:text-green-400 dark:bg-green-900/30";
       case "rebote":
+      case "rebotado": // <--- añade este case
         return "text-yellow-600 bg-yellow-100 dark:text-yellow-400 dark:bg-yellow-900/30";
       case "error":
         return "text-red-600 bg-red-100 dark:text-red-400 dark:bg-red-950/30";
@@ -293,18 +295,14 @@ function RecentRecipients({
                     <div className="text-xs text-muted-foreground">
                       {evento.actualizado_at
                         ? new Date(evento.actualizado_at).toLocaleString()
-                        : evento.created_at
-                        ? new Date(evento.created_at).toLocaleString()
                         : "Sin fecha"}
                     </div>
                   </div>
                   <div className="flex items-center space-x-2">
                     <Badge
-                      className={`text-xs ${getEstadoColor(
-                        evento.estado || evento.tipo
-                      )}`}
+                      className={`text-xs ${getEstadoColor(evento.estado)}`}
                     >
-                      {evento.estado || evento.tipo}
+                      {evento.estado}
                     </Badge>
                     {evento.aperturas > 0 && (
                       <Badge variant="outline" className="text-xs">
@@ -319,6 +317,84 @@ function RecentRecipients({
                   </div>
                 </div>
               ))
+            )}
+          </div>
+        </ScrollArea>
+      </CardContent>
+    </Card>
+  );
+}
+
+function WorkerActivities({ actividades }: { actividades: WorkerActivity[] }) {
+  const etapaColor = (etapa: WorkerActivity["etapa"], ok: boolean) => {
+    if (!ok)
+      return "text-red-600 bg-red-100 dark:text-red-400 dark:bg-red-900/30";
+    switch (etapa) {
+      case "siguiente":
+        return "text-blue-600 bg-blue-100 dark:text-blue-400 dark:bg-blue-900/30";
+      case "render":
+        return "text-purple-600 bg-purple-100 dark:text-purple-400 dark:bg-purple-900/30";
+      case "enviar":
+        return "text-green-600 bg-green-100 dark:text-green-400 dark:bg-green-900/30";
+      case "ack":
+        return "text-gray-600 bg-gray-100 dark:text-gray-300 dark:bg-gray-800";
+      case "finalizar":
+        return "text-teal-600 bg-teal-100 dark:text-teal-400 dark:bg-teal-900/30";
+      default:
+        return "text-muted-foreground bg-muted";
+    }
+  };
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center">
+          <Activity className="w-5 h-5 mr-2" />
+          Actividades del worker
+        </CardTitle>
+        <CardDescription>Operaciones ejecutadas por el worker</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <ScrollArea className="h-64">
+          <div className="space-y-2">
+            {!actividades || actividades.length === 0 ? (
+              <div className="text-center text-muted-foreground py-4">
+                No hay actividades registradas aún
+              </div>
+            ) : (
+              actividades
+                .slice()
+                .reverse()
+                .map((a) => (
+                  <div
+                    key={a.id}
+                    className="flex items-center justify-between p-2 border rounded-lg"
+                  >
+                    <div className="flex-1 min-w-0">
+                      <div className="text-sm font-medium truncate">
+                        {a.email || (a.dest_id ? `dest#${a.dest_id}` : "—")}
+                      </div>
+                      <div className="text-xs text-muted-foreground">
+                        {a.ts ? new Date(a.ts).toLocaleString() : "Sin fecha"}
+                        {a.endpoint ? ` • ${a.endpoint}` : ""}
+                        {typeof a.ms === "number" ? ` • ${a.ms} ms` : ""}
+                        {typeof a.http_status === "number"
+                          ? ` • HTTP ${a.http_status}`
+                          : ""}
+                      </div>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Badge className={`text-xs ${etapaColor(a.etapa, a.ok)}`}>
+                        {a.etapa}
+                      </Badge>
+                      {!a.ok && a.error && (
+                        <Badge variant="outline" className="text-xs">
+                          {a.error}
+                        </Badge>
+                      )}
+                    </div>
+                  </div>
+                ))
             )}
           </div>
         </ScrollArea>
@@ -560,6 +636,12 @@ export function SendCampaign() {
           )}
 
           {statusData && <RecentRecipients ultimos={statusData.ultimos} />}
+
+          {statusData && (
+            <WorkerActivities
+              actividades={statusData.actividades || statusData.llamadas || []}
+            />
+          )}
         </div>
 
         {/* Sidebar */}

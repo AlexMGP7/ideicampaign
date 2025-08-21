@@ -172,6 +172,31 @@ export interface Evento {
   clics: number
 }
 
+export interface LastRecipient {
+  id: number
+  email: string
+  estado: string
+  aperturas: number
+  clics: number
+  actualizado_at?: string | null
+}
+
+export type WorkerStage = "siguiente" | "render" | "enviar" | "ack" | "finalizar"
+
+export interface WorkerActivity {
+  id: number
+  ts: string | null
+  campana_id: number
+  dest_id: number | null
+  email?: string | null
+  etapa: WorkerStage
+  ok: boolean
+  http_status?: number | null
+  ms?: number | null
+  error?: string | null
+  endpoint?: string | null
+}
+
 export interface CampaignStatusData {
   ok: boolean
   campana: {
@@ -182,33 +207,33 @@ export interface CampaignStatusData {
     created_at: string
     updated_at: string
     proximo_envio_at?: string
+    // opcional: ritmo/audiencia ya parseados por el service
+    ritmo?: any
+    audiencia?: any
   }
   resumen: {
-    total: number
     en_cola: number
     procesando: number
     enviados: number
     rebotados: number
     bajas: number
-    abiertos: number
-    clicados: number
+    error?: number
+    bloqueado?: number
   }
   metricas: {
     abiertos_unicos: number
     clic_unicos: number
     open_rate_uni_pct: number
-    apertura: number
-    clic: number
-    rebote: number
+    ctr_uni_pct: number
+    bounce_rate_pct: number
   }
   progreso: {
-    procesados: number
-    total: number
     porcentaje: number
   }
-  ultimos: Evento[]
-  worker: any | null
-  llamadas: any[]
+  ultimos: LastRecipient[]
+  worker: { alive: boolean; last_at?: string | null; seconds_since?: number | null } | null
+  actividades: WorkerActivity[]
+  llamadas: WorkerActivity[] // alias para compat
   next_cursor: number | null
 }
 
