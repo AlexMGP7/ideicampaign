@@ -1,15 +1,40 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Badge } from "@/components/ui/badge"
-import { Textarea } from "@/components/ui/textarea"
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { useState, useEffect } from "react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import {
   Search,
   Filter,
@@ -22,26 +47,26 @@ import {
   Eye,
   ChevronLeft,
   ChevronRight,
-} from "lucide-react"
-import { useToast } from "@/hooks/use-toast"
-import { empresaService } from "@/services/empresaService"
-import type { Empresa, EmpresaFilters } from "@/types/empresa"
+} from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { empresaService } from "@/services/empresaService";
+import type { Empresa, EmpresaFilters } from "@/types/empresa";
 
 export function Contacts() {
-  const { toast } = useToast()
-  const [empresas, setEmpresas] = useState<Empresa[]>([])
-  const [loading, setLoading] = useState(true)
-  const [totalEmpresas, setTotalEmpresas] = useState(0)
-  const [currentPage, setCurrentPage] = useState(1)
-  const [selectedEmpresa, setSelectedEmpresa] = useState<Empresa | null>(null)
-  const [editDialogOpen, setEditDialogOpen] = useState(false)
-  const [detailDialogOpen, setDetailDialogOpen] = useState(false)
+  const { toast } = useToast();
+  const [empresas, setEmpresas] = useState<Empresa[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [totalEmpresas, setTotalEmpresas] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [selectedEmpresa, setSelectedEmpresa] = useState<Empresa | null>(null);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [detailDialogOpen, setDetailDialogOpen] = useState(false);
 
   const [filters, setFilters] = useState<EmpresaFilters>({
     page: 1,
     per_page: 50,
     order_by: "recientes",
-  })
+  });
 
   const [editForm, setEditForm] = useState({
     estado: "",
@@ -49,69 +74,69 @@ export function Contacts() {
     telefono: "",
     sitio_web: "",
     contactada_manual: false,
-  })
+  });
 
   useEffect(() => {
-    loadEmpresas()
-  }, [filters])
+    loadEmpresas();
+  }, [filters]);
 
   const loadEmpresas = async () => {
-    setLoading(true)
+    setLoading(true);
     try {
-      const response = await empresaService.listarEmpresas(filters)
+      const response = await empresaService.listarEmpresas(filters);
       if (response.ok) {
-        setEmpresas(response.data)
-        setTotalEmpresas(response.meta.total)
-        setCurrentPage(response.meta.page)
+        setEmpresas(response.data);
+        setTotalEmpresas(response.meta.total);
+        setCurrentPage(response.meta.page);
       } else {
         toast({
           variant: "destructive",
           title: "Error",
           description: "No se pudieron cargar las empresas",
-        })
+        });
       }
     } catch (error) {
       toast({
         variant: "destructive",
         title: "Error",
         description: "Error de conexión al cargar empresas",
-      })
+      });
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleSearch = (query: string) => {
-    setFilters((prev) => ({ ...prev, q: query, page: 1 }))
-  }
+    setFilters((prev) => ({ ...prev, q: query, page: 1 }));
+  };
 
   const handleFilterChange = (key: keyof EmpresaFilters, value: any) => {
-    setFilters((prev) => ({ ...prev, [key]: value, page: 1 }))
-  }
+    setFilters((prev) => ({ ...prev, [key]: value, page: 1 }));
+  };
 
   const handlePageChange = (newPage: number) => {
-    setFilters((prev) => ({ ...prev, page: newPage }))
-  }
+    setFilters((prev) => ({ ...prev, page: newPage }));
+  };
 
   const openEditDialog = (empresa: Empresa) => {
-    setSelectedEmpresa(empresa)
+    setSelectedEmpresa(empresa);
     setEditForm({
       estado: empresa.crm.estado || "sin_contactar",
       notas: empresa.crm.notas || "",
       telefono: empresa.telefono || "",
       sitio_web: empresa.sitio_web || "",
       contactada_manual: empresa.resumen_contacto.contactada_manual,
-    })
-    setEditDialogOpen(true)
-  }
+    });
+    setEditDialogOpen(true);
+  };
 
   const openDetailDialog = (empresa: Empresa) => {
-    setSelectedEmpresa(empresa)
-    setDetailDialogOpen(true)
-  }
+    setSelectedEmpresa(empresa);
+    setDetailDialogOpen(true);
+  };
 
   const handleUpdateEmpresa = async () => {
-    if (!selectedEmpresa) return
+    if (!selectedEmpresa) return;
 
     try {
       const response = await empresaService.actualizarEstado({
@@ -121,40 +146,48 @@ export function Contacts() {
         telefono: editForm.telefono || undefined,
         sitio_web: editForm.sitio_web || undefined,
         contactada_manual: editForm.contactada_manual,
-      })
+      });
 
       if (response.ok) {
         toast({
           variant: "success", // Agregada variante success
           title: "Empresa actualizada",
           description: `Los datos de "${selectedEmpresa.titulo}" se actualizaron correctamente`,
-        })
-        setEditDialogOpen(false)
-        loadEmpresas() // Recargar la lista
+        });
+        setEditDialogOpen(false);
+        loadEmpresas(); // Recargar la lista
       } else {
-        throw new Error(response.error || "Error al actualizar")
+        throw new Error(response.error || "Error al actualizar");
       }
     } catch (error) {
       toast({
         variant: "destructive",
         title: "Error",
-        description: error instanceof Error ? error.message : "Error al actualizar empresa",
-      })
+        description:
+          error instanceof Error
+            ? error.message
+            : "Error al actualizar empresa",
+      });
     }
-  }
+  };
 
   const getEstadoBadge = (empresa: Empresa) => {
-    const { resumen_contacto, crm } = empresa
+    const { resumen_contacto, crm } = empresa;
 
     if (crm.estado) {
       const estadoColors = {
-        sin_contactar: "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200",
-        contactada: "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200",
-        interesada: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200",
-        no_interesada: "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200",
-        pendiente: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200",
+        sin_contactar:
+          "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200",
+        contactada:
+          "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200",
+        interesada:
+          "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200",
+        no_interesada:
+          "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200",
+        pendiente:
+          "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200",
         bloqueada: "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200",
-      }
+      };
       return (
         <Badge
           className={
@@ -164,19 +197,21 @@ export function Contacts() {
         >
           {crm.estado.replace("_", " ")}
         </Badge>
-      )
+      );
     }
 
     if (resumen_contacto.contactada_por_campana) {
       return (
-        <Badge className="bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">Contactada por campaña</Badge>
-      )
+        <Badge className="bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+          Contactada por campaña
+        </Badge>
+      );
     }
 
-    return <Badge variant="outline">Sin contactar</Badge>
-  }
+    return <Badge variant="outline">Sin contactar</Badge>;
+  };
 
-  const totalPages = Math.ceil(totalEmpresas / (filters.per_page || 50))
+  const totalPages = Math.ceil(totalEmpresas / (filters.per_page || 50));
 
   return (
     <div className="space-y-8">
@@ -190,7 +225,10 @@ export function Contacts() {
           </p>
         </div>
         <div className="flex items-center gap-3">
-          <Badge variant="outline" className="text-sm px-3 py-1 bg-white dark:bg-gray-800">
+          <Badge
+            variant="outline"
+            className="text-sm px-3 py-1 bg-white dark:bg-gray-800"
+          >
             <Building2 className="w-4 h-4 mr-2" />
             {totalEmpresas.toLocaleString()} empresas
           </Badge>
@@ -228,7 +266,14 @@ export function Contacts() {
               <Label htmlFor="contactada" className="text-sm font-medium">
                 Estado de Contacto
               </Label>
-              <Select onValueChange={(value) => handleFilterChange("contactada", value === "all" ? undefined : value)}>
+              <Select
+                onValueChange={(value) =>
+                  handleFilterChange(
+                    "contactada",
+                    value === "all" ? undefined : value
+                  )
+                }
+              >
                 <SelectTrigger className="h-11">
                   <SelectValue placeholder="Todos" />
                 </SelectTrigger>
@@ -244,7 +289,10 @@ export function Contacts() {
               <Label htmlFor="order" className="text-sm font-medium">
                 Ordenar por
               </Label>
-              <Select value={filters.order_by} onValueChange={(value) => handleFilterChange("order_by", value)}>
+              <Select
+                value={filters.order_by}
+                onValueChange={(value) => handleFilterChange("order_by", value)}
+              >
                 <SelectTrigger className="h-11">
                   <SelectValue />
                 </SelectTrigger>
@@ -263,7 +311,9 @@ export function Contacts() {
               </Label>
               <Select
                 value={filters.per_page?.toString()}
-                onValueChange={(value) => handleFilterChange("per_page", Number.parseInt(value))}
+                onValueChange={(value) =>
+                  handleFilterChange("per_page", Number.parseInt(value))
+                }
               >
                 <SelectTrigger className="h-11">
                   <SelectValue />
@@ -289,7 +339,8 @@ export function Contacts() {
             Lista de Empresas
           </CardTitle>
           <CardDescription className="text-base">
-            Página {currentPage} de {totalPages} ({totalEmpresas.toLocaleString()} empresas total)
+            Página {currentPage} de {totalPages} (
+            {totalEmpresas.toLocaleString()} empresas total)
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -303,17 +354,30 @@ export function Contacts() {
                 <Table className="table-fixed w-full">
                   <TableHeader>
                     <TableRow>
-                      <TableHead className="font-semibold w-[35%]">Empresa</TableHead>
-                      <TableHead className="font-semibold w-[25%]">Contacto</TableHead>
-                      <TableHead className="font-semibold w-[15%]">Estado</TableHead>
-                      <TableHead className="font-semibold w-[15%]">Métricas</TableHead>
-                      <TableHead className="font-semibold w-[10%]">Acciones</TableHead>
+                      <TableHead className="font-semibold w-[28%]">
+                        Empresa
+                      </TableHead>
+                      <TableHead className="font-semibold w-[32%]">
+                        Contacto
+                      </TableHead>
+                      <TableHead className="font-semibold w-[15%]">
+                        Estado
+                      </TableHead>
+                      <TableHead className="font-semibold w-[15%]">
+                        Métricas
+                      </TableHead>
+                      <TableHead className="font-semibold w-[10%]">
+                        Acciones
+                      </TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {empresas.map((empresa) => (
-                      <TableRow key={empresa.id} className="hover:bg-muted/50 transition-colors">
-                        <TableCell className="w-[35%] p-4">
+                      <TableRow
+                        key={empresa.id}
+                        className="hover:bg-muted/50 transition-colors"
+                      >
+                        <TableCell className="w-[28%] p-4">
                           <div className="space-y-1 min-w-0">
                             <div
                               className="font-semibold text-gray-900 dark:text-gray-100 truncate cursor-pointer hover:text-blue-600 transition-colors"
@@ -325,7 +389,10 @@ export function Contacts() {
                             {empresa.categoria.nombre && (
                               <div className="flex items-center gap-1 text-sm text-gray-600 dark:text-gray-400 min-w-0">
                                 <Building2 className="w-3 h-3 flex-shrink-0" />
-                                <span className="truncate" title={empresa.categoria.nombre}>
+                                <span
+                                  className="truncate"
+                                  title={empresa.categoria.nombre}
+                                >
                                   {empresa.categoria.nombre}
                                 </span>
                               </div>
@@ -333,16 +400,23 @@ export function Contacts() {
                           </div>
                         </TableCell>
 
-                        <TableCell className="w-[25%] p-4">
+                        <TableCell className="w-[32%] p-4">
                           <div className="space-y-2 min-w-0">
                             {empresa.emails.length > 0 && (
-                              <div className="flex items-center gap-1 text-sm min-w-0">
+                              <div className="flex items-start gap-1 text-sm min-w-0">
                                 <Mail className="w-4 h-4 text-blue-500 flex-shrink-0" />
-                                <span className="truncate flex-1" title={empresa.emails[0]}>
+                                {/* No cortar: permitir wrap del email */}
+                                <span
+                                  className="flex-1 whitespace-normal break-words leading-tight"
+                                  title={empresa.emails[0]}
+                                >
                                   {empresa.emails[0]}
                                 </span>
                                 {empresa.emails.length > 1 && (
-                                  <Badge variant="outline" className="text-xs px-1.5 py-0.5 flex-shrink-0">
+                                  <Badge
+                                    variant="outline"
+                                    className="text-xs px-1.5 py-0.5 flex-shrink-0 self-start"
+                                  >
                                     +{empresa.emails.length - 1}
                                   </Badge>
                                 )}
@@ -351,7 +425,10 @@ export function Contacts() {
                             {empresa.telefono && (
                               <div className="flex items-center gap-1 text-sm text-gray-600 dark:text-gray-400 min-w-0">
                                 <Phone className="w-4 h-4 flex-shrink-0" />
-                                <span className="truncate" title={empresa.telefono}>
+                                <span
+                                  className="truncate"
+                                  title={empresa.telefono}
+                                >
                                   {empresa.telefono}
                                 </span>
                               </div>
@@ -418,8 +495,11 @@ export function Contacts() {
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mt-8 pt-6 border-t">
                 <div className="text-sm text-gray-600 dark:text-gray-400">
                   Mostrando {(currentPage - 1) * (filters.per_page || 50) + 1} a{" "}
-                  {Math.min(currentPage * (filters.per_page || 50), totalEmpresas)} de {totalEmpresas.toLocaleString()}{" "}
-                  empresas
+                  {Math.min(
+                    currentPage * (filters.per_page || 50),
+                    totalEmpresas
+                  )}{" "}
+                  de {totalEmpresas.toLocaleString()} empresas
                 </div>
                 <div className="flex gap-3">
                   <Button
@@ -455,7 +535,8 @@ export function Contacts() {
           <DialogHeader className="space-y-3">
             <DialogTitle className="text-xl">Editar Empresa</DialogTitle>
             <DialogDescription className="text-base">
-              Actualiza el estado y datos de contacto de {selectedEmpresa?.titulo}
+              Actualiza el estado y datos de contacto de{" "}
+              {selectedEmpresa?.titulo}
             </DialogDescription>
           </DialogHeader>
 
@@ -466,7 +547,9 @@ export function Contacts() {
               </Label>
               <Select
                 value={editForm.estado}
-                onValueChange={(value) => setEditForm((prev) => ({ ...prev, estado: value }))}
+                onValueChange={(value) =>
+                  setEditForm((prev) => ({ ...prev, estado: value }))
+                }
               >
                 <SelectTrigger className="h-11">
                   <SelectValue />
@@ -484,27 +567,43 @@ export function Contacts() {
 
             <div className="form-row-2">
               <div className="form-group">
-                <Label htmlFor="telefono" className="text-sm font-medium icon-text">
+                <Label
+                  htmlFor="telefono"
+                  className="text-sm font-medium icon-text"
+                >
                   <Phone className="w-4 h-4" />
                   Teléfono
                 </Label>
                 <Input
                   id="telefono"
                   value={editForm.telefono}
-                  onChange={(e) => setEditForm((prev) => ({ ...prev, telefono: e.target.value }))}
+                  onChange={(e) =>
+                    setEditForm((prev) => ({
+                      ...prev,
+                      telefono: e.target.value,
+                    }))
+                  }
                   placeholder="Teléfono de contacto"
                   className="h-11"
                 />
               </div>
               <div className="form-group">
-                <Label htmlFor="sitio_web" className="text-sm font-medium icon-text">
+                <Label
+                  htmlFor="sitio_web"
+                  className="text-sm font-medium icon-text"
+                >
                   <Globe className="w-4 h-4" />
                   Sitio Web
                 </Label>
                 <Input
                   id="sitio_web"
                   value={editForm.sitio_web}
-                  onChange={(e) => setEditForm((prev) => ({ ...prev, sitio_web: e.target.value }))}
+                  onChange={(e) =>
+                    setEditForm((prev) => ({
+                      ...prev,
+                      sitio_web: e.target.value,
+                    }))
+                  }
                   placeholder="https://ejemplo.com"
                   className="h-11"
                 />
@@ -518,7 +617,9 @@ export function Contacts() {
               <Textarea
                 id="notas"
                 value={editForm.notas}
-                onChange={(e) => setEditForm((prev) => ({ ...prev, notas: e.target.value }))}
+                onChange={(e) =>
+                  setEditForm((prev) => ({ ...prev, notas: e.target.value }))
+                }
                 placeholder="Notas sobre el contacto..."
                 rows={4}
                 className="resize-none focus:ring-2 focus:ring-blue-500"
@@ -526,10 +627,17 @@ export function Contacts() {
             </div>
 
             <div className="flex justify-end gap-3 pt-4 border-t">
-              <Button variant="outline" onClick={() => setEditDialogOpen(false)} className="px-6">
+              <Button
+                variant="outline"
+                onClick={() => setEditDialogOpen(false)}
+                className="px-6"
+              >
                 Cancelar
               </Button>
-              <Button onClick={handleUpdateEmpresa} className="button-primary px-6">
+              <Button
+                onClick={handleUpdateEmpresa}
+                className="button-primary px-6"
+              >
                 Guardar Cambios
               </Button>
             </div>
@@ -542,7 +650,9 @@ export function Contacts() {
         <DialogContent className="max-w-2xl">
           <DialogHeader>
             <DialogTitle>{selectedEmpresa?.titulo}</DialogTitle>
-            <DialogDescription>Información detallada de la empresa</DialogDescription>
+            <DialogDescription>
+              Información detallada de la empresa
+            </DialogDescription>
           </DialogHeader>
 
           {selectedEmpresa && (
@@ -582,7 +692,10 @@ export function Contacts() {
                     {selectedEmpresa.direccion && (
                       <div className="flex items-center min-w-0">
                         <MapPin className="w-3 h-3 mr-2 flex-shrink-0" />
-                        <span className="truncate" title={selectedEmpresa.direccion}>
+                        <span
+                          className="truncate"
+                          title={selectedEmpresa.direccion}
+                        >
                           {selectedEmpresa.direccion}
                         </span>
                       </div>
@@ -593,13 +706,25 @@ export function Contacts() {
                 <div>
                   <h4 className="font-medium mb-2">Métricas de Campaña</h4>
                   <div className="space-y-2 text-sm">
-                    <div>Campañas: {selectedEmpresa.resumen_contacto.num_campanas}</div>
-                    <div>Emails enviados: {selectedEmpresa.resumen_contacto.enviados}</div>
-                    <div>Aperturas: {selectedEmpresa.resumen_contacto.aperturas}</div>
+                    <div>
+                      Campañas: {selectedEmpresa.resumen_contacto.num_campanas}
+                    </div>
+                    <div>
+                      Emails enviados:{" "}
+                      {selectedEmpresa.resumen_contacto.enviados}
+                    </div>
+                    <div>
+                      Aperturas: {selectedEmpresa.resumen_contacto.aperturas}
+                    </div>
                     <div>Clics: {selectedEmpresa.resumen_contacto.clics}</div>
-                    <div>Suprimidos: {selectedEmpresa.resumen_contacto.suprimidos}</div>
+                    <div>
+                      Suprimidos: {selectedEmpresa.resumen_contacto.suprimidos}
+                    </div>
                     {selectedEmpresa.resumen_contacto.ultimo_evento && (
-                      <div>Último evento: {selectedEmpresa.resumen_contacto.ultimo_evento}</div>
+                      <div>
+                        Último evento:{" "}
+                        {selectedEmpresa.resumen_contacto.ultimo_evento}
+                      </div>
                     )}
                   </div>
                 </div>
@@ -608,10 +733,15 @@ export function Contacts() {
               {selectedEmpresa.crm.notas && (
                 <div>
                   <h4 className="font-medium mb-2">Notas CRM</h4>
-                  <div className="p-3 bg-muted rounded-lg text-sm">{selectedEmpresa.crm.notas}</div>
+                  <div className="p-3 bg-muted rounded-lg text-sm">
+                    {selectedEmpresa.crm.notas}
+                  </div>
                   {selectedEmpresa.crm.actualizado_en && (
                     <div className="text-xs text-muted-foreground mt-1">
-                      Actualizado: {new Date(selectedEmpresa.crm.actualizado_en).toLocaleString()}
+                      Actualizado:{" "}
+                      {new Date(
+                        selectedEmpresa.crm.actualizado_en
+                      ).toLocaleString()}
                     </div>
                   )}
                 </div>
@@ -621,5 +751,5 @@ export function Contacts() {
         </DialogContent>
       </Dialog>
     </div>
-  )
+  );
 }
