@@ -599,16 +599,13 @@ function SidebarMenuBadge({
   )
 }
 
-function SidebarMenuSkeleton({
-  className,
-  showIcon = false,
-  ...props
-}: React.ComponentProps<"div"> & {
-  showIcon?: boolean
-}) {
-  // Random width between 50 to 90%.
-  const width = React.useMemo(() => {
-    return `${Math.floor(Math.random() * 40) + 50}%`
+function SidebarMenuSkeleton({ className, showIcon = false, ...props }: React.ComponentProps<"div"> & { showIcon?: boolean }) {
+  // Valor estable para SSR/primer paint
+  const [width, setWidth] = React.useState<string>("80%")
+
+  // Solo en cliente, después del mount
+  React.useEffect(() => {
+    setWidth(`${Math.floor(Math.random() * 40) + 50}%`)
   }, [])
 
   return (
@@ -626,12 +623,7 @@ function SidebarMenuSkeleton({
       )}
       <Skeleton
         className="h-4 max-w-(--skeleton-width) flex-1"
-        data-sidebar="menu-skeleton-text"
-        style={
-          {
-            "--skeleton-width": width,
-          } as React.CSSProperties
-        }
+        style={{ ["--skeleton-width" as any]: width } as React.CSSProperties}
       />
     </div>
   )
