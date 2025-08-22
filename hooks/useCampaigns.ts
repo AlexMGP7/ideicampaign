@@ -15,15 +15,14 @@ export function useCampaigns() {
     setLoading(true)
     setError(null)
     try {
-      const response = await campaignService.getAllCampaigns()
-      if (response.ok && response.data) {
-        setCampaigns(response.data)
+      const res = await campaignService.getAllCampaigns()
+      if (res.ok && Array.isArray(res.data)) {
+        setCampaigns(res.data)
       } else {
-        setError(response.error || "Error al cargar campañas")
+        throw new Error(res.error || "No se pudieron cargar las campañas")
       }
-    } catch (err) {
-      setError("Error de conexión")
-      console.error("[v0] Error loading campaigns:", err)
+    } catch (e: any) {
+      setError(e?.message || "Error de conexión")
     } finally {
       setLoading(false)
     }
@@ -32,59 +31,57 @@ export function useCampaigns() {
   // Cargar campaña activa
   const loadActiveCampaign = async () => {
     try {
-      const response = await campaignService.getActiveCampaign();
-      if (response.ok && response.data) {
-        setActiveCampaign(response.data);
+      const res = await campaignService.getActiveCampaign()
+      if (res.ok && res.data) {
+        setActiveCampaign(res.data as Campaign)
       }
-    } catch (err) {
-      console.error("[v0] Error loading active campaign:", err)
+    } catch (e) {
+      // Silencioso: campaña activa puede no existir
     }
   }
 
-  // Crear nueva campaña
-  const createCampaign = async (campaignData: Omit<Campaign, "id">) => {
+  // Crear campaña
+  const createCampaign = async (data: Omit<Campaign, "id" | "created_at" | "updated_at">) => {
     setLoading(true)
     setError(null)
     try {
-      const response = await campaignService.createCampaign(campaignData)
-      if (response.ok) {
-        await loadCampaigns() // Recargar lista
-        return response.data
-      } else {
-        setError(response.error || "Error al crear campaña")
-        return null
-      }
-    } catch (err) {
-      setError("Error de conexión")
-      console.error("[v0] Error creating campaign:", err)
-      return null
+      const res = await campaignService.createCampaign(data)
+      if (!res.ok) throw new Error(res.error || "No se pudo crear la campaña")
+      // Refrescar listados
+      await loadCampaigns()
+      await loadActiveCampaign()
+      return res
+    } catch (e: any) {
+      setError(e?.message || "Error al crear la campaña")
+      return { ok: false, error: e?.message || "Error" }
     } finally {
       setLoading(false)
     }
   }
 
-  // Cambiar estado de campaña
-  const changeStatus = async (campaignId: string, estado: Campaign["estado"]) => {
+  // Cambiar estado
+  const changeStatus = async (id: number | string, estado: Campaign["estado"]) => {
+    setLoading(true)
+    setError(null)
     try {
-      const response = await campaignService.changeStatus(campaignId, estado)
-      if (response.ok) {
-        await loadCampaigns()
-        await loadActiveCampaign()
-        return true
-      } else {
-        setError(response.error || "Error al cambiar estado")
-        return false
-      }
-    } catch (err) {
-      setError("Error de conexión")
-      console.error("[v0] Error changing status:", err)
-      return false
+      const res = await campaignService.changeStatus(id, estado)
+      if (!res.ok) throw new Error(res.error || "No se pudo cambiar el estado")
+      await loadCampaigns()
+      await loadActiveCampaign()
+      return res
+    } catch (e: any) {
+      setError(e?.message || "Error al cambiar estado")
+      return { ok: false, error: e?.message || "Error" }
+    } finally {
+      setLoading(false)
     }
   }
 
   useEffect(() => {
+    // Cargar al montar
     loadCampaigns()
     loadActiveCampaign()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   return {

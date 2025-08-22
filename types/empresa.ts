@@ -14,19 +14,17 @@ export interface Empresa {
     contactada: boolean
     contactada_por_campana: boolean
     contactada_manual: boolean
-    suprimidos: number
     enviados: number
-    aperturas: number
+    abiertos: number
     clics: number
-    ultimo_evento: string | null
-    ultima_interaccion: string | null
-    num_campanas: number
+    ultimo_envio_at: string | null
   }
   crm: {
-    estado: string | null
-    notas: string | null
-    actualizado_en: string | null
-  }
+    estado: "nuevo" | "en_proceso" | "interesado" | "no_interesado" | "contactado" | "cliente" | "descartado"
+    notas: string
+    actualizado_en: string
+  } | null
+  error?: string
 }
 
 export interface EmpresaListResponse {
@@ -37,27 +35,22 @@ export interface EmpresaListResponse {
     page: number
     per_page: number
   }
+  message?: string
+  error?: string
 }
 
 export interface EmpresaUpdateRequest {
   empresa_id: number
-  contactada_manual?: boolean
-  estado?: "sin_contactar" | "contactada" | "interesada" | "no_interesada" | "pendiente" | "bloqueada"
+  estado?: string
   notas?: string
   telefono?: string
   sitio_web?: string
-  categoria_id?: number | null
+  contactada_manual?: boolean
 }
 
 export interface EmpresaUpdateResponse {
   ok: boolean
-  empresa_id: number
-  crm: {
-    contactada_manual: boolean
-    estado: string
-    notas: string
-    actualizado_en: string
-  } | null
+  message?: string
   error?: string
 }
 
