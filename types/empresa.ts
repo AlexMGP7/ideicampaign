@@ -62,3 +62,15 @@ export interface EmpresaFilters {
   contactada?: "si" | "no"
   order_by?: "recientes" | "antiguos" | "titulo" | "categoria"
 }
+export type EmpresaDeleteRequest = { empresa_id: number }
+
+export interface EmpresaDeleteResponse {
+  ok: boolean
+  empresa_eliminada?: { id: number; titulo: string }
+  impacto?: {
+    emails_borrados: number
+    destinatarios_borrados: number
+    eventos_que_quedan_con_destinatario_null: number
+  }
+  error?: string
+}

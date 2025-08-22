@@ -1,5 +1,12 @@
 import { apiService } from "./api"
-import type { EmpresaListResponse, EmpresaUpdateRequest, EmpresaUpdateResponse, EmpresaFilters } from "@/types/empresa"
+import type {
+  EmpresaListResponse,
+  EmpresaUpdateRequest,
+  EmpresaUpdateResponse,
+  EmpresaFilters,
+  EmpresaDeleteResponse, 
+  EmpresaDeleteRequest,    
+} from "@/types/empresa"
 
 class EmpresaService {
   async listarEmpresas(filters: EmpresaFilters = {}): Promise<EmpresaListResponse> {
@@ -20,6 +27,11 @@ class EmpresaService {
 
   async actualizarEstado(data: EmpresaUpdateRequest): Promise<EmpresaUpdateResponse> {
     return apiService.post<EmpresaUpdateResponse>("/campana/empresas.actualizar_estado.php", data)
+  }
+
+  async eliminarEmpresa(empresa_id: number): Promise<EmpresaDeleteResponse> {
+    const payload: EmpresaDeleteRequest = { empresa_id }
+    return apiService.post<EmpresaDeleteResponse>("/campana/empresas.eliminar.php", payload)
   }
 }
 

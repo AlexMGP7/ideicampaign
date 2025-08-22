@@ -27,6 +27,17 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+/* ⭐️ NUEVO: AlertDialog para confirmar borrado */
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import {
   Table,
   TableBody,
@@ -47,6 +58,8 @@ import {
   Eye,
   ChevronLeft,
   ChevronRight,
+  Trash2,        // ⭐️ NUEVO: ícono eliminar
+  Loader2,       // ⭐️ NUEVO: spinner
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { empresaService } from "@/services/empresaService";
@@ -61,6 +74,11 @@ export function Contacts() {
   const [selectedEmpresa, setSelectedEmpresa] = useState<Empresa | null>(null);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [detailDialogOpen, setDetailDialogOpen] = useState(false);
+
+  /* ⭐️ NUEVO: estado para eliminar */
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [empresaAEliminar, setEmpresaAEliminar] = useState<Empresa | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
   const [filters, setFilters] = useState<EmpresaFilters>({
     page: 1,
@@ -78,6 +96,7 @@ export function Contacts() {
 
   useEffect(() => {
     loadEmpresas();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filters]);
 
   const loadEmpresas = async () => {
@@ -95,7 +114,7 @@ export function Contacts() {
           description: "No se pudieron cargar las empresas",
         });
       }
-    } catch (error) {
+    } catch {
       toast({
         variant: "destructive",
         title: "Error",
@@ -135,6 +154,57 @@ export function Contacts() {
     setDetailDialogOpen(true);
   };
 
+  /* ⭐️ NUEVO: abrir diálogo de eliminar */
+  const openDeleteDialog = (empresa: Empresa) => {
+    setEmpresaAEliminar(empresa);
+    setDeleteDialogOpen(true);
+  };
+
+  /* ⭐️ NUEVO: confirmar eliminación */
+  const handleDeleteEmpresa = async () => {
+    if (!empresaAEliminar) return;
+    setDeleting(true);
+    try {
+      const res = await empresaService.eliminarEmpresa(empresaAEliminar.id);
+
+      if (!res.ok) {
+        throw new Error(res.error || "No se pudo eliminar la empresa");
+      }
+
+      // Actualización optimista del listado y contadores
+      setEmpresas((prev) => prev.filter((e) => e.id !== empresaAEliminar.id));
+      setTotalEmpresas((prev) => Math.max(0, prev - 1));
+
+      // Feedback con detalles de impacto (si vienen)
+      const imp = res.impacto;
+      const detalle =
+        imp
+          ? `Se borraron ${imp.emails_borrados} emails y ${imp.destinatarios_borrados} destinatarios. ` +
+            `${imp.eventos_que_quedan_con_destinatario_null} eventos quedaron sin destinatario.`
+          : undefined;
+
+      toast({
+        variant: "success",
+        title: "Empresa eliminada",
+        description:
+          `“${empresaAEliminar.titulo}” fue eliminada correctamente.` +
+          (detalle ? ` ${detalle}` : ""),
+      });
+
+      setDeleteDialogOpen(false);
+      setEmpresaAEliminar(null);
+    } catch (err) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description:
+          err instanceof Error ? err.message : "No se pudo eliminar la empresa",
+      });
+    } finally {
+      setDeleting(false);
+    }
+  };
+
   const handleUpdateEmpresa = async () => {
     if (!selectedEmpresa) return;
 
@@ -150,7 +220,7 @@ export function Contacts() {
 
       if (response.ok) {
         toast({
-          variant: "success", // Agregada variante success
+          variant: "success",
           title: "Empresa actualizada",
           description: `Los datos de "${selectedEmpresa.titulo}" se actualizaron correctamente`,
         });
@@ -405,7 +475,6 @@ export function Contacts() {
                             {empresa.emails.length > 0 && (
                               <div className="flex items-start gap-1 text-sm min-w-0">
                                 <Mail className="w-4 h-4 text-blue-500 flex-shrink-0" />
-                                {/* No cortar: permitir wrap del email */}
                                 <span
                                   className="flex-1 whitespace-normal break-words leading-tight"
                                   title={empresa.emails[0]}
@@ -472,6 +541,7 @@ export function Contacts() {
                               onClick={() => openDetailDialog(empresa)}
                               className="p-2 h-8 w-8"
                               title="Ver detalles"
+                              aria-label="Ver detalles"
                             >
                               <Eye className="w-3 h-3" />
                             </Button>
@@ -481,8 +551,20 @@ export function Contacts() {
                               onClick={() => openEditDialog(empresa)}
                               className="p-2 h-8 w-8"
                               title="Editar"
+                              aria-label="Editar"
                             >
                               <Edit className="w-3 h-3" />
+                            </Button>
+                            {/* ⭐️ NUEVO: botón eliminar */}
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => openDeleteDialog(empresa)}
+                              className="p-2 h-8 w-8 text-red-600 border-red-200 hover:bg-red-50 dark:text-red-400 dark:border-red-900 dark:hover:bg-red-950/50"
+                              title="Eliminar"
+                              aria-label="Eliminar"
+                            >
+                              <Trash2 className="w-3 h-3" />
                             </Button>
                           </div>
                         </TableCell>
@@ -645,6 +727,43 @@ export function Contacts() {
         </DialogContent>
       </Dialog>
 
+      {/* ⭐️ NUEVO: AlertDialog de confirmación de borrado */}
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent className="max-w-lg">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Eliminar empresa</AlertDialogTitle>
+            <AlertDialogDescription>
+              Vas a eliminar{" "}
+              <span className="font-medium">
+                “{empresaAEliminar?.titulo ?? ""}”
+              </span>
+              . Esta acción no se puede deshacer y eliminará contactos y
+              destinatarios asociados. ¿Deseas continuar?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={deleting}>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDeleteEmpresa}
+              disabled={deleting}
+              className="bg-red-600 hover:bg-red-700 focus:ring-red-600"
+            >
+              {deleting ? (
+                <span className="inline-flex items-center gap-2">
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  Eliminando...
+                </span>
+              ) : (
+                <span className="inline-flex items-center gap-2">
+                  <Trash2 className="w-4 h-4" />
+                  Eliminar
+                </span>
+              )}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
       {/* Dialog de detalle */}
       <Dialog open={detailDialogOpen} onOpenChange={setDetailDialogOpen}>
         <DialogContent className="max-w-2xl">
@@ -710,8 +829,7 @@ export function Contacts() {
                       Campañas: {selectedEmpresa.resumen_contacto.num_campanas}
                     </div>
                     <div>
-                      Emails enviados:{" "}
-                      {selectedEmpresa.resumen_contacto.enviados}
+                      Emails enviados: {selectedEmpresa.resumen_contacto.enviados}
                     </div>
                     <div>
                       Aperturas: {selectedEmpresa.resumen_contacto.aperturas}
@@ -722,8 +840,7 @@ export function Contacts() {
                     </div>
                     {selectedEmpresa.resumen_contacto.ultimo_evento && (
                       <div>
-                        Último evento:{" "}
-                        {selectedEmpresa.resumen_contacto.ultimo_evento}
+                        Último evento: {selectedEmpresa.resumen_contacto.ultimo_evento}
                       </div>
                     )}
                   </div>
