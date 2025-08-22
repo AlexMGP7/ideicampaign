@@ -366,8 +366,8 @@ export class CampaignService {
       const resumen = {
         en_cola: Number(s.en_cola ?? 0),
         procesando: Number(s.procesando ?? 0),
-        enviados: Number(s.enviado ?? 0), // map: enviado -> enviados
-        rebotados: Number(s.rebote ?? 0), // map: rebote -> rebotados
+        enviado: Number(s.enviado ?? 0),
+        rebotados: Number(s.rebote ?? 0),
         bajas: Number(s.baja ?? 0),
         error: Number(s.error ?? 0),
         bloqueado: Number(s.bloqueado ?? 0),
