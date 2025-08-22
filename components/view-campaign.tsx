@@ -177,7 +177,7 @@ function CampaignStatus({ campaign, statusData }: CampaignStatusProps) {
                 <div className="text-2xl font-bold text-blue-600">
                   {(statusData.resumen?.en_cola || 0) +
                     (statusData.resumen?.procesando || 0) +
-                    (statusData.resumen?.enviados || 0) +
+                    (statusData.resumen?.enviado || 0) +
                     (statusData.resumen?.rebotados || 0) +
                     (statusData.resumen?.bajas || 0)}
                 </div>
@@ -192,7 +192,7 @@ function CampaignStatus({ campaign, statusData }: CampaignStatusProps) {
               </div>
               <div className="text-center p-3 border rounded-lg">
                 <div className="text-2xl font-bold text-green-600">
-                  {statusData.resumen?.enviados || 0}
+                  {statusData.resumen?.enviado || 0}
                 </div>
                 <div className="text-sm text-muted-foreground">Enviados</div>
               </div>
@@ -248,7 +248,7 @@ function CampaignStatus({ campaign, statusData }: CampaignStatusProps) {
               </div>
               <div className="text-center p-2 bg-green-100 dark:bg-green-900/30 rounded">
                 <div className="font-bold">
-                  {statusData.resumen?.enviados || 0}
+                  {statusData.resumen?.enviado || 0}
                 </div>
                 <div className="text-muted-foreground">Enviado</div>
               </div>

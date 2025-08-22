@@ -46,7 +46,7 @@ export interface Campaign {
     total_destinatarios: number
     en_cola: number
     procesando: number
-    enviados: number
+    enviado: number
     rebotados: number
     bajas: number
     abiertos: number
@@ -64,7 +64,7 @@ export interface Campaign {
 
 export interface CampaignStats {
   total_destinatarios: number
-  enviados: number
+  enviado: number
   exitosos: number
   fallidos: number
   pendientes: number
@@ -214,7 +214,7 @@ export interface CampaignStatusData {
   resumen: {
     en_cola: number
     procesando: number
-    enviados: number
+    enviado: number
     rebotados: number
     bajas: number
     error?: number
