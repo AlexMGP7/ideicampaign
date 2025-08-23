@@ -144,6 +144,28 @@ export function CampaignForm() {
     handleRitmoChange("activo", "dias", newDias)
   }
 
+  const handleFranjaChange = (index: number, field: "inicio" | "fin", value: string) => {
+    const newFranjas = [...formData.ritmo.activo.franjas]
+    if (field === "inicio") {
+      newFranjas[index] = [value, newFranjas[index][1]]
+    } else {
+      newFranjas[index] = [newFranjas[index][0], value]
+    }
+    handleRitmoChange("activo", "franjas", newFranjas)
+  }
+
+  const agregarFranja = () => {
+    const newFranjas = [...formData.ritmo.activo.franjas, ["09:00", "17:00"]]
+    handleRitmoChange("activo", "franjas", newFranjas)
+  }
+
+  const eliminarFranja = (index: number) => {
+    if (formData.ritmo.activo.franjas.length > 1) {
+      const newFranjas = formData.ritmo.activo.franjas.filter((_, i) => i !== index)
+      handleRitmoChange("activo", "franjas", newFranjas)
+    }
+  }
+
   const diasSemana = [
     { value: 1, label: "Lun" },
     { value: 2, label: "Mar" },
@@ -335,6 +357,59 @@ export function CampaignForm() {
                 </div>
               </div>
 
+              <div className="form-group">
+                <div className="flex items-center justify-between mb-4">
+                  <Label className="text-sm font-medium">Franjas Horarias de Envío</Label>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={agregarFranja}
+                    className="text-xs bg-transparent"
+                  >
+                    + Agregar Franja
+                  </Button>
+                </div>
+                <div className="space-y-3">
+                  {formData.ritmo.activo.franjas.map((franja, index) => (
+                    <div key={index} className="flex items-center gap-3 p-3 border rounded-lg bg-muted/20">
+                      <div className="flex items-center gap-2 flex-1">
+                        <Label className="text-sm text-muted-foreground min-w-[40px]">Desde:</Label>
+                        <Input
+                          type="time"
+                          value={franja[0]}
+                          onChange={(e) => handleFranjaChange(index, "inicio", e.target.value)}
+                          className="h-9 flex-1"
+                        />
+                      </div>
+                      <div className="flex items-center gap-2 flex-1">
+                        <Label className="text-sm text-muted-foreground min-w-[40px]">Hasta:</Label>
+                        <Input
+                          type="time"
+                          value={franja[1]}
+                          onChange={(e) => handleFranjaChange(index, "fin", e.target.value)}
+                          className="h-9 flex-1"
+                        />
+                      </div>
+                      {formData.ritmo.activo.franjas.length > 1 && (
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => eliminarFranja(index)}
+                          className="text-red-500 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-950 px-2"
+                        >
+                          ×
+                        </Button>
+                      )}
+                    </div>
+                  ))}
+                </div>
+                <p className="text-xs text-muted-foreground mt-2">
+                  Los emails solo se enviarán durante estas franjas horarias en los días seleccionados.
+                </p>
+              </div>
+
               <div className="form-row-2">
                 <div className="form-group">
                   <Label htmlFor="jitter_min" className="text-sm font-medium">
@@ -375,6 +450,12 @@ export function CampaignForm() {
                       Se enviarán {formData.ritmo.quota.emails} emails cada {formData.ritmo.quota.horas} horas, con una
                       pausa aleatoria de {formData.ritmo.jitter_seg.min}-{formData.ritmo.jitter_seg.max} segundos entre
                       envíos.
+                      {formData.ritmo.activo.franjas.length > 0 && (
+                        <>
+                          {" "}
+                          Horarios de envío: {formData.ritmo.activo.franjas.map((f) => `${f[0]}-${f[1]}`).join(", ")}.
+                        </>
+                      )}
                     </p>
                   </div>
                 </div>
@@ -474,6 +555,12 @@ export function CampaignForm() {
                   <span className="text-sm text-muted-foreground">Días activos:</span>
                   <span className="font-semibold text-green-600 dark:text-green-400">
                     {formData.ritmo.activo.dias.length} días
+                  </span>
+                </div>
+                <div className="flex justify-between items-center py-2 border-b border-border">
+                  <span className="text-sm text-muted-foreground">Horarios:</span>
+                  <span className="font-semibold text-purple-600 dark:text-purple-400 text-xs">
+                    {formData.ritmo.activo.franjas.map((f) => `${f[0]}-${f[1]}`).join(", ")}
                   </span>
                 </div>
                 <div className="flex justify-between items-center py-2">

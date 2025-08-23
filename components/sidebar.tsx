@@ -5,38 +5,37 @@ import { cn } from "@/lib/utils"
 import { Home, Plus, Mail, Users, LogOut, User, Eye } from "lucide-react"
 import Image from "next/image"
 import { ThemeToggle } from "@/components/theme-toggle"
+import Link from "next/link"
+import { usePathname } from "next/navigation"
+import { useAuth } from "@/contexts/auth-context"
 
-interface SidebarProps {
-  activeTab: string
-  setActiveTab: (tab: string) => void
-  user?: { name: string; email: string }
-  onLogout?: () => void
-}
+export function Sidebar() {
+  const pathname = usePathname()
+  const { user, logout } = useAuth()
 
-export function Sidebar({ activeTab, setActiveTab, user, onLogout }: SidebarProps) {
   const menuItems = [
-    { id: "overview", label: "Dashboard", icon: Home },
-    { id: "create", label: "Nueva Campaña", icon: Plus },
-    { id: "send", label: "Ver Envío", icon: Eye },
-    // { id: "analytics", label: "Análisis", icon: BarChart3 },
-    { id: "campaigns", label: "Campañas", icon: Mail },
-    { id: "contacts", label: "Contactos", icon: Users },
-    // { id: "settings", label: "Configuración", icon: Settings },
+    { id: "/", label: "Dashboard", icon: Home },
+    { id: "/campaigns/create", label: "Nueva Campaña", icon: Plus },
+    { id: "/campaigns/send", label: "Ver Envío", icon: Eye },
+    { id: "/campaigns", label: "Campañas", icon: Mail },
+    { id: "/contacts", label: "Contactos", icon: Users },
   ]
 
   return (
-    <div className="w-full md:w-64 bg-sidebar border-r border-sidebar-border flex flex-col h-full">
-      <div className="p-6">
+    <div className="w-full h-full bg-sidebar border-r border-sidebar-border flex flex-col">
+      {/* Header */}
+      <div className="p-6 border-b border-sidebar-border">
         <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-3">
+          <Link href="/" className="flex items-center space-x-3 group">
             <Image
               src="/images/ideiweb-logo.png"
               alt="IDEI WEB Logo"
               width={140}
               height={45}
-              className="object-contain"
+              className="object-contain transition-opacity group-hover:opacity-80"
+              priority
             />
-          </div>
+          </Link>
           {/* Toggle visible solo en escritorio */}
           <div className="hidden md:block">
             <ThemeToggle />
@@ -47,33 +46,36 @@ export function Sidebar({ activeTab, setActiveTab, user, onLogout }: SidebarProp
         </div>
       </div>
 
-      <nav className="px-4 space-y-2 flex-1">
+      {/* Navigation */}
+      <nav className="px-4 py-4 space-y-2 flex-1" role="navigation" aria-label="Menú principal">
         {menuItems.map((item) => {
           const Icon = item.icon
+          const isActive = pathname === item.id
           return (
-            <Button
-              key={item.id}
-              variant={activeTab === item.id ? "default" : "ghost"}
-              className={cn(
-                "w-full justify-start transition-colors",
-                activeTab === item.id
-                  ? "bg-sidebar-primary text-sidebar-primary-foreground hover:bg-sidebar-primary/90"
-                  : "text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
-              )}
-              onClick={() => setActiveTab(item.id)}
-              aria-current={activeTab === item.id ? "page" : undefined}
-            >
-              <Icon className="mr-3 h-4 w-4" />
-              {item.label}
-            </Button>
+            <Link key={item.id} href={item.id} className="block">
+              <Button
+                variant={isActive ? "default" : "ghost"}
+                className={cn(
+                  "w-full justify-start transition-all duration-200 h-11",
+                  isActive
+                    ? "bg-sidebar-primary text-sidebar-primary-foreground hover:bg-sidebar-primary/90 shadow-sm"
+                    : "text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground hover:translate-x-1",
+                )}
+                aria-current={isActive ? "page" : undefined}
+              >
+                <Icon className="mr-3 h-4 w-4 flex-shrink-0" />
+                <span className="truncate">{item.label}</span>
+              </Button>
+            </Link>
           )
         })}
       </nav>
 
+      {/* User section */}
       {user && (
-        <div className="p-4 border-t border-sidebar-border">
-          <div className="flex items-center space-x-3 mb-3">
-            <div className="w-8 h-8 bg-sidebar-primary rounded-full flex items-center justify-center">
+        <div className="p-4 border-t border-sidebar-border bg-sidebar/50">
+          <div className="flex items-center space-x-3 mb-3 p-2 rounded-lg bg-sidebar-accent/30">
+            <div className="w-8 h-8 bg-sidebar-primary rounded-full flex items-center justify-center flex-shrink-0">
               <User className="w-4 h-4 text-sidebar-primary-foreground" />
             </div>
             <div className="flex-1 min-w-0">
@@ -81,22 +83,20 @@ export function Sidebar({ activeTab, setActiveTab, user, onLogout }: SidebarProp
               <p className="text-xs text-sidebar-foreground/60 truncate">{user.email}</p>
             </div>
           </div>
-          <div className="space-y-2">
-            <Button
-              variant="ghost"
-              size="sm"
-              className="w-full justify-start text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent transition-colors"
-              onClick={onLogout}
-            >
-              <LogOut className="mr-2 h-4 w-4" />
-              Cerrar Sesión
-            </Button>
-          </div>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="w-full justify-start text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent transition-all duration-200 h-9"
+            onClick={logout}
+          >
+            <LogOut className="mr-2 h-4 w-4" />
+            Cerrar Sesión
+          </Button>
         </div>
       )}
 
-      {/* Footer tema solo móvil (abajo) */}
-      <div className="md:hidden p-4 border-t border-sidebar-border mt-auto">
+      {/* Footer tema solo móvil */}
+      <div className="md:hidden p-4 border-t border-sidebar-border">
         <div className="flex items-center justify-between">
           <span className="text-sm text-sidebar-foreground/70">Tema</span>
           <ThemeToggle />
