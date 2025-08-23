@@ -8,14 +8,12 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Switch } from "@/components/ui/switch"
 import { Checkbox } from "@/components/ui/checkbox"
-import { Send, Save, Users, Mail, Info, Clock, Loader2, User, Globe } from "lucide-react"
+import { Send, Save, Users, Mail, Info, Clock, User, Globe } from "lucide-react"
 import type { Campaign } from "@/types/campaign"
-import { useToast } from "@/hooks/use-toast"
-import { campaignService } from "@/services/campaignService"
+import { useCampaigns } from "@/hooks/queries/use-campaigns"
 
 export function CampaignForm() {
-  const { toast } = useToast()
-  const [isLoading, setIsLoading] = useState(false)
+  const { createCampaign, createAndStartCampaign, isCreating } = useCampaigns()
 
   const [formData, setFormData] = useState<Omit<Campaign, "id" | "created_at" | "updated_at">>({
     nombre: "",
@@ -46,66 +44,23 @@ export function CampaignForm() {
   const handleSubmit = async (action: "save" | "send") => {
     // Basic validation
     if (!formData.nombre.trim()) {
-      toast({
-        variant: "destructive",
-        title: "Error de validación",
-        description: "El nombre de la campaña es requerido",
-      })
       return
     }
 
     if (!formData.remitente_nombre.trim() || !formData.remitente_email.trim()) {
-      toast({
-        variant: "destructive",
-        title: "Error de validación",
-        description: "Los datos del remitente son requeridos",
-      })
       return
     }
 
-    setIsLoading(true)
-
-    try {
-      if (action === "save") {
-        // Crear como borrador
-        const response = await campaignService.createCampaign({
-          ...formData,
-          estado: "borrador",
-        })
-
-        if (response.ok) {
-          toast({
-            variant: "success",
-            title: "Borrador guardado",
-            description: `La campaña "${formData.nombre}" se guardó como borrador exitosamente`,
-          })
-        } else {
-          throw new Error(response.error || "Error al guardar borrador")
-        }
-      } else {
-        const response = await campaignService.createAndStartCampaign({
-          ...formData,
-          estado: "borrador",
-        })
-
-        if (response.ok) {
-          toast({
-            variant: "success",
-            title: "Campaña creada exitosamente",
-            description: `La campaña "${formData.nombre}" se creó con ${response.data?.insertados || 0} destinatarios`,
-          })
-        } else {
-          throw new Error(response.error || "Error al crear y ejecutar campaña")
-        }
-      }
-    } catch (error) {
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: error instanceof Error ? error.message : "Error desconocido",
+    if (action === "save") {
+      createCampaign({
+        ...formData,
+        estado: "borrador",
       })
-    } finally {
-      setIsLoading(false)
+    } else {
+      createAndStartCampaign({
+        ...formData,
+        estado: "borrador",
+      })
     }
   }
 
@@ -188,13 +143,17 @@ export function CampaignForm() {
           </p>
         </div>
         <div className="flex flex-col sm:flex-row gap-3">
-          <Button variant="outline" onClick={() => handleSubmit("save")} disabled={isLoading} className="icon-button">
-            <Save className="w-4 h-4" />
+          <Button variant="outline" onClick={() => handleSubmit("save")} disabled={isCreating} className="icon-button">
+            <Save className="icon-md" />
             Guardar Borrador
           </Button>
-          <Button onClick={() => handleSubmit("send")} disabled={isLoading} className="button-primary icon-button">
-            {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
-            {isLoading ? "Procesando..." : "Crear y Ejecutar"}
+          <Button onClick={() => handleSubmit("send")} disabled={isCreating} className="btn-primary icon-button">
+            {isCreating ? (
+              <div className="w-4 h-4 animate-spin rounded-full border-b-2 border-current" />
+            ) : (
+              <Send className="icon-md" />
+            )}
+            {isCreating ? "Procesando..." : "Crear y Ejecutar"}
           </Button>
         </div>
       </div>
@@ -206,7 +165,7 @@ export function CampaignForm() {
             <CardHeader className="pb-6">
               <CardTitle className="icon-text text-xl">
                 <div className="p-2 bg-muted rounded-lg">
-                  <Mail className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                  <Mail className="icon-lg text-[var(--status-info)]" />
                 </div>
                 Información Básica
               </CardTitle>
@@ -222,14 +181,14 @@ export function CampaignForm() {
                   placeholder="Ej: Prospección 2025-08-12"
                   value={formData.nombre}
                   onChange={(e) => handleInputChange("nombre", e.target.value)}
-                  className="h-11 focus:ring-2 focus:ring-blue-500"
+                  className="input-standard"
                 />
               </div>
 
               <div className="form-row-2">
                 <div className="form-group">
                   <Label htmlFor="remitente_nombre" className="text-sm font-medium icon-text">
-                    <User className="w-4 h-4" />
+                    <User className="icon-md" />
                     Nombre del Remitente
                   </Label>
                   <Input
@@ -237,12 +196,12 @@ export function CampaignForm() {
                     placeholder="Luis García"
                     value={formData.remitente_nombre}
                     onChange={(e) => handleInputChange("remitente_nombre", e.target.value)}
-                    className="h-11 focus:ring-2 focus:ring-blue-500"
+                    className="input-standard"
                   />
                 </div>
                 <div className="form-group">
                   <Label htmlFor="remitente_email" className="text-sm font-medium icon-text">
-                    <Mail className="w-4 h-4" />
+                    <Mail className="icon-md" />
                     Email del Remitente
                   </Label>
                   <Input
@@ -251,7 +210,7 @@ export function CampaignForm() {
                     placeholder="info@ideidev.com"
                     value={formData.remitente_email}
                     onChange={(e) => handleInputChange("remitente_email", e.target.value)}
-                    className="h-11 focus:ring-2 focus:ring-blue-500"
+                    className="input-standard"
                   />
                 </div>
               </div>
@@ -262,7 +221,7 @@ export function CampaignForm() {
                     Proveedor de Email
                   </Label>
                   <Select value={formData.proveedor} onValueChange={(value) => handleInputChange("proveedor", value)}>
-                    <SelectTrigger className="h-11">
+                    <SelectTrigger className="input-standard">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -272,11 +231,11 @@ export function CampaignForm() {
                 </div>
                 <div className="form-group">
                   <Label htmlFor="tz" className="text-sm font-medium icon-text">
-                    <Globe className="w-4 h-4" />
+                    <Globe className="icon-md" />
                     Zona Horaria
                   </Label>
                   <Select value={formData.tz} onValueChange={(value) => handleInputChange("tz", value)}>
-                    <SelectTrigger className="h-11">
+                    <SelectTrigger className="input-standard">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -295,7 +254,7 @@ export function CampaignForm() {
             <CardHeader className="pb-6">
               <CardTitle className="icon-text text-xl">
                 <div className="p-2 bg-muted rounded-lg">
-                  <Clock className="w-5 h-5 text-orange-600 dark:text-orange-400" />
+                  <Clock className="icon-lg text-[var(--status-warning)]" />
                 </div>
                 Configuración de Ritmo
               </CardTitle>
@@ -316,7 +275,7 @@ export function CampaignForm() {
                     max="100"
                     value={formData.ritmo.quota.emails}
                     onChange={(e) => handleRitmoChange("quota", "emails", Number.parseInt(e.target.value))}
-                    className="h-11 focus:ring-2 focus:ring-orange-500"
+                    className="input-standard focus:ring-[var(--status-warning)]"
                   />
                 </div>
                 <div className="form-group">
@@ -330,7 +289,7 @@ export function CampaignForm() {
                     max="24"
                     value={formData.ritmo.quota.horas}
                     onChange={(e) => handleRitmoChange("quota", "horas", Number.parseInt(e.target.value))}
-                    className="h-11 focus:ring-2 focus:ring-orange-500"
+                    className="input-standard focus:ring-[var(--status-warning)]"
                   />
                 </div>
               </div>
@@ -410,39 +369,10 @@ export function CampaignForm() {
                 </p>
               </div>
 
-              <div className="form-row-2">
-                <div className="form-group">
-                  <Label htmlFor="jitter_min" className="text-sm font-medium">
-                    Jitter Mínimo (seg)
-                  </Label>
-                  <Input
-                    id="jitter_min"
-                    type="number"
-                    min="0"
-                    value={formData.ritmo.jitter_seg.min}
-                    onChange={(e) => handleRitmoChange("jitter_seg", "min", Number.parseInt(e.target.value))}
-                    className="h-11 focus:ring-2 focus:ring-orange-500"
-                  />
-                </div>
-                <div className="form-group">
-                  <Label htmlFor="jitter_max" className="text-sm font-medium">
-                    Jitter Máximo (seg)
-                  </Label>
-                  <Input
-                    id="jitter_max"
-                    type="number"
-                    min="0"
-                    value={formData.ritmo.jitter_seg.max}
-                    onChange={(e) => handleRitmoChange("jitter_seg", "max", Number.parseInt(e.target.value))}
-                    className="h-11 focus:ring-2 focus:ring-orange-500"
-                  />
-                </div>
-              </div>
-
               <div className="bg-muted/50 border rounded-xl p-6">
                 <div className="flex items-start gap-4">
                   <div className="p-2 bg-muted rounded-lg flex-shrink-0">
-                    <Info className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                    <Info className="icon-lg text-[var(--status-info)]" />
                   </div>
                   <div className="space-y-2">
                     <h4 className="font-semibold text-card-foreground">Configuración de Ritmo</h4>
@@ -470,7 +400,7 @@ export function CampaignForm() {
             <CardHeader className="pb-6">
               <CardTitle className="icon-text text-xl">
                 <div className="p-2 bg-muted rounded-lg">
-                  <Users className="w-5 h-5 text-green-600 dark:text-green-400" />
+                  <Users className="icon-lg text-[var(--status-success)]" />
                 </div>
                 Configuración de Audiencia
               </CardTitle>
@@ -487,7 +417,7 @@ export function CampaignForm() {
                       handleAudienciaChange("politica_email_por_empresa", value)
                     }
                   >
-                    <SelectTrigger className="h-11">
+                    <SelectTrigger className="input-standard">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -507,7 +437,7 @@ export function CampaignForm() {
                     min="1"
                     value={formData.audiencia.limite_empresas || ""}
                     onChange={(e) => handleAudienciaChange("limite_empresas", Number.parseInt(e.target.value) || null)}
-                    className="h-11 focus:ring-2 focus:ring-green-500"
+                    className="input-standard focus:ring-[var(--status-success)]"
                   />
                 </div>
 
@@ -541,19 +471,19 @@ export function CampaignForm() {
               <div className="space-y-3">
                 <div className="flex justify-between items-center py-2 border-b border-border">
                   <span className="text-sm text-muted-foreground">Empresas objetivo:</span>
-                  <span className="font-semibold text-blue-600 dark:text-blue-400">
+                  <span className="font-semibold text-[var(--status-info)]">
                     {formData.audiencia.limite_empresas?.toLocaleString() || "Sin límite"}
                   </span>
                 </div>
                 <div className="flex justify-between items-center py-2 border-b border-border">
                   <span className="text-sm text-muted-foreground">Ritmo:</span>
-                  <span className="font-semibold text-orange-600 dark:text-orange-400">
+                  <span className="font-semibold text-[var(--status-warning)]">
                     {formData.ritmo.quota.emails}/{formData.ritmo.quota.horas}h
                   </span>
                 </div>
                 <div className="flex justify-between items-center py-2 border-b border-border">
                   <span className="text-sm text-muted-foreground">Días activos:</span>
-                  <span className="font-semibold text-green-600 dark:text-green-400">
+                  <span className="font-semibold text-[var(--status-success)]">
                     {formData.ritmo.activo.dias.length} días
                   </span>
                 </div>
