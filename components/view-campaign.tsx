@@ -516,7 +516,7 @@ export function SendCampaign() {
         </Button>
       </div>
 
-      {statusData?.campana?.proximo_envio_at && activeCampaign.estado === "en_ejecucion" && (
+      {statusData?.campana?.proximo_envio_at && activeCampaign?.estado === "en_ejecucion" && (
         <Alert>
           <Clock className="h-4 w-4" />
           <AlertDescription>
@@ -593,14 +593,14 @@ export function SendCampaign() {
               <CardTitle>Control de Campaña</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
-              {activeCampaign.estado === "borrador" && (
+              {activeCampaign?.estado === "borrador" && (
                 <Button onClick={() => handleChangeStatus("en_ejecucion")} disabled={statusChanging} className="w-full">
                   <Rocket className="w-4 h-4 mr-2" />
                   Iniciar Campaña
                 </Button>
               )}
 
-              {activeCampaign.estado === "en_ejecucion" && (
+              {activeCampaign?.estado === "en_ejecucion" && (
                 <Button
                   onClick={() => handleChangeStatus("pausada")}
                   disabled={statusChanging}
@@ -612,7 +612,7 @@ export function SendCampaign() {
                 </Button>
               )}
 
-              {activeCampaign.estado === "pausada" && (
+              {activeCampaign?.estado === "pausada" && (
                 <>
                   <Button
                     onClick={() => handleChangeStatus("en_ejecucion")}
@@ -644,21 +644,21 @@ export function SendCampaign() {
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between">
                   <span>Emails por cuota:</span>
-                  <span className="font-medium">{activeCampaign.ritmo.quota.emails}</span>
+                  <span className="font-medium">{activeCampaign?.ritmo?.quota?.emails || 0}</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Horas por cuota:</span>
-                  <span className="font-medium">{activeCampaign.ritmo.quota.horas}</span>
+                  <span className="font-medium">{activeCampaign?.ritmo?.quota?.horas || 0}</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Jitter:</span>
                   <span className="font-medium">
-                    {activeCampaign.ritmo.jitter_seg.min}-{activeCampaign.ritmo.jitter_seg.max}s
+                    {activeCampaign?.ritmo?.jitter_seg?.min || 0}-{activeCampaign?.ritmo?.jitter_seg?.max || 0}s
                   </span>
                 </div>
                 <div className="flex justify-between">
                   <span>Días activos:</span>
-                  <span className="font-medium">{activeCampaign.ritmo.activo.dias.length} días</span>
+                  <span className="font-medium">{activeCampaign?.ritmo?.activo?.dias?.length || 0} días</span>
                 </div>
               </div>
             </CardContent>

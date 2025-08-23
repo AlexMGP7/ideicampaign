@@ -18,7 +18,7 @@ export function useCampaigns() {
       if (!response.ok) {
         throw new Error(response.error || "Error al cargar campañas")
       }
-      return response.data
+      return response.data || []
     },
   })
 
@@ -26,12 +26,19 @@ export function useCampaigns() {
   const activeCampaignQuery = useQuery({
     queryKey: queryKeys.campaigns.active(),
     queryFn: async () => {
-      const response = await campaignService.getActiveCampaign()
-      if (!response.ok) {
-        return null // Campaña activa puede no existir
+      try {
+        const response = await campaignService.getActiveCampaign()
+        if (!response.ok) {
+          return null
+        }
+        return response.data || null
+      } catch (error) {
+        console.error("[v0] Error fetching active campaign:", error)
+        return null
       }
-      return response.data
     },
+    retry: 1,
+    retryDelay: 1000,
   })
 
   // Mutation para crear campaña
