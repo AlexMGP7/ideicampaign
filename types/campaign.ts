@@ -197,6 +197,65 @@ export interface WorkerActivity {
   endpoint?: string | null
 }
 
+export interface RawCampaignStatusResponse {
+  ok: boolean
+  campana: {
+    id: number
+    nombre: string
+    remitente_nombre: string
+    remitente_email: string
+    proveedor: string
+    estado: string
+    ritmo: string | { quota: { emails: number; horas: number }; activo?: { dias: number[]; franjas: string[][] }; jitter_seg?: { min: number; max: number } }
+    proximo_envio_at?: string | null
+    tz: string
+    audiencia?: string | any
+    created_at: string
+    updated_at: string
+  }
+  resumen: {
+    en_cola: number
+    bloqueado: number
+    procesando: number
+    enviado: number
+    rebote: number
+    baja: number
+    error: number
+  }
+  metricas: {
+    abiertos_unicos: number
+    clic_unicos: number
+    open_rate_uni_pct: number
+    ctr_uni_pct: number
+    bounce_rate_pct: number
+  }
+  progreso: number
+  ultimos: Array<{
+    id: number
+    email: string
+    estado: string
+    aperturas: number
+    clics: number
+    actualizado_at: string | null
+  }>
+  worker: { alive: boolean; last_at: string; seconds_since: number } | null
+  actividades: Array<{
+    id: number
+    ts: string
+    campana_id: number
+    dest_id: number | null
+    email: string | null
+    etapa: string
+    ok: boolean
+    http_status: number
+    ms: number
+    error: string | null
+    endpoint: string
+  }>
+  llamadas: RawCampaignStatusResponse["actividades"]
+  next_cursor: number | null
+}
+
 export interface CampaignStatusData {
   ok: boolean
   campana: {

@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-// ✅ usamos tu hook (API key queda dentro del hook)
 import { useCampaignStatus } from "@/hooks/useCampaignStatus";
 
 import {

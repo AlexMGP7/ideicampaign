@@ -25,16 +25,22 @@ export function Sidebar({ activeTab, setActiveTab, user, onLogout }: SidebarProp
   ]
 
   return (
-    <div className="w-64 bg-sidebar border-r border-sidebar-border flex flex-col h-full">
+    <div className="w-full md:w-64 bg-sidebar border-r border-sidebar-border flex flex-col h-full">
       <div className="p-6">
-        <div className="flex items-center space-x-3">
-          <Image
-            src="/images/ideiweb-logo.png"
-            alt="IDEI WEB Logo"
-            width={140}
-            height={45}
-            className="object-contain"
-          />
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-3">
+            <Image
+              src="/images/ideiweb-logo.png"
+              alt="IDEI WEB Logo"
+              width={140}
+              height={45}
+              className="object-contain"
+            />
+          </div>
+          {/* Toggle visible solo en escritorio */}
+          <div className="hidden md:block">
+            <ThemeToggle />
+          </div>
         </div>
         <div className="mt-2">
           <p className="text-sm text-sidebar-foreground/70">Campaign Manager</p>
@@ -55,6 +61,7 @@ export function Sidebar({ activeTab, setActiveTab, user, onLogout }: SidebarProp
                   : "text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
               )}
               onClick={() => setActiveTab(item.id)}
+              aria-current={activeTab === item.id ? "page" : undefined}
             >
               <Icon className="mr-3 h-4 w-4" />
               {item.label}
@@ -75,10 +82,6 @@ export function Sidebar({ activeTab, setActiveTab, user, onLogout }: SidebarProp
             </div>
           </div>
           <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-sidebar-foreground/70">Tema</span>
-              <ThemeToggle />
-            </div>
             <Button
               variant="ghost"
               size="sm"
@@ -91,6 +94,14 @@ export function Sidebar({ activeTab, setActiveTab, user, onLogout }: SidebarProp
           </div>
         </div>
       )}
+
+      {/* Footer tema solo móvil (abajo) */}
+      <div className="md:hidden p-4 border-t border-sidebar-border mt-auto">
+        <div className="flex items-center justify-between">
+          <span className="text-sm text-sidebar-foreground/70">Tema</span>
+          <ThemeToggle />
+        </div>
+      </div>
     </div>
   )
 }

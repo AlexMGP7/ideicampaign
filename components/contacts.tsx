@@ -140,8 +140,8 @@ export function Contacts() {
   const openEditDialog = (empresa: Empresa) => {
     setSelectedEmpresa(empresa);
     setEditForm({
-      estado: empresa.crm.estado || "sin_contactar",
-      notas: empresa.crm.notas || "",
+      estado: empresa.crm?.estado ?? "sin_contactar",
+      notas: empresa.crm?.notas ?? "",
       telefono: empresa.telefono || "",
       sitio_web: empresa.sitio_web || "",
       contactada_manual: empresa.resumen_contacto.contactada_manual,
@@ -244,7 +244,7 @@ export function Contacts() {
   const getEstadoBadge = (empresa: Empresa) => {
     const { resumen_contacto, crm } = empresa;
 
-    if (crm.estado) {
+    if (crm?.estado) {
       const estadoColors = {
         sin_contactar:
           "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200",
@@ -261,11 +261,11 @@ export function Contacts() {
       return (
         <Badge
           className={
-            estadoColors[crm.estado as keyof typeof estadoColors] ||
+            estadoColors[(crm?.estado as keyof typeof estadoColors) ?? "sin_contactar"] ||
             "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200"
           }
         >
-          {crm.estado.replace("_", " ")}
+          {(crm?.estado ?? "sin_contactar").replace("_", " ")}
         </Badge>
       );
     }
@@ -508,12 +508,12 @@ export function Contacts() {
                         <TableCell className="w-[15%] p-4">
                           <div className="space-y-2 min-w-0">
                             {getEstadoBadge(empresa)}
-                            {empresa.crm.notas && (
+                            {empresa.crm?.notas && (
                               <div
                                 className="text-xs text-gray-600 dark:text-gray-400 truncate cursor-help"
-                                title={empresa.crm.notas}
+                                title={empresa.crm?.notas ?? ""}
                               >
-                                {empresa.crm.notas}
+                                {empresa.crm?.notas}
                               </div>
                             )}
                           </div>
@@ -525,7 +525,7 @@ export function Contacts() {
                               Env: {empresa.resumen_contacto.enviados}
                             </div>
                             <div className="text-green-600 dark:text-green-400 truncate">
-                              Apt: {empresa.resumen_contacto.aperturas}
+                              Apt: {(empresa.resumen_contacto as any)?.aperturas ?? empresa.resumen_contacto.abiertos}
                             </div>
                             <div className="text-orange-600 dark:text-orange-400 truncate">
                               Clc: {empresa.resumen_contacto.clics}
@@ -826,34 +826,34 @@ export function Contacts() {
                   <h4 className="font-medium mb-2">Métricas de Campaña</h4>
                   <div className="space-y-2 text-sm">
                     <div>
-                      Campañas: {selectedEmpresa.resumen_contacto.num_campanas}
+                      Campañas: {(selectedEmpresa.resumen_contacto as any)?.num_campanas ?? 0}
                     </div>
                     <div>
                       Emails enviados: {selectedEmpresa.resumen_contacto.enviados}
                     </div>
                     <div>
-                      Aperturas: {selectedEmpresa.resumen_contacto.aperturas}
+                      Aperturas: {(selectedEmpresa.resumen_contacto as any)?.aperturas ?? selectedEmpresa.resumen_contacto.abiertos}
                     </div>
                     <div>Clics: {selectedEmpresa.resumen_contacto.clics}</div>
                     <div>
-                      Suprimidos: {selectedEmpresa.resumen_contacto.suprimidos}
+                      Suprimidos: {(selectedEmpresa.resumen_contacto as any)?.suprimidos ?? 0}
                     </div>
-                    {selectedEmpresa.resumen_contacto.ultimo_evento && (
+                    {(selectedEmpresa.resumen_contacto as any)?.ultimo_evento && (
                       <div>
-                        Último evento: {selectedEmpresa.resumen_contacto.ultimo_evento}
+                        Último evento: {(selectedEmpresa.resumen_contacto as any)?.ultimo_evento}
                       </div>
                     )}
                   </div>
                 </div>
               </div>
 
-              {selectedEmpresa.crm.notas && (
+              {selectedEmpresa?.crm?.notas && (
                 <div>
                   <h4 className="font-medium mb-2">Notas CRM</h4>
                   <div className="p-3 bg-muted rounded-lg text-sm">
-                    {selectedEmpresa.crm.notas}
+                    {selectedEmpresa?.crm?.notas}
                   </div>
-                  {selectedEmpresa.crm.actualizado_en && (
+                  {selectedEmpresa?.crm?.actualizado_en && (
                     <div className="text-xs text-muted-foreground mt-1">
                       Actualizado:{" "}
                       {new Date(

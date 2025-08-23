@@ -58,7 +58,7 @@ interface CampaignListItem extends Campaign {
     total_destinatarios: number
     en_cola: number
     procesando: number
-    enviados: number
+    enviado: number
     rebotados: number
     bajas: number
     abiertos: number
@@ -608,7 +608,7 @@ export function CampaignsList() {
                           <div className="text-sm">
                             <span className="text-muted-foreground">Enviados:</span>
                             <span className="font-medium ml-1 text-green-600 dark:text-green-400">
-                              {campaign.totales.enviados.toLocaleString()}
+                              {campaign.totales.enviado.toLocaleString()}
                             </span>
                           </div>
                           <div className="text-sm">

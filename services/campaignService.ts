@@ -329,7 +329,7 @@ export class CampaignService {
     campaignId: number | string,
     sinceId = 0,
     limit = 50
-  ): Promise<ApiResponse<any>> {
+  ): Promise<ApiResponse<import('../types/campaign').CampaignStatusData>> {
     try {
       const response = await apiService.post<any>(
         "/campana/campanas.status.php",
