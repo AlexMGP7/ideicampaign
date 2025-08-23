@@ -727,55 +727,216 @@ export function CampaignsList() {
                             onClick={() => {
                               if (campaign.id) {
                                 loadCampaignDetail(campaign.id)
-                                setEditingCampaign(selectedCampaign)
+                                setTimeout(() => setEditingCampaign(selectedCampaign), 100)
                               }
                             }}
                           >
                             <Edit className="w-4 h-4" />
                           </Button>
                         </DialogTrigger>
-                        <DialogContent>
+                        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
                           <DialogHeader>
                             <DialogTitle>Editar Campaña</DialogTitle>
                             <DialogDescription>Modifica los detalles de la campaña</DialogDescription>
                           </DialogHeader>
                           {editingCampaign && (
-                            <div className="space-y-4">
-                              <div>
-                                <Label htmlFor="edit-nombre">Nombre</Label>
-                                <Input
-                                  id="edit-nombre"
-                                  value={editingCampaign.nombre}
-                                  onChange={(e) =>
-                                    setEditingCampaign((prev) => (prev ? { ...prev, nombre: e.target.value } : null))
-                                  }
-                                />
+                            <div className="space-y-6">
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                  <Label htmlFor="edit-nombre">Nombre</Label>
+                                  <Input
+                                    id="edit-nombre"
+                                    value={editingCampaign.nombre}
+                                    onChange={(e) =>
+                                      setEditingCampaign((prev) => (prev ? { ...prev, nombre: e.target.value } : null))
+                                    }
+                                  />
+                                </div>
+                                <div>
+                                  <Label htmlFor="edit-remitente-nombre">Nombre del Remitente</Label>
+                                  <Input
+                                    id="edit-remitente-nombre"
+                                    value={editingCampaign.remitente_nombre}
+                                    onChange={(e) =>
+                                      setEditingCampaign((prev) =>
+                                        prev ? { ...prev, remitente_nombre: e.target.value } : null,
+                                      )
+                                    }
+                                  />
+                                </div>
+                                <div>
+                                  <Label htmlFor="edit-remitente-email">Email del Remitente</Label>
+                                  <Input
+                                    id="edit-remitente-email"
+                                    type="email"
+                                    value={editingCampaign.remitente_email}
+                                    onChange={(e) =>
+                                      setEditingCampaign((prev) =>
+                                        prev ? { ...prev, remitente_email: e.target.value } : null,
+                                      )
+                                    }
+                                  />
+                                </div>
+                                <div>
+                                  <Label htmlFor="edit-tz">Zona Horaria</Label>
+                                  <Select
+                                    value={editingCampaign.tz || "America/Mexico_City"}
+                                    onValueChange={(value) =>
+                                      setEditingCampaign((prev) => (prev ? { ...prev, tz: value } : null))
+                                    }
+                                  >
+                                    <SelectTrigger>
+                                      <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      <SelectItem value="America/Mexico_City">Ciudad de México (GMT-6)</SelectItem>
+                                      <SelectItem value="America/New_York">Nueva York (GMT-5)</SelectItem>
+                                      <SelectItem value="America/Los_Angeles">Los Ángeles (GMT-8)</SelectItem>
+                                      <SelectItem value="Europe/Madrid">Madrid (GMT+1)</SelectItem>
+                                      <SelectItem value="UTC">UTC (GMT+0)</SelectItem>
+                                    </SelectContent>
+                                  </Select>
+                                </div>
                               </div>
-                              <div>
-                                <Label htmlFor="edit-remitente-nombre">Nombre del Remitente</Label>
-                                <Input
-                                  id="edit-remitente-nombre"
-                                  value={editingCampaign.remitente_nombre}
-                                  onChange={(e) =>
-                                    setEditingCampaign((prev) =>
-                                      prev ? { ...prev, remitente_nombre: e.target.value } : null,
-                                    )
-                                  }
-                                />
+
+                              <div className="space-y-4">
+                                <h3 className="text-lg font-semibold">Configuración de Envío</h3>
+
+                                {/* Franjas Horarias */}
+                                <div>
+                                  <Label>Franjas Horarias de Envío</Label>
+                                  <div className="space-y-2 mt-2">
+                                    {editingCampaign.ritmo?.franjas_horarias?.map((franja: any, index: number) => (
+                                      <div key={index} className="flex items-center space-x-2 p-2 border rounded">
+                                        <Input
+                                          type="time"
+                                          value={franja.inicio}
+                                          onChange={(e) => {
+                                            const newRitmo = { ...editingCampaign.ritmo }
+                                            newRitmo.franjas_horarias[index].inicio = e.target.value
+                                            setEditingCampaign((prev) => (prev ? { ...prev, ritmo: newRitmo } : null))
+                                          }}
+                                          className="w-32"
+                                        />
+                                        <span>a</span>
+                                        <Input
+                                          type="time"
+                                          value={franja.fin}
+                                          onChange={(e) => {
+                                            const newRitmo = { ...editingCampaign.ritmo }
+                                            newRitmo.franjas_horarias[index].fin = e.target.value
+                                            setEditingCampaign((prev) => (prev ? { ...prev, ritmo: newRitmo } : null))
+                                          }}
+                                          className="w-32"
+                                        />
+                                        <Button
+                                          variant="outline"
+                                          size="sm"
+                                          onClick={() => {
+                                            const newRitmo = { ...editingCampaign.ritmo }
+                                            newRitmo.franjas_horarias.splice(index, 1)
+                                            setEditingCampaign((prev) => (prev ? { ...prev, ritmo: newRitmo } : null))
+                                          }}
+                                        >
+                                          <Trash2 className="w-4 h-4" />
+                                        </Button>
+                                      </div>
+                                    )) || []}
+                                    <Button
+                                      variant="outline"
+                                      size="sm"
+                                      onClick={() => {
+                                        const newRitmo = editingCampaign.ritmo || { franjas_horarias: [] }
+                                        newRitmo.franjas_horarias = [
+                                          ...(newRitmo.franjas_horarias || []),
+                                          { inicio: "09:00", fin: "17:00" },
+                                        ]
+                                        setEditingCampaign((prev) => (prev ? { ...prev, ritmo: newRitmo } : null))
+                                      }}
+                                    >
+                                      <Plus className="w-4 h-4 mr-2" />
+                                      Agregar Franja
+                                    </Button>
+                                  </div>
+                                </div>
+
+                                {/* Días de la Semana */}
+                                <div>
+                                  <Label>Días de Envío</Label>
+                                  <div className="flex flex-wrap gap-2 mt-2">
+                                    {[
+                                      { key: "lunes", label: "Lun" },
+                                      { key: "martes", label: "Mar" },
+                                      { key: "miercoles", label: "Mié" },
+                                      { key: "jueves", label: "Jue" },
+                                      { key: "viernes", label: "Vie" },
+                                      { key: "sabado", label: "Sáb" },
+                                      { key: "domingo", label: "Dom" },
+                                    ].map((dia) => (
+                                      <Button
+                                        key={dia.key}
+                                        variant={editingCampaign.ritmo?.dias?.[dia.key] ? "default" : "outline"}
+                                        size="sm"
+                                        onClick={() => {
+                                          const newRitmo = editingCampaign.ritmo || { dias: {} }
+                                          newRitmo.dias = { ...newRitmo.dias, [dia.key]: !newRitmo.dias?.[dia.key] }
+                                          setEditingCampaign((prev) => (prev ? { ...prev, ritmo: newRitmo } : null))
+                                        }}
+                                      >
+                                        {dia.label}
+                                      </Button>
+                                    ))}
+                                  </div>
+                                </div>
+
+                                {/* Jitter y Cuotas */}
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                  <div>
+                                    <Label htmlFor="edit-jitter">Jitter (minutos)</Label>
+                                    <Input
+                                      id="edit-jitter"
+                                      type="number"
+                                      min="0"
+                                      max="60"
+                                      value={editingCampaign.ritmo?.jitter_minutos || 0}
+                                      onChange={(e) => {
+                                        const newRitmo = editingCampaign.ritmo || {}
+                                        newRitmo.jitter_minutos = Number.parseInt(e.target.value) || 0
+                                        setEditingCampaign((prev) => (prev ? { ...prev, ritmo: newRitmo } : null))
+                                      }}
+                                    />
+                                  </div>
+                                  <div>
+                                    <Label htmlFor="edit-cuota-hora">Cuota por Hora</Label>
+                                    <Input
+                                      id="edit-cuota-hora"
+                                      type="number"
+                                      min="1"
+                                      value={editingCampaign.ritmo?.cuota_por_hora || 100}
+                                      onChange={(e) => {
+                                        const newRitmo = editingCampaign.ritmo || {}
+                                        newRitmo.cuota_por_hora = Number.parseInt(e.target.value) || 100
+                                        setEditingCampaign((prev) => (prev ? { ...prev, ritmo: newRitmo } : null))
+                                      }}
+                                    />
+                                  </div>
+                                  <div>
+                                    <Label htmlFor="edit-cuota-dia">Cuota por Día</Label>
+                                    <Input
+                                      id="edit-cuota-dia"
+                                      type="number"
+                                      min="1"
+                                      value={editingCampaign.ritmo?.cuota_por_dia || 1000}
+                                      onChange={(e) => {
+                                        const newRitmo = editingCampaign.ritmo || {}
+                                        newRitmo.cuota_por_dia = Number.parseInt(e.target.value) || 1000
+                                        setEditingCampaign((prev) => (prev ? { ...prev, ritmo: newRitmo } : null))
+                                      }}
+                                    />
+                                  </div>
+                                </div>
                               </div>
-                              <div>
-                                <Label htmlFor="edit-remitente-email">Email del Remitente</Label>
-                                <Input
-                                  id="edit-remitente-email"
-                                  type="email"
-                                  value={editingCampaign.remitente_email}
-                                  onChange={(e) =>
-                                    setEditingCampaign((prev) =>
-                                      prev ? { ...prev, remitente_email: e.target.value } : null,
-                                    )
-                                  }
-                                />
-                              </div>
+
                               <div className="flex justify-end space-x-2">
                                 <Button variant="outline" onClick={() => setEditingCampaign(null)}>
                                   Cancelar
