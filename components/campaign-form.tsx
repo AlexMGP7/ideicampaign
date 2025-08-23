@@ -6,9 +6,8 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Switch } from "@/components/ui/switch"
 import { Checkbox } from "@/components/ui/checkbox"
-import { Send, Save, Users, Mail, Info, Clock, User, Globe } from "lucide-react"
+import { Send, Save, Mail, Info, Clock, User, Globe } from "lucide-react"
 import type { Campaign } from "@/types/campaign"
 import { useCampaigns } from "@/hooks/queries/use-campaigns"
 
@@ -132,13 +131,13 @@ export function CampaignForm() {
   ]
 
   return (
-    <div className="space-y-8">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-6 bg-muted/50 rounded-xl border">
+    <div className="space-y-6 md:space-y-8">
+      <div className="flex flex-col gap-4 p-4 md:p-6 bg-muted/50 rounded-xl border">
         <div className="space-y-2">
-          <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+          <h2 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
             Nueva Campaña
           </h2>
-          <p className="text-muted-foreground text-base">
+          <p className="text-muted-foreground text-sm md:text-base">
             Configura tu campaña - el contenido será generado automáticamente por IA
           </p>
         </div>
@@ -158,18 +157,20 @@ export function CampaignForm() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 md:gap-8">
         {/* Main Form */}
-        <div className="lg:col-span-2 space-y-8">
+        <div className="xl:col-span-2 space-y-6 md:space-y-8">
           <Card className="bg-card border shadow-sm">
             <CardHeader className="pb-6">
-              <CardTitle className="icon-text text-xl">
+              <CardTitle className="icon-text text-lg md:text-xl">
                 <div className="p-2 bg-muted rounded-lg">
                   <Mail className="icon-lg text-[var(--status-info)]" />
                 </div>
                 Información Básica
               </CardTitle>
-              <CardDescription className="text-base">Configura los detalles principales de tu campaña</CardDescription>
+              <CardDescription className="text-sm md:text-base">
+                Configura los detalles principales de tu campaña
+              </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="form-group">
@@ -185,7 +186,7 @@ export function CampaignForm() {
                 />
               </div>
 
-              <div className="form-row-2">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="form-group">
                   <Label htmlFor="remitente_nombre" className="text-sm font-medium icon-text">
                     <User className="icon-md" />
@@ -215,7 +216,7 @@ export function CampaignForm() {
                 </div>
               </div>
 
-              <div className="form-row-2">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="form-group">
                   <Label htmlFor="proveedor" className="text-sm font-medium">
                     Proveedor de Email
@@ -252,18 +253,18 @@ export function CampaignForm() {
 
           <Card className="bg-card border shadow-sm">
             <CardHeader className="pb-6">
-              <CardTitle className="icon-text text-xl">
+              <CardTitle className="icon-text text-lg md:text-xl">
                 <div className="p-2 bg-muted rounded-lg">
                   <Clock className="icon-lg text-[var(--status-warning)]" />
                 </div>
                 Configuración de Ritmo
               </CardTitle>
-              <CardDescription className="text-base">
+              <CardDescription className="text-sm md:text-base">
                 Controla cuándo y cómo se envían los emails para evitar ser marcado como spam
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-8">
-              <div className="form-row-2">
+            <CardContent className="space-y-6 md:space-y-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="form-group">
                   <Label htmlFor="quota_emails" className="text-sm font-medium">
                     Emails por Cuota
@@ -296,19 +297,19 @@ export function CampaignForm() {
 
               <div className="form-group">
                 <Label className="text-sm font-medium mb-4 block">Días Activos</Label>
-                <div className="grid grid-cols-7 gap-3">
+                <div className="grid grid-cols-4 sm:grid-cols-7 gap-2 md:gap-3">
                   {diasSemana.map((dia) => (
                     <div
                       key={dia.value}
-                      className="flex flex-col items-center space-y-2 p-3 rounded-lg border hover:bg-muted/50 transition-colors"
+                      className="flex flex-col items-center space-y-2 p-2 md:p-3 rounded-lg border hover:bg-muted/50 transition-colors"
                     >
                       <Checkbox
                         id={`dia-${dia.value}`}
                         checked={formData.ritmo.activo.dias.includes(dia.value)}
                         onCheckedChange={(checked) => handleDiasChange(dia.value, checked as boolean)}
-                        className="w-5 h-5"
+                        className="w-4 h-4 md:w-5 md:h-5"
                       />
-                      <Label htmlFor={`dia-${dia.value}`} className="text-sm font-medium cursor-pointer">
+                      <Label htmlFor={`dia-${dia.value}`} className="text-xs md:text-sm font-medium cursor-pointer">
                         {dia.label}
                       </Label>
                     </div>
@@ -317,23 +318,26 @@ export function CampaignForm() {
               </div>
 
               <div className="form-group">
-                <div className="flex items-center justify-between mb-4">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-4">
                   <Label className="text-sm font-medium">Franjas Horarias de Envío</Label>
                   <Button
                     type="button"
                     variant="outline"
                     size="sm"
                     onClick={agregarFranja}
-                    className="text-xs bg-transparent"
+                    className="text-xs bg-transparent self-start sm:self-auto"
                   >
                     + Agregar Franja
                   </Button>
                 </div>
                 <div className="space-y-3">
                   {formData.ritmo.activo.franjas.map((franja, index) => (
-                    <div key={index} className="flex items-center gap-3 p-3 border rounded-lg bg-muted/20">
-                      <div className="flex items-center gap-2 flex-1">
-                        <Label className="text-sm text-muted-foreground min-w-[40px]">Desde:</Label>
+                    <div
+                      key={index}
+                      className="flex flex-col sm:flex-row items-start sm:items-center gap-3 p-3 border rounded-lg bg-muted/20"
+                    >
+                      <div className="flex items-center gap-2 w-full sm:flex-1">
+                        <Label className="text-sm text-muted-foreground min-w-[50px]">Desde:</Label>
                         <Input
                           type="time"
                           value={franja[0]}
@@ -341,8 +345,8 @@ export function CampaignForm() {
                           className="h-9 flex-1"
                         />
                       </div>
-                      <div className="flex items-center gap-2 flex-1">
-                        <Label className="text-sm text-muted-foreground min-w-[40px]">Hasta:</Label>
+                      <div className="flex items-center gap-2 w-full sm:flex-1">
+                        <Label className="text-sm text-muted-foreground min-w-[50px]">Hasta:</Label>
                         <Input
                           type="time"
                           value={franja[1]}
@@ -356,7 +360,7 @@ export function CampaignForm() {
                           variant="ghost"
                           size="sm"
                           onClick={() => eliminarFranja(index)}
-                          className="text-red-500 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-950 px-2"
+                          className="text-red-500 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-950 px-2 self-end sm:self-auto"
                         >
                           ×
                         </Button>
@@ -369,8 +373,8 @@ export function CampaignForm() {
                 </p>
               </div>
 
-              <div className="bg-muted/50 border rounded-xl p-6">
-                <div className="flex items-start gap-4">
+              <div className="bg-muted/50 border rounded-xl p-4 md:p-6">
+                <div className="flex flex-col sm:flex-row items-start gap-4">
                   <div className="p-2 bg-muted rounded-lg flex-shrink-0">
                     <Info className="icon-lg text-[var(--status-info)]" />
                   </div>
@@ -395,74 +399,7 @@ export function CampaignForm() {
         </div>
 
         {/* Sidebar */}
-        <div className="space-y-8">
-          <Card className="bg-card border shadow-sm">
-            <CardHeader className="pb-6">
-              <CardTitle className="icon-text text-xl">
-                <div className="p-2 bg-muted rounded-lg">
-                  <Users className="icon-lg text-[var(--status-success)]" />
-                </div>
-                Configuración de Audiencia
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-6">
-                <div className="form-group">
-                  <Label htmlFor="politica_email" className="text-sm font-medium">
-                    Política de Email por Empresa
-                  </Label>
-                  <Select
-                    value={formData.audiencia.politica_email_por_empresa}
-                    onValueChange={(value: "uno" | "todos") =>
-                      handleAudienciaChange("politica_email_por_empresa", value)
-                    }
-                  >
-                    <SelectTrigger className="input-standard">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="uno">Un email por empresa</SelectItem>
-                      <SelectItem value="todos">Todos los emails</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="form-group">
-                  <Label htmlFor="limite_empresas" className="text-sm font-medium">
-                    Límite de Empresas
-                  </Label>
-                  <Input
-                    id="limite_empresas"
-                    type="number"
-                    min="1"
-                    value={formData.audiencia.limite_empresas || ""}
-                    onChange={(e) => handleAudienciaChange("limite_empresas", Number.parseInt(e.target.value) || null)}
-                    className="input-standard focus:ring-[var(--status-success)]"
-                  />
-                </div>
-
-                <div className="flex items-center justify-between p-4 bg-muted/50 rounded-lg">
-                  <div className="space-y-1">
-                    <Label htmlFor="lista_supresion" className="text-sm font-medium cursor-pointer">
-                      Excluir lista de supresión
-                    </Label>
-                    <p className="text-xs text-muted-foreground">Evita enviar a contactos que se han dado de baja</p>
-                  </div>
-                  <Switch
-                    id="lista_supresion"
-                    checked={formData.audiencia.excluir.lista_supresion}
-                    onCheckedChange={(checked) =>
-                      handleAudienciaChange("excluir", {
-                        ...formData.audiencia.excluir,
-                        lista_supresion: checked,
-                      })
-                    }
-                  />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
+        <div className="space-y-6 md:space-y-8">
           <Card className="bg-card border shadow-sm">
             <CardHeader className="pb-4">
               <CardTitle className="text-lg font-semibold">Vista Previa de Configuración</CardTitle>

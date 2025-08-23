@@ -111,7 +111,7 @@ export default function Dashboard() {
 
         <div className="space-y-6">
           {/* Stats Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
             <Card className="bg-card border shadow-sm">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium text-card-foreground">Total Campañas</CardTitle>
@@ -171,20 +171,20 @@ export default function Dashboard() {
           </div>
 
           {/* Separando los gráficos en una grilla independiente */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 md:gap-6">
             <Card className="bg-card border shadow-sm">
               <CardHeader>
-                <CardTitle className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                <CardTitle className="text-lg md:text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
                   Rendimiento Mensual
                 </CardTitle>
                 <CardDescription>Emails enviados, abiertos y clicks por mes</CardDescription>
               </CardHeader>
               <CardContent>
-                <ResponsiveContainer width="100%" height={300}>
+                <ResponsiveContainer width="100%" height={250} className="md:h-[300px]">
                   <BarChart data={chartData}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-                    <XAxis dataKey="name" stroke="#64748b" />
-                    <YAxis stroke="#64748b" />
+                    <XAxis dataKey="name" stroke="#64748b" fontSize={12} />
+                    <YAxis stroke="#64748b" fontSize={12} />
                     <Tooltip
                       contentStyle={{
                         backgroundColor: "hsl(var(--popover))",
@@ -204,13 +204,13 @@ export default function Dashboard() {
 
             <Card className="bg-card border shadow-sm">
               <CardHeader>
-                <CardTitle className="text-xl font-bold bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">
+                <CardTitle className="text-lg md:text-xl font-bold bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">
                   Distribución de Engagement
                 </CardTitle>
                 <CardDescription>Distribución de interacciones con emails</CardDescription>
               </CardHeader>
               <CardContent>
-                <ResponsiveContainer width="100%" height={300}>
+                <ResponsiveContainer width="100%" height={250} className="md:h-[300px]">
                   <PieChart>
                     <Pie
                       data={pieData}
@@ -246,7 +246,7 @@ export default function Dashboard() {
           {/* Recent Campaigns */}
           <Card className="bg-card border shadow-sm">
             <CardHeader>
-              <CardTitle className="text-xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+              <CardTitle className="text-lg md:text-xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
                 Campañas Recientes
               </CardTitle>
               <CardDescription>Últimas campañas creadas y su rendimiento</CardDescription>
@@ -256,21 +256,28 @@ export default function Dashboard() {
                 {recentCampaigns.map((campaign) => (
                   <div
                     key={campaign.id}
-                    className="flex items-center justify-between p-4 border rounded-lg hover:shadow-md transition-shadow bg-muted/30 hover:bg-muted/50"
+                    className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-4 border rounded-lg hover:shadow-md transition-shadow bg-muted/30 hover:bg-muted/50"
                   >
-                    <div className="flex items-center space-x-4">
-                      <div>
-                        <h4 className="font-semibold text-card-foreground">{campaign.name}</h4>
+                    <div className="flex items-start sm:items-center space-x-4 min-w-0 flex-1">
+                      <div className="min-w-0 flex-1">
+                        <h4 className="font-semibold text-card-foreground text-sm sm:text-base break-words">
+                          {campaign.name}
+                        </h4>
                         <p className="text-sm text-muted-foreground">{campaign.date}</p>
                       </div>
                     </div>
-                    <div className="flex items-center space-x-4">
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
                       {getStatusBadge(campaign.status)}
                       {campaign.status === "sent" && (
-                        <div className="text-sm text-muted-foreground">
-                          <span className="text-blue-600 font-medium">{campaign.sent}</span> enviados •
-                          <span className="text-green-600 font-medium"> {campaign.opened}</span> abiertos •
-                          <span className="text-orange-600 font-medium"> {campaign.clicked}</span> clicks
+                        <div className="text-xs sm:text-sm text-muted-foreground">
+                          <div className="flex flex-wrap gap-1 sm:gap-2">
+                            <span className="text-blue-600 font-medium">{campaign.sent}</span>
+                            <span>enviados •</span>
+                            <span className="text-green-600 font-medium">{campaign.opened}</span>
+                            <span>abiertos •</span>
+                            <span className="text-orange-600 font-medium">{campaign.clicked}</span>
+                            <span>clicks</span>
+                          </div>
                         </div>
                       )}
                     </div>

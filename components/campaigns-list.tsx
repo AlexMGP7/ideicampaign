@@ -440,22 +440,22 @@ export function CampaignsList() {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="space-y-4 sm:space-y-6">
+      <div className="flex flex-col space-y-4 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
         <div>
-          <h2 className="text-2xl font-bold">Gestión de Campañas</h2>
-          <p className="text-muted-foreground">Administra todas tus campañas de email marketing</p>
+          <h2 className="text-xl sm:text-2xl font-bold">Gestión de Campañas</h2>
+          <p className="text-sm sm:text-base text-muted-foreground">Administra todas tus campañas de email marketing</p>
         </div>
-        <div className="flex space-x-2">
-          <Button variant="outline" onClick={() => setShowFilters(!showFilters)}>
+        <div className="flex flex-col space-y-2 sm:flex-row sm:space-y-0 sm:space-x-2">
+          <Button variant="outline" onClick={() => setShowFilters(!showFilters)} className="w-full sm:w-auto">
             <Filter className="w-4 h-4 mr-2" />
             Filtros
           </Button>
-          <Button variant="outline" onClick={loadCampaigns}>
+          <Button variant="outline" onClick={loadCampaigns} className="w-full sm:w-auto bg-transparent">
             <RefreshCw className="w-4 h-4 mr-2" />
             Actualizar
           </Button>
-          <Button>
+          <Button className="w-full sm:w-auto">
             <Plus className="w-4 h-4 mr-2" />
             Nueva Campaña
           </Button>
@@ -468,8 +468,8 @@ export function CampaignsList() {
             <CardTitle>Filtros de Búsqueda</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
-              <div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
+              <div className="sm:col-span-2 lg:col-span-1">
                 <Label htmlFor="search">Buscar</Label>
                 <Input
                   id="search"
@@ -550,15 +550,15 @@ export function CampaignsList() {
 
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center justify-between">
-            <span>Campañas ({total})</span>
+          <CardTitle className="flex flex-col space-y-2 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
+            <span className="text-lg sm:text-xl">Campañas ({total})</span>
             <div className="flex items-center space-x-2 text-sm text-muted-foreground">
-              <span>Ordenar por:</span>
+              <span className="hidden sm:inline">Ordenar por:</span>
               <Select
                 value={filters.order_by}
                 onValueChange={(value) => setFilters((prev) => ({ ...prev, order_by: value }))}
               >
-                <SelectTrigger className="w-32">
+                <SelectTrigger className="w-full sm:w-40">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -571,7 +571,7 @@ export function CampaignsList() {
             </div>
           </CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="px-2 sm:px-6">
           {loading ? (
             <div className="flex items-center justify-center py-8">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
@@ -583,74 +583,84 @@ export function CampaignsList() {
               <p className="text-muted-foreground">Crea tu primera campaña para comenzar</p>
             </div>
           ) : (
-            <div className="space-y-4">
+            <div className="space-y-3 sm:space-y-4">
               {campaigns.map((campaign) => (
-                <div key={campaign.id} className="border rounded-lg p-4 hover:bg-muted/50 transition-colors">
-                  <div className="flex items-center justify-between">
-                    <div className="flex-1">
-                      <div className="flex items-center space-x-3 mb-2">
+                <div key={campaign.id} className="border rounded-lg p-3 sm:p-4 hover:bg-muted/50 transition-colors">
+                  <div className="space-y-3">
+                    {/* Header with title and badges */}
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="flex items-center space-x-2 min-w-0 flex-1">
                         {getStatusIcon(campaign.estado || "borrador")}
-                        <h3 className="font-semibold">{campaign.nombre || "Sin nombre"}</h3>
-                        <Badge className={getStatusColor(campaign.estado || "borrador")}>
+                        <h3 className="font-semibold truncate text-sm sm:text-base">
+                          {campaign.nombre || "Sin nombre"}
+                        </h3>
+                      </div>
+                      <div className="flex flex-col sm:flex-row gap-1 sm:gap-2 shrink-0">
+                        <Badge className={`${getStatusColor(campaign.estado || "borrador")} text-xs`}>
                           {(campaign.estado || "borrador").replace("_", " ")}
                         </Badge>
-                        <Badge variant="outline">{campaign.proveedor || "Sin proveedor"}</Badge>
+                        <Badge variant="outline" className="text-xs">
+                          {campaign.proveedor || "Sin proveedor"}
+                        </Badge>
                       </div>
+                    </div>
 
-                      {campaign.totales && (
-                        <div className="grid grid-cols-2 md:grid-cols-6 gap-4 mb-3">
-                          <div className="text-sm">
-                            <span className="text-muted-foreground">Total:</span>
-                            <span className="font-medium ml-1">
-                              {campaign.totales.total_destinatarios.toLocaleString()}
-                            </span>
-                          </div>
-                          <div className="text-sm">
-                            <span className="text-muted-foreground">Enviados:</span>
-                            <span className="font-medium ml-1 text-green-600 dark:text-green-400">
-                              {campaign.totales.enviado.toLocaleString()}
-                            </span>
-                          </div>
-                          <div className="text-sm">
-                            <span className="text-muted-foreground">En Cola:</span>
-                            <span className="font-medium ml-1 text-blue-600 dark:text-blue-400">
-                              {campaign.totales.en_cola.toLocaleString()}
-                            </span>
-                          </div>
-                          <div className="text-sm">
-                            <span className="text-muted-foreground">Abiertos:</span>
-                            <span className="font-medium ml-1 text-purple-600 dark:text-purple-400">
-                              {campaign.totales.abiertos.toLocaleString()}
-                            </span>
-                          </div>
-                          <div className="text-sm">
-                            <span className="text-muted-foreground">Clics:</span>
-                            <span className="font-medium ml-1 text-orange-600 dark:text-orange-400">
-                              {campaign.totales.clicados.toLocaleString()}
-                            </span>
-                          </div>
-                          <div className="text-sm">
-                            <span className="text-muted-foreground">Rebotes:</span>
-                            <span className="font-medium ml-1 text-red-600 dark:text-red-400">
-                              {campaign.totales.rebotados.toLocaleString()}
-                            </span>
-                          </div>
+                    {/* Stats grid - responsive layout */}
+                    {campaign.totales && (
+                      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 sm:gap-4">
+                        <div className="text-xs sm:text-sm">
+                          <span className="text-muted-foreground block sm:inline">Total:</span>
+                          <span className="font-medium sm:ml-1 block sm:inline">
+                            {campaign.totales.total_destinatarios.toLocaleString()}
+                          </span>
                         </div>
-                      )}
-
-                      {campaign.progreso && (
-                        <div className="flex items-center space-x-4 mb-2">
-                          <div className="flex-1">
-                            <div className="flex justify-between text-sm mb-1">
-                              <span>Progreso</span>
-                              <span>{Math.round(campaign.progreso.porcentaje)}%</span>
-                            </div>
-                            <Progress value={campaign.progreso.porcentaje} className="h-2" />
-                          </div>
+                        <div className="text-xs sm:text-sm">
+                          <span className="text-muted-foreground block sm:inline">Enviados:</span>
+                          <span className="font-medium sm:ml-1 text-green-600 dark:text-green-400 block sm:inline">
+                            {campaign.totales.enviado.toLocaleString()}
+                          </span>
                         </div>
-                      )}
+                        <div className="text-xs sm:text-sm">
+                          <span className="text-muted-foreground block sm:inline">En Cola:</span>
+                          <span className="font-medium sm:ml-1 text-blue-600 dark:text-blue-400 block sm:inline">
+                            {campaign.totales.en_cola.toLocaleString()}
+                          </span>
+                        </div>
+                        <div className="text-xs sm:text-sm">
+                          <span className="text-muted-foreground block sm:inline">Abiertos:</span>
+                          <span className="font-medium sm:ml-1 text-purple-600 dark:text-purple-400 block sm:inline">
+                            {campaign.totales.abiertos.toLocaleString()}
+                          </span>
+                        </div>
+                        <div className="text-xs sm:text-sm">
+                          <span className="text-muted-foreground block sm:inline">Clics:</span>
+                          <span className="font-medium sm:ml-1 text-orange-600 dark:text-orange-400 block sm:inline">
+                            {campaign.totales.clicados.toLocaleString()}
+                          </span>
+                        </div>
+                        <div className="text-xs sm:text-sm">
+                          <span className="text-muted-foreground block sm:inline">Rebotes:</span>
+                          <span className="font-medium sm:ml-1 text-red-600 dark:text-red-400 block sm:inline">
+                            {campaign.totales.rebotados.toLocaleString()}
+                          </span>
+                        </div>
+                      </div>
+                    )}
 
-                      <div className="flex items-center space-x-4 text-xs text-muted-foreground">
+                    {/* Progress bar */}
+                    {campaign.progreso && (
+                      <div className="space-y-1">
+                        <div className="flex justify-between text-xs sm:text-sm">
+                          <span>Progreso</span>
+                          <span>{Math.round(campaign.progreso.porcentaje)}%</span>
+                        </div>
+                        <Progress value={campaign.progreso.porcentaje} className="h-2" />
+                      </div>
+                    )}
+
+                    {/* Dates and actions */}
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                      <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-4 text-xs text-muted-foreground space-y-1 sm:space-y-0">
                         {campaign.created_at && (
                           <span>Creada: {new Date(campaign.created_at).toLocaleDateString()}</span>
                         )}
@@ -658,323 +668,363 @@ export function CampaignsList() {
                           <span>Actualizada: {new Date(campaign.updated_at).toLocaleDateString()}</span>
                         )}
                         {campaign.proximo_envio_at && (
-                          <span>Próximo envío: {new Date(campaign.proximo_envio_at).toLocaleString()}</span>
+                          <span className="text-blue-600 dark:text-blue-400">
+                            Próximo: {new Date(campaign.proximo_envio_at).toLocaleString()}
+                          </span>
                         )}
                       </div>
-                    </div>
 
-                    <div className="flex items-center space-x-2">
-                      {getStatusActionButtons(campaign)}
+                      <div className="flex items-center justify-end gap-1 sm:gap-2">
+                        {/* Status action buttons */}
+                        <div className="flex gap-1">{getStatusActionButtons(campaign)}</div>
 
-                      <Dialog>
-                        <DialogTrigger asChild>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => campaign.id && loadCampaignDetail(campaign.id)}
-                          >
-                            <Eye className="w-4 h-4" />
-                          </Button>
-                        </DialogTrigger>
-                        <DialogContent className="max-w-2xl">
-                          <DialogHeader>
-                            <DialogTitle>Detalles de Campaña</DialogTitle>
-                            <DialogDescription>Información completa de la campaña</DialogDescription>
-                          </DialogHeader>
-                          {selectedCampaign && (
-                            <ScrollArea className="max-h-96">
-                              <div className="space-y-4">
-                                <div className="grid grid-cols-2 gap-4">
+                        {/* View button */}
+                        <Dialog>
+                          <DialogTrigger asChild>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => campaign.id && loadCampaignDetail(campaign.id)}
+                              className="h-8 w-8 p-0 sm:h-9 sm:w-auto sm:px-3"
+                            >
+                              <Eye className="w-4 h-4" />
+                              <span className="hidden sm:inline sm:ml-2">Ver</span>
+                            </Button>
+                          </DialogTrigger>
+                          <DialogContent className="w-[95vw] max-w-2xl max-h-[90vh] overflow-y-auto">
+                            <DialogHeader>
+                              <DialogTitle>Detalles de Campaña</DialogTitle>
+                              <DialogDescription>Información completa de la campaña</DialogDescription>
+                            </DialogHeader>
+                            {selectedCampaign && (
+                              <ScrollArea className="max-h-96">
+                                <div className="space-y-4">
+                                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <div>
+                                      <Label>Nombre</Label>
+                                      <p className="font-medium">{selectedCampaign.nombre}</p>
+                                    </div>
+                                    <div>
+                                      <Label>Estado</Label>
+                                      <Badge className={getStatusColor(selectedCampaign.estado)}>
+                                        {selectedCampaign.estado}
+                                      </Badge>
+                                    </div>
+                                    <div>
+                                      <Label>Remitente</Label>
+                                      <p className="font-medium">{selectedCampaign.remitente_nombre}</p>
+                                      <p className="text-sm text-muted-foreground break-all">
+                                        {selectedCampaign.remitente_email}
+                                      </p>
+                                    </div>
+                                    <div>
+                                      <Label>Proveedor</Label>
+                                      <p className="font-medium">{selectedCampaign.proveedor}</p>
+                                    </div>
+                                  </div>
+                                  {selectedCampaign.ritmo && (
+                                    <div>
+                                      <Label>Configuración de Ritmo</Label>
+                                      <ScrollArea className="h-32 w-full">
+                                        <pre className="text-xs bg-muted p-2 rounded mt-1 overflow-x-auto">
+                                          {JSON.stringify(selectedCampaign.ritmo, null, 2)}
+                                        </pre>
+                                      </ScrollArea>
+                                    </div>
+                                  )}
+                                </div>
+                              </ScrollArea>
+                            )}
+                          </DialogContent>
+                        </Dialog>
+
+                        {/* Edit button */}
+                        <Dialog>
+                          <DialogTrigger asChild>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => {
+                                if (campaign.id) {
+                                  loadCampaignDetail(campaign.id)
+                                  setTimeout(() => setEditingCampaign(selectedCampaign), 100)
+                                }
+                              }}
+                              className="h-8 w-8 p-0 sm:h-9 sm:w-auto sm:px-3"
+                            >
+                              <Edit className="w-4 h-4" />
+                              <span className="hidden sm:inline sm:ml-2">Editar</span>
+                            </Button>
+                          </DialogTrigger>
+                          <DialogContent className="w-[95vw] max-w-4xl max-h-[90vh] overflow-y-auto">
+                            <DialogHeader>
+                              <DialogTitle>Editar Campaña</DialogTitle>
+                              <DialogDescription>Modifica los detalles de la campaña</DialogDescription>
+                            </DialogHeader>
+                            {editingCampaign && (
+                              <div className="space-y-6">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                   <div>
-                                    <Label>Nombre</Label>
-                                    <p className="font-medium">{selectedCampaign.nombre}</p>
+                                    <Label htmlFor="edit-nombre">Nombre</Label>
+                                    <Input
+                                      id="edit-nombre"
+                                      value={editingCampaign.nombre}
+                                      onChange={(e) =>
+                                        setEditingCampaign((prev) =>
+                                          prev ? { ...prev, nombre: e.target.value } : null,
+                                        )
+                                      }
+                                    />
                                   </div>
                                   <div>
-                                    <Label>Estado</Label>
-                                    <Badge className={getStatusColor(selectedCampaign.estado)}>
-                                      {selectedCampaign.estado}
-                                    </Badge>
+                                    <Label htmlFor="edit-remitente-nombre">Nombre del Remitente</Label>
+                                    <Input
+                                      id="edit-remitente-nombre"
+                                      value={editingCampaign.remitente_nombre}
+                                      onChange={(e) =>
+                                        setEditingCampaign((prev) =>
+                                          prev ? { ...prev, remitente_nombre: e.target.value } : null,
+                                        )
+                                      }
+                                    />
                                   </div>
                                   <div>
-                                    <Label>Remitente</Label>
-                                    <p className="font-medium">{selectedCampaign.remitente_nombre}</p>
-                                    <p className="text-sm text-muted-foreground">{selectedCampaign.remitente_email}</p>
+                                    <Label htmlFor="edit-remitente-email">Email del Remitente</Label>
+                                    <Input
+                                      id="edit-remitente-email"
+                                      type="email"
+                                      value={editingCampaign.remitente_email}
+                                      onChange={(e) =>
+                                        setEditingCampaign((prev) =>
+                                          prev ? { ...prev, remitente_email: e.target.value } : null,
+                                        )
+                                      }
+                                    />
                                   </div>
                                   <div>
-                                    <Label>Proveedor</Label>
-                                    <p className="font-medium">{selectedCampaign.proveedor}</p>
-                                  </div>
-                                </div>
-                                {selectedCampaign.ritmo && (
-                                  <div>
-                                    <Label>Configuración de Ritmo</Label>
-                                    <pre className="text-xs bg-muted p-2 rounded mt-1">
-                                      {JSON.stringify(selectedCampaign.ritmo, null, 2)}
-                                    </pre>
-                                  </div>
-                                )}
-                              </div>
-                            </ScrollArea>
-                          )}
-                        </DialogContent>
-                      </Dialog>
-
-                      <Dialog>
-                        <DialogTrigger asChild>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => {
-                              if (campaign.id) {
-                                loadCampaignDetail(campaign.id)
-                                setTimeout(() => setEditingCampaign(selectedCampaign), 100)
-                              }
-                            }}
-                          >
-                            <Edit className="w-4 h-4" />
-                          </Button>
-                        </DialogTrigger>
-                        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-                          <DialogHeader>
-                            <DialogTitle>Editar Campaña</DialogTitle>
-                            <DialogDescription>Modifica los detalles de la campaña</DialogDescription>
-                          </DialogHeader>
-                          {editingCampaign && (
-                            <div className="space-y-6">
-                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div>
-                                  <Label htmlFor="edit-nombre">Nombre</Label>
-                                  <Input
-                                    id="edit-nombre"
-                                    value={editingCampaign.nombre}
-                                    onChange={(e) =>
-                                      setEditingCampaign((prev) => (prev ? { ...prev, nombre: e.target.value } : null))
-                                    }
-                                  />
-                                </div>
-                                <div>
-                                  <Label htmlFor="edit-remitente-nombre">Nombre del Remitente</Label>
-                                  <Input
-                                    id="edit-remitente-nombre"
-                                    value={editingCampaign.remitente_nombre}
-                                    onChange={(e) =>
-                                      setEditingCampaign((prev) =>
-                                        prev ? { ...prev, remitente_nombre: e.target.value } : null,
-                                      )
-                                    }
-                                  />
-                                </div>
-                                <div>
-                                  <Label htmlFor="edit-remitente-email">Email del Remitente</Label>
-                                  <Input
-                                    id="edit-remitente-email"
-                                    type="email"
-                                    value={editingCampaign.remitente_email}
-                                    onChange={(e) =>
-                                      setEditingCampaign((prev) =>
-                                        prev ? { ...prev, remitente_email: e.target.value } : null,
-                                      )
-                                    }
-                                  />
-                                </div>
-                                <div>
-                                  <Label htmlFor="edit-tz">Zona Horaria</Label>
-                                  <Select
-                                    value={editingCampaign.tz || "America/Mexico_City"}
-                                    onValueChange={(value) =>
-                                      setEditingCampaign((prev) => (prev ? { ...prev, tz: value } : null))
-                                    }
-                                  >
-                                    <SelectTrigger>
-                                      <SelectValue />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                      <SelectItem value="America/Mexico_City">Ciudad de México (GMT-6)</SelectItem>
-                                      <SelectItem value="America/New_York">Nueva York (GMT-5)</SelectItem>
-                                      <SelectItem value="America/Los_Angeles">Los Ángeles (GMT-8)</SelectItem>
-                                      <SelectItem value="Europe/Madrid">Madrid (GMT+1)</SelectItem>
-                                      <SelectItem value="UTC">UTC (GMT+0)</SelectItem>
-                                    </SelectContent>
-                                  </Select>
-                                </div>
-                              </div>
-
-                              <div className="space-y-4">
-                                <h3 className="text-lg font-semibold">Configuración de Envío</h3>
-
-                                {/* Franjas Horarias */}
-                                <div>
-                                  <Label>Franjas Horarias de Envío</Label>
-                                  <div className="space-y-2 mt-2">
-                                    {editingCampaign.ritmo?.franjas_horarias?.map((franja: any, index: number) => (
-                                      <div key={index} className="flex items-center space-x-2 p-2 border rounded">
-                                        <Input
-                                          type="time"
-                                          value={franja.inicio}
-                                          onChange={(e) => {
-                                            const newRitmo = { ...editingCampaign.ritmo }
-                                            newRitmo.franjas_horarias[index].inicio = e.target.value
-                                            setEditingCampaign((prev) => (prev ? { ...prev, ritmo: newRitmo } : null))
-                                          }}
-                                          className="w-32"
-                                        />
-                                        <span>a</span>
-                                        <Input
-                                          type="time"
-                                          value={franja.fin}
-                                          onChange={(e) => {
-                                            const newRitmo = { ...editingCampaign.ritmo }
-                                            newRitmo.franjas_horarias[index].fin = e.target.value
-                                            setEditingCampaign((prev) => (prev ? { ...prev, ritmo: newRitmo } : null))
-                                          }}
-                                          className="w-32"
-                                        />
-                                        <Button
-                                          variant="outline"
-                                          size="sm"
-                                          onClick={() => {
-                                            const newRitmo = { ...editingCampaign.ritmo }
-                                            newRitmo.franjas_horarias.splice(index, 1)
-                                            setEditingCampaign((prev) => (prev ? { ...prev, ritmo: newRitmo } : null))
-                                          }}
-                                        >
-                                          <Trash2 className="w-4 h-4" />
-                                        </Button>
-                                      </div>
-                                    )) || []}
-                                    <Button
-                                      variant="outline"
-                                      size="sm"
-                                      onClick={() => {
-                                        const newRitmo = editingCampaign.ritmo || { franjas_horarias: [] }
-                                        newRitmo.franjas_horarias = [
-                                          ...(newRitmo.franjas_horarias || []),
-                                          { inicio: "09:00", fin: "17:00" },
-                                        ]
-                                        setEditingCampaign((prev) => (prev ? { ...prev, ritmo: newRitmo } : null))
-                                      }}
+                                    <Label htmlFor="edit-tz">Zona Horaria</Label>
+                                    <Select
+                                      value={editingCampaign.tz || "America/Mexico_City"}
+                                      onValueChange={(value) =>
+                                        setEditingCampaign((prev) => (prev ? { ...prev, tz: value } : null))
+                                      }
                                     >
-                                      <Plus className="w-4 h-4 mr-2" />
-                                      Agregar Franja
-                                    </Button>
+                                      <SelectTrigger>
+                                        <SelectValue />
+                                      </SelectTrigger>
+                                      <SelectContent>
+                                        <SelectItem value="America/Mexico_City">Ciudad de México (GMT-6)</SelectItem>
+                                        <SelectItem value="America/New_York">Nueva York (GMT-5)</SelectItem>
+                                        <SelectItem value="America/Los_Angeles">Los Ángeles (GMT-8)</SelectItem>
+                                        <SelectItem value="Europe/Madrid">Madrid (GMT+1)</SelectItem>
+                                        <SelectItem value="UTC">UTC (GMT+0)</SelectItem>
+                                      </SelectContent>
+                                    </Select>
                                   </div>
                                 </div>
 
-                                {/* Días de la Semana */}
-                                <div>
-                                  <Label>Días de Envío</Label>
-                                  <div className="flex flex-wrap gap-2 mt-2">
-                                    {[
-                                      { key: "lunes", label: "Lun" },
-                                      { key: "martes", label: "Mar" },
-                                      { key: "miercoles", label: "Mié" },
-                                      { key: "jueves", label: "Jue" },
-                                      { key: "viernes", label: "Vie" },
-                                      { key: "sabado", label: "Sáb" },
-                                      { key: "domingo", label: "Dom" },
-                                    ].map((dia) => (
+                                <div className="space-y-4">
+                                  <h3 className="text-lg font-semibold">Configuración de Envío</h3>
+
+                                  {/* Franjas Horarias */}
+                                  <div>
+                                    <Label>Franjas Horarias de Envío</Label>
+                                    <div className="space-y-2 mt-2">
+                                      {editingCampaign.ritmo?.franjas_horarias?.map((franja: any, index: number) => (
+                                        <div
+                                          key={index}
+                                          className="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-2 p-2 border rounded"
+                                        >
+                                          <div className="flex items-center space-x-2 w-full sm:w-auto">
+                                            <Input
+                                              type="time"
+                                              value={franja.inicio}
+                                              onChange={(e) => {
+                                                const newRitmo = { ...editingCampaign.ritmo }
+                                                newRitmo.franjas_horarias[index].inicio = e.target.value
+                                                setEditingCampaign((prev) =>
+                                                  prev ? { ...prev, ritmo: newRitmo } : null,
+                                                )
+                                              }}
+                                              className="flex-1 sm:w-32"
+                                            />
+                                            <span>a</span>
+                                            <Input
+                                              type="time"
+                                              value={franja.fin}
+                                              onChange={(e) => {
+                                                const newRitmo = { ...editingCampaign.ritmo }
+                                                newRitmo.franjas_horarias[index].fin = e.target.value
+                                                setEditingCampaign((prev) =>
+                                                  prev ? { ...prev, ritmo: newRitmo } : null,
+                                                )
+                                              }}
+                                              className="flex-1 sm:w-32"
+                                            />
+                                          </div>
+                                          <Button
+                                            variant="outline"
+                                            size="sm"
+                                            onClick={() => {
+                                              const newRitmo = { ...editingCampaign.ritmo }
+                                              newRitmo.franjas_horarias.splice(index, 1)
+                                              setEditingCampaign((prev) => (prev ? { ...prev, ritmo: newRitmo } : null))
+                                            }}
+                                            className="w-full sm:w-auto"
+                                          >
+                                            <Trash2 className="w-4 h-4" />
+                                          </Button>
+                                        </div>
+                                      )) || []}
                                       <Button
-                                        key={dia.key}
-                                        variant={editingCampaign.ritmo?.dias?.[dia.key] ? "default" : "outline"}
+                                        variant="outline"
                                         size="sm"
                                         onClick={() => {
-                                          const newRitmo = editingCampaign.ritmo || { dias: {} }
-                                          newRitmo.dias = { ...newRitmo.dias, [dia.key]: !newRitmo.dias?.[dia.key] }
+                                          const newRitmo = editingCampaign.ritmo || { franjas_horarias: [] }
+                                          newRitmo.franjas_horarias = [
+                                            ...(newRitmo.franjas_horarias || []),
+                                            { inicio: "09:00", fin: "17:00" },
+                                          ]
                                           setEditingCampaign((prev) => (prev ? { ...prev, ritmo: newRitmo } : null))
                                         }}
+                                        className="w-full sm:w-auto"
                                       >
-                                        {dia.label}
+                                        <Plus className="w-4 h-4 mr-2" />
+                                        Agregar Franja
                                       </Button>
-                                    ))}
+                                    </div>
+                                  </div>
+
+                                  {/* Días de la Semana */}
+                                  <div>
+                                    <Label>Días de Envío</Label>
+                                    <div className="grid grid-cols-4 sm:flex sm:flex-wrap gap-2 mt-2">
+                                      {[
+                                        { key: "lunes", label: "Lun" },
+                                        { key: "martes", label: "Mar" },
+                                        { key: "miercoles", label: "Mié" },
+                                        { key: "jueves", label: "Jue" },
+                                        { key: "viernes", label: "Vie" },
+                                        { key: "sabado", label: "Sáb" },
+                                        { key: "domingo", label: "Dom" },
+                                      ].map((dia) => (
+                                        <Button
+                                          key={dia.key}
+                                          variant={editingCampaign.ritmo?.dias?.[dia.key] ? "default" : "outline"}
+                                          size="sm"
+                                          onClick={() => {
+                                            const newRitmo = editingCampaign.ritmo || { dias: {} }
+                                            newRitmo.dias = { ...newRitmo.dias, [dia.key]: !newRitmo.dias?.[dia.key] }
+                                            setEditingCampaign((prev) => (prev ? { ...prev, ritmo: newRitmo } : null))
+                                          }}
+                                          className="text-xs"
+                                        >
+                                          {dia.label}
+                                        </Button>
+                                      ))}
+                                    </div>
+                                  </div>
+
+                                  {/* Jitter y Cuotas */}
+                                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                    <div>
+                                      <Label htmlFor="edit-jitter">Jitter (minutos)</Label>
+                                      <Input
+                                        id="edit-jitter"
+                                        type="number"
+                                        min="0"
+                                        max="60"
+                                        value={editingCampaign.ritmo?.jitter_minutos || 0}
+                                        onChange={(e) => {
+                                          const newRitmo = editingCampaign.ritmo || {}
+                                          newRitmo.jitter_minutos = Number.parseInt(e.target.value) || 0
+                                          setEditingCampaign((prev) => (prev ? { ...prev, ritmo: newRitmo } : null))
+                                        }}
+                                      />
+                                    </div>
+                                    <div>
+                                      <Label htmlFor="edit-cuota-hora">Cuota por Hora</Label>
+                                      <Input
+                                        id="edit-cuota-hora"
+                                        type="number"
+                                        min="1"
+                                        value={editingCampaign.ritmo?.cuota_por_hora || 100}
+                                        onChange={(e) => {
+                                          const newRitmo = editingCampaign.ritmo || {}
+                                          newRitmo.cuota_por_hora = Number.parseInt(e.target.value) || 100
+                                          setEditingCampaign((prev) => (prev ? { ...prev, ritmo: newRitmo } : null))
+                                        }}
+                                      />
+                                    </div>
+                                    <div>
+                                      <Label htmlFor="edit-cuota-dia">Cuota por Día</Label>
+                                      <Input
+                                        id="edit-cuota-dia"
+                                        type="number"
+                                        min="1"
+                                        value={editingCampaign.ritmo?.cuota_por_dia || 1000}
+                                        onChange={(e) => {
+                                          const newRitmo = editingCampaign.ritmo || {}
+                                          newRitmo.cuota_por_dia = Number.parseInt(e.target.value) || 1000
+                                          setEditingCampaign((prev) => (prev ? { ...prev, ritmo: newRitmo } : null))
+                                        }}
+                                      />
+                                    </div>
                                   </div>
                                 </div>
 
-                                {/* Jitter y Cuotas */}
-                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                  <div>
-                                    <Label htmlFor="edit-jitter">Jitter (minutos)</Label>
-                                    <Input
-                                      id="edit-jitter"
-                                      type="number"
-                                      min="0"
-                                      max="60"
-                                      value={editingCampaign.ritmo?.jitter_minutos || 0}
-                                      onChange={(e) => {
-                                        const newRitmo = editingCampaign.ritmo || {}
-                                        newRitmo.jitter_minutos = Number.parseInt(e.target.value) || 0
-                                        setEditingCampaign((prev) => (prev ? { ...prev, ritmo: newRitmo } : null))
-                                      }}
-                                    />
-                                  </div>
-                                  <div>
-                                    <Label htmlFor="edit-cuota-hora">Cuota por Hora</Label>
-                                    <Input
-                                      id="edit-cuota-hora"
-                                      type="number"
-                                      min="1"
-                                      value={editingCampaign.ritmo?.cuota_por_hora || 100}
-                                      onChange={(e) => {
-                                        const newRitmo = editingCampaign.ritmo || {}
-                                        newRitmo.cuota_por_hora = Number.parseInt(e.target.value) || 100
-                                        setEditingCampaign((prev) => (prev ? { ...prev, ritmo: newRitmo } : null))
-                                      }}
-                                    />
-                                  </div>
-                                  <div>
-                                    <Label htmlFor="edit-cuota-dia">Cuota por Día</Label>
-                                    <Input
-                                      id="edit-cuota-dia"
-                                      type="number"
-                                      min="1"
-                                      value={editingCampaign.ritmo?.cuota_por_dia || 1000}
-                                      onChange={(e) => {
-                                        const newRitmo = editingCampaign.ritmo || {}
-                                        newRitmo.cuota_por_dia = Number.parseInt(e.target.value) || 1000
-                                        setEditingCampaign((prev) => (prev ? { ...prev, ritmo: newRitmo } : null))
-                                      }}
-                                    />
-                                  </div>
+                                <div className="flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-2">
+                                  <Button
+                                    variant="outline"
+                                    onClick={() => setEditingCampaign(null)}
+                                    className="w-full sm:w-auto"
+                                  >
+                                    Cancelar
+                                  </Button>
+                                  <Button
+                                    onClick={() => updateCampaign(editingCampaign.id, editingCampaign)}
+                                    className="w-full sm:w-auto"
+                                  >
+                                    Guardar Cambios
+                                  </Button>
                                 </div>
                               </div>
+                            )}
+                          </DialogContent>
+                        </Dialog>
 
-                              <div className="flex justify-end space-x-2">
-                                <Button variant="outline" onClick={() => setEditingCampaign(null)}>
-                                  Cancelar
-                                </Button>
-                                <Button onClick={() => updateCampaign(editingCampaign.id, editingCampaign)}>
-                                  Guardar Cambios
-                                </Button>
-                              </div>
-                            </div>
-                          )}
-                        </DialogContent>
-                      </Dialog>
-
-                      <AlertDialog>
-                        <AlertDialogTrigger asChild>
-                          <Button variant="outline" size="sm">
-                            <Trash2 className="w-4 h-4 text-red-600" />
-                          </Button>
-                        </AlertDialogTrigger>
-                        <AlertDialogContent>
-                          <AlertDialogHeader>
-                            <AlertDialogTitle>¿Eliminar campaña?</AlertDialogTitle>
-                            <AlertDialogDescription>
-                              Esta acción no se puede deshacer. Se eliminará permanentemente la campaña "
-                              {campaign.nombre}".
-                            </AlertDialogDescription>
-                          </AlertDialogHeader>
-                          <AlertDialogFooter>
-                            <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                            <AlertDialogAction
-                              onClick={() => campaign.id && deleteCampaign(campaign.id)}
-                              className="bg-red-600 hover:bg-red-700"
+                        {/* Delete button */}
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="h-8 w-8 p-0 sm:h-9 sm:w-auto sm:px-3 bg-transparent"
                             >
-                              Eliminar
-                            </AlertDialogAction>
-                          </AlertDialogFooter>
-                        </AlertDialogContent>
-                      </AlertDialog>
+                              <Trash2 className="w-4 h-4 text-red-600" />
+                              <span className="hidden sm:inline sm:ml-2">Eliminar</span>
+                            </Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent className="w-[95vw] max-w-md">
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>¿Eliminar campaña?</AlertDialogTitle>
+                              <AlertDialogDescription>
+                                Esta acción no se puede deshacer. Se eliminará permanentemente la campaña "
+                                {campaign.nombre}".
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter className="flex-col sm:flex-row gap-2">
+                              <AlertDialogCancel className="w-full sm:w-auto">Cancelar</AlertDialogCancel>
+                              <AlertDialogAction
+                                onClick={() => campaign.id && deleteCampaign(campaign.id)}
+                                className="bg-red-600 hover:bg-red-700 w-full sm:w-auto"
+                              >
+                                Eliminar
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -985,8 +1035,8 @@ export function CampaignsList() {
       </Card>
 
       {total > pagination.limit && (
-        <div className="flex items-center justify-between">
-          <p className="text-sm text-muted-foreground">
+        <div className="flex flex-col sm:flex-row items-center justify-between space-y-2 sm:space-y-0">
+          <p className="text-xs sm:text-sm text-muted-foreground text-center sm:text-left">
             Mostrando {pagination.offset + 1} a {Math.min(pagination.offset + pagination.limit, total)} de {total}{" "}
             campañas
           </p>
@@ -996,6 +1046,7 @@ export function CampaignsList() {
               size="sm"
               disabled={pagination.offset === 0}
               onClick={() => setPagination((prev) => ({ ...prev, offset: Math.max(0, prev.offset - prev.limit) }))}
+              className="text-xs sm:text-sm"
             >
               Anterior
             </Button>
@@ -1004,6 +1055,7 @@ export function CampaignsList() {
               size="sm"
               disabled={pagination.offset + pagination.limit >= total}
               onClick={() => setPagination((prev) => ({ ...prev, offset: prev.offset + prev.limit }))}
+              className="text-xs sm:text-sm"
             >
               Siguiente
             </Button>

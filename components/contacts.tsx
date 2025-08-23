@@ -1,32 +1,14 @@
-"use client";
+"use client"
 
-import { useState, useEffect } from "react";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Badge } from "@/components/ui/badge";
-import { Textarea } from "@/components/ui/textarea";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { useState, useEffect } from "react"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Badge } from "@/components/ui/badge"
+import { Textarea } from "@/components/ui/textarea"
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 /* ⭐️ NUEVO: AlertDialog para confirmar borrado */
 import {
   AlertDialog,
@@ -37,15 +19,8 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+} from "@/components/ui/alert-dialog"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import {
   Search,
   Filter,
@@ -58,33 +33,33 @@ import {
   Eye,
   ChevronLeft,
   ChevronRight,
-  Trash2,        // ⭐️ NUEVO: ícono eliminar
-  Loader2,       // ⭐️ NUEVO: spinner
-} from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
-import { empresaService } from "@/services/empresaService";
-import type { Empresa, EmpresaFilters } from "@/types/empresa";
+  Trash2,
+  Loader2,
+} from "lucide-react"
+import { useToast } from "@/hooks/use-toast"
+import { empresaService } from "@/services/empresaService"
+import type { Empresa, EmpresaFilters } from "@/types/empresa"
 
 export function Contacts() {
-  const { toast } = useToast();
-  const [empresas, setEmpresas] = useState<Empresa[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [totalEmpresas, setTotalEmpresas] = useState(0);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [selectedEmpresa, setSelectedEmpresa] = useState<Empresa | null>(null);
-  const [editDialogOpen, setEditDialogOpen] = useState(false);
-  const [detailDialogOpen, setDetailDialogOpen] = useState(false);
+  const { toast } = useToast()
+  const [empresas, setEmpresas] = useState<Empresa[]>([])
+  const [loading, setLoading] = useState(true)
+  const [totalEmpresas, setTotalEmpresas] = useState(0)
+  const [currentPage, setCurrentPage] = useState(1)
+  const [selectedEmpresa, setSelectedEmpresa] = useState<Empresa | null>(null)
+  const [editDialogOpen, setEditDialogOpen] = useState(false)
+  const [detailDialogOpen, setDetailDialogOpen] = useState(false)
 
   /* ⭐️ NUEVO: estado para eliminar */
-  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [empresaAEliminar, setEmpresaAEliminar] = useState<Empresa | null>(null);
-  const [deleting, setDeleting] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
+  const [empresaAEliminar, setEmpresaAEliminar] = useState<Empresa | null>(null)
+  const [deleting, setDeleting] = useState(false)
 
   const [filters, setFilters] = useState<EmpresaFilters>({
     page: 1,
     per_page: 50,
     order_by: "recientes",
-  });
+  })
 
   const [editForm, setEditForm] = useState({
     estado: "",
@@ -92,121 +67,117 @@ export function Contacts() {
     telefono: "",
     sitio_web: "",
     contactada_manual: false,
-  });
+  })
 
   useEffect(() => {
-    loadEmpresas();
+    loadEmpresas()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filters]);
+  }, [filters])
 
   const loadEmpresas = async () => {
-    setLoading(true);
+    setLoading(true)
     try {
-      const response = await empresaService.listarEmpresas(filters);
+      const response = await empresaService.listarEmpresas(filters)
       if (response.ok) {
-        setEmpresas(response.data);
-        setTotalEmpresas(response.meta.total);
-        setCurrentPage(response.meta.page);
+        setEmpresas(response.data)
+        setTotalEmpresas(response.meta.total)
+        setCurrentPage(response.meta.page)
       } else {
         toast({
           variant: "destructive",
           title: "Error",
           description: "No se pudieron cargar las empresas",
-        });
+        })
       }
     } catch {
       toast({
         variant: "destructive",
         title: "Error",
         description: "Error de conexión al cargar empresas",
-      });
+      })
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   const handleSearch = (query: string) => {
-    setFilters((prev) => ({ ...prev, q: query, page: 1 }));
-  };
+    setFilters((prev) => ({ ...prev, q: query, page: 1 }))
+  }
 
   const handleFilterChange = (key: keyof EmpresaFilters, value: any) => {
-    setFilters((prev) => ({ ...prev, [key]: value, page: 1 }));
-  };
+    setFilters((prev) => ({ ...prev, [key]: value, page: 1 }))
+  }
 
   const handlePageChange = (newPage: number) => {
-    setFilters((prev) => ({ ...prev, page: newPage }));
-  };
+    setFilters((prev) => ({ ...prev, page: newPage }))
+  }
 
   const openEditDialog = (empresa: Empresa) => {
-    setSelectedEmpresa(empresa);
+    setSelectedEmpresa(empresa)
     setEditForm({
       estado: empresa.crm?.estado ?? "sin_contactar",
       notas: empresa.crm?.notas ?? "",
       telefono: empresa.telefono || "",
       sitio_web: empresa.sitio_web || "",
       contactada_manual: empresa.resumen_contacto.contactada_manual,
-    });
-    setEditDialogOpen(true);
-  };
+    })
+    setEditDialogOpen(true)
+  }
 
   const openDetailDialog = (empresa: Empresa) => {
-    setSelectedEmpresa(empresa);
-    setDetailDialogOpen(true);
-  };
+    setSelectedEmpresa(empresa)
+    setDetailDialogOpen(true)
+  }
 
   /* ⭐️ NUEVO: abrir diálogo de eliminar */
   const openDeleteDialog = (empresa: Empresa) => {
-    setEmpresaAEliminar(empresa);
-    setDeleteDialogOpen(true);
-  };
+    setEmpresaAEliminar(empresa)
+    setDeleteDialogOpen(true)
+  }
 
   /* ⭐️ NUEVO: confirmar eliminación */
   const handleDeleteEmpresa = async () => {
-    if (!empresaAEliminar) return;
-    setDeleting(true);
+    if (!empresaAEliminar) return
+    setDeleting(true)
     try {
-      const res = await empresaService.eliminarEmpresa(empresaAEliminar.id);
+      const res = await empresaService.eliminarEmpresa(empresaAEliminar.id)
 
       if (!res.ok) {
-        throw new Error(res.error || "No se pudo eliminar la empresa");
+        throw new Error(res.error || "No se pudo eliminar la empresa")
       }
 
       // Actualización optimista del listado y contadores
-      setEmpresas((prev) => prev.filter((e) => e.id !== empresaAEliminar.id));
-      setTotalEmpresas((prev) => Math.max(0, prev - 1));
+      setEmpresas((prev) => prev.filter((e) => e.id !== empresaAEliminar.id))
+      setTotalEmpresas((prev) => Math.max(0, prev - 1))
 
       // Feedback con detalles de impacto (si vienen)
-      const imp = res.impacto;
-      const detalle =
-        imp
-          ? `Se borraron ${imp.emails_borrados} emails y ${imp.destinatarios_borrados} destinatarios. ` +
-            `${imp.eventos_que_quedan_con_destinatario_null} eventos quedaron sin destinatario.`
-          : undefined;
+      const imp = res.impacto
+      const detalle = imp
+        ? `Se borraron ${imp.emails_borrados} emails y ${imp.destinatarios_borrados} destinatarios. ` +
+          `${imp.eventos_que_quedan_con_destinatario_null} eventos quedaron sin destinatario.`
+        : undefined
 
       toast({
         variant: "success",
         title: "Empresa eliminada",
-        description:
-          `“${empresaAEliminar.titulo}” fue eliminada correctamente.` +
-          (detalle ? ` ${detalle}` : ""),
-      });
+        description: `“${empresaAEliminar.titulo}” fue eliminada correctamente.` + (detalle ? ` ${detalle}` : ""),
+      })
 
-      setDeleteDialogOpen(false);
-      setEmpresaAEliminar(null);
+      setDeleteDialogOpen(false)
+      setEmpresaAEliminar(null)
     } catch (err) {
       toast({
         variant: "destructive",
         title: "Error",
-        description:
-          err instanceof Error ? err.message : "No se pudo eliminar la empresa",
-      });
+        description: err instanceof Error ? err.message : "No se pudo eliminar la empresa",
+      })
     } finally {
-      setDeleting(false);
+      setDeleting(false)
     }
-  };
+  }
 
   const handleUpdateEmpresa = async () => {
-    if (!selectedEmpresa) return;
+    if (!selectedEmpresa) return
 
     try {
       const response = await empresaService.actualizarEstado({
@@ -216,48 +187,40 @@ export function Contacts() {
         telefono: editForm.telefono || undefined,
         sitio_web: editForm.sitio_web || undefined,
         contactada_manual: editForm.contactada_manual,
-      });
+      })
 
       if (response.ok) {
         toast({
           variant: "success",
           title: "Empresa actualizada",
           description: `Los datos de "${selectedEmpresa.titulo}" se actualizaron correctamente`,
-        });
-        setEditDialogOpen(false);
-        loadEmpresas(); // Recargar la lista
+        })
+        setEditDialogOpen(false)
+        loadEmpresas() // Recargar la lista
       } else {
-        throw new Error(response.error || "Error al actualizar");
+        throw new Error(response.error || "Error al actualizar")
       }
     } catch (error) {
       toast({
         variant: "destructive",
         title: "Error",
-        description:
-          error instanceof Error
-            ? error.message
-            : "Error al actualizar empresa",
-      });
+        description: error instanceof Error ? error.message : "Error al actualizar empresa",
+      })
     }
-  };
+  }
 
   const getEstadoBadge = (empresa: Empresa) => {
-    const { resumen_contacto, crm } = empresa;
+    const { resumen_contacto, crm } = empresa
 
     if (crm?.estado) {
       const estadoColors = {
-        sin_contactar:
-          "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200",
-        contactada:
-          "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200",
-        interesada:
-          "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200",
-        no_interesada:
-          "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200",
-        pendiente:
-          "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200",
+        sin_contactar: "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200",
+        contactada: "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200",
+        interesada: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200",
+        no_interesada: "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200",
+        pendiente: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200",
         bloqueada: "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200",
-      };
+      }
       return (
         <Badge
           className={
@@ -267,39 +230,34 @@ export function Contacts() {
         >
           {(crm?.estado ?? "sin_contactar").replace("_", " ")}
         </Badge>
-      );
+      )
     }
 
     if (resumen_contacto.contactada_por_campana) {
       return (
-        <Badge className="bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
-          Contactada por campaña
-        </Badge>
-      );
+        <Badge className="bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">Contactada por campaña</Badge>
+      )
     }
 
-    return <Badge variant="outline">Sin contactar</Badge>;
-  };
+    return <Badge variant="outline">Sin contactar</Badge>
+  }
 
-  const totalPages = Math.ceil(totalEmpresas / (filters.per_page || 50));
+  const totalPages = Math.ceil(totalEmpresas / (filters.per_page || 50))
 
   return (
-    <div className="space-y-8">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-6 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-xl border">
+    <div className="space-y-6 md:space-y-8">
+      <div className="flex flex-col gap-4 p-4 md:p-6 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-xl border">
         <div className="space-y-2">
-          <h2 className="text-3xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
+          <h2 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
             Contactos
           </h2>
-          <p className="text-gray-600 dark:text-gray-300 text-base">
+          <p className="text-gray-600 dark:text-gray-300 text-sm md:text-base">
             Gestiona tu base de datos de empresas y su estado de contacto
           </p>
         </div>
         <div className="flex items-center gap-3">
-          <Badge
-            variant="outline"
-            className="text-sm px-3 py-1 bg-white dark:bg-gray-800"
-          >
-            <Building2 className="w-4 h-4 mr-2" />
+          <Badge variant="outline" className="text-xs md:text-sm px-3 py-1 bg-white dark:bg-gray-800">
+            <Building2 className="w-4 h-4 mr-2 flex-shrink-0" />
             {totalEmpresas.toLocaleString()} empresas
           </Badge>
         </div>
@@ -308,7 +266,7 @@ export function Contacts() {
       {/* Filtros */}
       <Card className="card-gradient border-0 shadow-lg">
         <CardHeader className="pb-6">
-          <CardTitle className="icon-text text-xl">
+          <CardTitle className="icon-text text-lg md:text-xl">
             <div className="p-2 bg-blue-100 dark:bg-blue-900 rounded-lg">
               <Filter className="w-5 h-5 text-blue-600 dark:text-blue-400" />
             </div>
@@ -316,7 +274,7 @@ export function Contacts() {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
             <div className="form-group">
               <Label htmlFor="search" className="text-sm font-medium">
                 Buscar
@@ -336,14 +294,7 @@ export function Contacts() {
               <Label htmlFor="contactada" className="text-sm font-medium">
                 Estado de Contacto
               </Label>
-              <Select
-                onValueChange={(value) =>
-                  handleFilterChange(
-                    "contactada",
-                    value === "all" ? undefined : value
-                  )
-                }
-              >
+              <Select onValueChange={(value) => handleFilterChange("contactada", value === "all" ? undefined : value)}>
                 <SelectTrigger className="h-11">
                   <SelectValue placeholder="Todos" />
                 </SelectTrigger>
@@ -359,10 +310,7 @@ export function Contacts() {
               <Label htmlFor="order" className="text-sm font-medium">
                 Ordenar por
               </Label>
-              <Select
-                value={filters.order_by}
-                onValueChange={(value) => handleFilterChange("order_by", value)}
-              >
+              <Select value={filters.order_by} onValueChange={(value) => handleFilterChange("order_by", value)}>
                 <SelectTrigger className="h-11">
                   <SelectValue />
                 </SelectTrigger>
@@ -381,9 +329,7 @@ export function Contacts() {
               </Label>
               <Select
                 value={filters.per_page?.toString()}
-                onValueChange={(value) =>
-                  handleFilterChange("per_page", Number.parseInt(value))
-                }
+                onValueChange={(value) => handleFilterChange("per_page", Number.parseInt(value))}
               >
                 <SelectTrigger className="h-11">
                   <SelectValue />
@@ -402,15 +348,14 @@ export function Contacts() {
       {/* Tabla de empresas */}
       <Card className="card-gradient border-0 shadow-lg">
         <CardHeader className="pb-6">
-          <CardTitle className="icon-text text-xl">
+          <CardTitle className="icon-text text-lg md:text-xl">
             <div className="p-2 bg-green-100 dark:bg-green-900 rounded-lg">
               <Building2 className="w-5 h-5 text-green-600 dark:text-green-400" />
             </div>
             Lista de Empresas
           </CardTitle>
-          <CardDescription className="text-base">
-            Página {currentPage} de {totalPages} (
-            {totalEmpresas.toLocaleString()} empresas total)
+          <CardDescription className="text-sm md:text-base">
+            Página {currentPage} de {totalPages} ({totalEmpresas.toLocaleString()} empresas total)
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -420,34 +365,21 @@ export function Contacts() {
             </div>
           ) : (
             <>
-              <div className="w-full overflow-hidden rounded-lg border">
-                <Table className="table-fixed w-full">
+              <div className="w-full overflow-x-auto rounded-lg border">
+                <Table className="w-full min-w-[800px]">
                   <TableHeader>
                     <TableRow>
-                      <TableHead className="font-semibold w-[28%]">
-                        Empresa
-                      </TableHead>
-                      <TableHead className="font-semibold w-[32%]">
-                        Contacto
-                      </TableHead>
-                      <TableHead className="font-semibold w-[15%]">
-                        Estado
-                      </TableHead>
-                      <TableHead className="font-semibold w-[15%]">
-                        Métricas
-                      </TableHead>
-                      <TableHead className="font-semibold w-[10%]">
-                        Acciones
-                      </TableHead>
+                      <TableHead className="font-semibold w-[28%] min-w-[200px]">Empresa</TableHead>
+                      <TableHead className="font-semibold w-[32%] min-w-[250px]">Contacto</TableHead>
+                      <TableHead className="font-semibold w-[15%] min-w-[120px]">Estado</TableHead>
+                      <TableHead className="font-semibold w-[15%] min-w-[100px]">Métricas</TableHead>
+                      <TableHead className="font-semibold w-[10%] min-w-[120px]">Acciones</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {empresas.map((empresa) => (
-                      <TableRow
-                        key={empresa.id}
-                        className="hover:bg-muted/50 transition-colors"
-                      >
-                        <TableCell className="w-[28%] p-4">
+                      <TableRow key={empresa.id} className="hover:bg-muted/50 transition-colors">
+                        <TableCell className="p-4">
                           <div className="space-y-1 min-w-0">
                             <div
                               className="font-semibold text-gray-900 dark:text-gray-100 truncate cursor-pointer hover:text-blue-600 transition-colors"
@@ -459,10 +391,7 @@ export function Contacts() {
                             {empresa.categoria.nombre && (
                               <div className="flex items-center gap-1 text-sm text-gray-600 dark:text-gray-400 min-w-0">
                                 <Building2 className="w-3 h-3 flex-shrink-0" />
-                                <span
-                                  className="truncate"
-                                  title={empresa.categoria.nombre}
-                                >
+                                <span className="truncate" title={empresa.categoria.nombre}>
                                   {empresa.categoria.nombre}
                                 </span>
                               </div>
@@ -470,22 +399,16 @@ export function Contacts() {
                           </div>
                         </TableCell>
 
-                        <TableCell className="w-[32%] p-4">
+                        <TableCell className="p-4">
                           <div className="space-y-2 min-w-0">
                             {empresa.emails.length > 0 && (
                               <div className="flex items-start gap-1 text-sm min-w-0">
-                                <Mail className="w-4 h-4 text-blue-500 flex-shrink-0" />
-                                <span
-                                  className="flex-1 whitespace-normal break-words leading-tight"
-                                  title={empresa.emails[0]}
-                                >
+                                <Mail className="w-4 h-4 text-blue-500 flex-shrink-0 mt-0.5" />
+                                <span className="flex-1 break-words leading-tight" title={empresa.emails[0]}>
                                   {empresa.emails[0]}
                                 </span>
                                 {empresa.emails.length > 1 && (
-                                  <Badge
-                                    variant="outline"
-                                    className="text-xs px-1.5 py-0.5 flex-shrink-0 self-start"
-                                  >
+                                  <Badge variant="outline" className="text-xs px-1.5 py-0.5 flex-shrink-0 self-start">
                                     +{empresa.emails.length - 1}
                                   </Badge>
                                 )}
@@ -494,10 +417,7 @@ export function Contacts() {
                             {empresa.telefono && (
                               <div className="flex items-center gap-1 text-sm text-gray-600 dark:text-gray-400 min-w-0">
                                 <Phone className="w-4 h-4 flex-shrink-0" />
-                                <span
-                                  className="truncate"
-                                  title={empresa.telefono}
-                                >
+                                <span className="truncate" title={empresa.telefono}>
                                   {empresa.telefono}
                                 </span>
                               </div>
@@ -505,7 +425,7 @@ export function Contacts() {
                           </div>
                         </TableCell>
 
-                        <TableCell className="w-[15%] p-4">
+                        <TableCell className="p-4">
                           <div className="space-y-2 min-w-0">
                             {getEstadoBadge(empresa)}
                             {empresa.crm?.notas && (
@@ -519,7 +439,7 @@ export function Contacts() {
                           </div>
                         </TableCell>
 
-                        <TableCell className="w-[15%] p-4">
+                        <TableCell className="p-4">
                           <div className="text-sm space-y-1 min-w-0">
                             <div className="text-blue-600 dark:text-blue-400 truncate">
                               Env: {empresa.resumen_contacto.enviados}
@@ -533,7 +453,7 @@ export function Contacts() {
                           </div>
                         </TableCell>
 
-                        <TableCell className="w-[10%] p-4">
+                        <TableCell className="p-4">
                           <div className="flex gap-1 justify-center">
                             <Button
                               variant="outline"
@@ -555,7 +475,6 @@ export function Contacts() {
                             >
                               <Edit className="w-3 h-3" />
                             </Button>
-                            {/* ⭐️ NUEVO: botón eliminar */}
                             <Button
                               variant="outline"
                               size="sm"
@@ -574,16 +493,13 @@ export function Contacts() {
                 </Table>
               </div>
 
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mt-8 pt-6 border-t">
-                <div className="text-sm text-gray-600 dark:text-gray-400">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mt-6 md:mt-8 pt-6 border-t">
+                <div className="text-xs md:text-sm text-gray-600 dark:text-gray-400">
                   Mostrando {(currentPage - 1) * (filters.per_page || 50) + 1} a{" "}
-                  {Math.min(
-                    currentPage * (filters.per_page || 50),
-                    totalEmpresas
-                  )}{" "}
-                  de {totalEmpresas.toLocaleString()} empresas
+                  {Math.min(currentPage * (filters.per_page || 50), totalEmpresas)} de {totalEmpresas.toLocaleString()}{" "}
+                  empresas
                 </div>
-                <div className="flex gap-3">
+                <div className="flex gap-3 justify-center sm:justify-end">
                   <Button
                     variant="outline"
                     size="sm"
@@ -592,7 +508,7 @@ export function Contacts() {
                     className="icon-button"
                   >
                     <ChevronLeft className="w-4 h-4" />
-                    Anterior
+                    <span className="hidden sm:inline">Anterior</span>
                   </Button>
                   <Button
                     variant="outline"
@@ -601,7 +517,7 @@ export function Contacts() {
                     disabled={currentPage >= totalPages}
                     className="icon-button"
                   >
-                    Siguiente
+                    <span className="hidden sm:inline">Siguiente</span>
                     <ChevronRight className="w-4 h-4" />
                   </Button>
                 </div>
@@ -613,12 +529,11 @@ export function Contacts() {
 
       {/* Dialog de edición */}
       <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
-        <DialogContent className="max-w-lg">
+        <DialogContent className="max-w-lg mx-4 sm:mx-auto">
           <DialogHeader className="space-y-3">
-            <DialogTitle className="text-xl">Editar Empresa</DialogTitle>
-            <DialogDescription className="text-base">
-              Actualiza el estado y datos de contacto de{" "}
-              {selectedEmpresa?.titulo}
+            <DialogTitle className="text-lg md:text-xl">Editar Empresa</DialogTitle>
+            <DialogDescription className="text-sm md:text-base">
+              Actualiza el estado y datos de contacto de {selectedEmpresa?.titulo}
             </DialogDescription>
           </DialogHeader>
 
@@ -629,9 +544,7 @@ export function Contacts() {
               </Label>
               <Select
                 value={editForm.estado}
-                onValueChange={(value) =>
-                  setEditForm((prev) => ({ ...prev, estado: value }))
-                }
+                onValueChange={(value) => setEditForm((prev) => ({ ...prev, estado: value }))}
               >
                 <SelectTrigger className="h-11">
                   <SelectValue />
@@ -647,12 +560,9 @@ export function Contacts() {
               </Select>
             </div>
 
-            <div className="form-row-2">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="form-group">
-                <Label
-                  htmlFor="telefono"
-                  className="text-sm font-medium icon-text"
-                >
+                <Label htmlFor="telefono" className="text-sm font-medium icon-text">
                   <Phone className="w-4 h-4" />
                   Teléfono
                 </Label>
@@ -670,10 +580,7 @@ export function Contacts() {
                 />
               </div>
               <div className="form-group">
-                <Label
-                  htmlFor="sitio_web"
-                  className="text-sm font-medium icon-text"
-                >
+                <Label htmlFor="sitio_web" className="text-sm font-medium icon-text">
                   <Globe className="w-4 h-4" />
                   Sitio Web
                 </Label>
@@ -699,27 +606,18 @@ export function Contacts() {
               <Textarea
                 id="notas"
                 value={editForm.notas}
-                onChange={(e) =>
-                  setEditForm((prev) => ({ ...prev, notas: e.target.value }))
-                }
+                onChange={(e) => setEditForm((prev) => ({ ...prev, notas: e.target.value }))}
                 placeholder="Notas sobre el contacto..."
                 rows={4}
                 className="resize-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
 
-            <div className="flex justify-end gap-3 pt-4 border-t">
-              <Button
-                variant="outline"
-                onClick={() => setEditDialogOpen(false)}
-                className="px-6"
-              >
+            <div className="flex flex-col sm:flex-row justify-end gap-3 pt-4 border-t">
+              <Button variant="outline" onClick={() => setEditDialogOpen(false)} className="px-6">
                 Cancelar
               </Button>
-              <Button
-                onClick={handleUpdateEmpresa}
-                className="button-primary px-6"
-              >
+              <Button onClick={handleUpdateEmpresa} className="button-primary px-6">
                 Guardar Cambios
               </Button>
             </div>
@@ -727,18 +625,14 @@ export function Contacts() {
         </DialogContent>
       </Dialog>
 
-      {/* ⭐️ NUEVO: AlertDialog de confirmación de borrado */}
+      {/* AlertDialog de confirmación de borrado */}
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-        <AlertDialogContent className="max-w-lg">
+        <AlertDialogContent className="max-w-lg mx-4 sm:mx-auto">
           <AlertDialogHeader>
             <AlertDialogTitle>Eliminar empresa</AlertDialogTitle>
             <AlertDialogDescription>
-              Vas a eliminar{" "}
-              <span className="font-medium">
-                “{empresaAEliminar?.titulo ?? ""}”
-              </span>
-              . Esta acción no se puede deshacer y eliminará contactos y
-              destinatarios asociados. ¿Deseas continuar?
+              Vas a eliminar <span className="font-medium">“{empresaAEliminar?.titulo ?? ""}”</span>. Esta acción no se
+              puede deshacer y eliminará contactos y destinatarios asociados. ¿Deseas continuar?
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -766,24 +660,22 @@ export function Contacts() {
 
       {/* Dialog de detalle */}
       <Dialog open={detailDialogOpen} onOpenChange={setDetailDialogOpen}>
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="max-w-2xl mx-4 sm:mx-auto">
           <DialogHeader>
-            <DialogTitle>{selectedEmpresa?.titulo}</DialogTitle>
-            <DialogDescription>
-              Información detallada de la empresa
-            </DialogDescription>
+            <DialogTitle className="text-lg md:text-xl">{selectedEmpresa?.titulo}</DialogTitle>
+            <DialogDescription className="text-sm md:text-base">Información detallada de la empresa</DialogDescription>
           </DialogHeader>
 
           {selectedEmpresa && (
             <div className="space-y-6">
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
                 <div>
                   <h4 className="font-medium mb-2">Información de Contacto</h4>
                   <div className="space-y-2 text-sm">
                     {selectedEmpresa.emails.map((email, index) => (
-                      <div key={index} className="flex items-center min-w-0">
-                        <Mail className="w-3 h-3 mr-2 flex-shrink-0" />
-                        <span className="truncate" title={email}>
+                      <div key={index} className="flex items-start min-w-0">
+                        <Mail className="w-3 h-3 mr-2 flex-shrink-0 mt-0.5" />
+                        <span className="break-words" title={email}>
                           {email}
                         </span>
                       </div>
@@ -795,13 +687,13 @@ export function Contacts() {
                       </div>
                     )}
                     {selectedEmpresa.sitio_web && (
-                      <div className="flex items-center min-w-0">
-                        <Globe className="w-3 h-3 mr-2 flex-shrink-0" />
+                      <div className="flex items-start min-w-0">
+                        <Globe className="w-3 h-3 mr-2 flex-shrink-0 mt-0.5" />
                         <a
                           href={selectedEmpresa.sitio_web}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-blue-600 hover:underline truncate block min-w-0"
+                          className="text-blue-600 hover:underline break-words block min-w-0"
                           title={selectedEmpresa.sitio_web}
                         >
                           {selectedEmpresa.sitio_web}
@@ -809,12 +701,9 @@ export function Contacts() {
                       </div>
                     )}
                     {selectedEmpresa.direccion && (
-                      <div className="flex items-center min-w-0">
-                        <MapPin className="w-3 h-3 mr-2 flex-shrink-0" />
-                        <span
-                          className="truncate"
-                          title={selectedEmpresa.direccion}
-                        >
+                      <div className="flex items-start min-w-0">
+                        <MapPin className="w-3 h-3 mr-2 flex-shrink-0 mt-0.5" />
+                        <span className="break-words" title={selectedEmpresa.direccion}>
                           {selectedEmpresa.direccion}
                         </span>
                       </div>
@@ -825,23 +714,17 @@ export function Contacts() {
                 <div>
                   <h4 className="font-medium mb-2">Métricas de Campaña</h4>
                   <div className="space-y-2 text-sm">
+                    <div>Campañas: {(selectedEmpresa.resumen_contacto as any)?.num_campanas ?? 0}</div>
+                    <div>Emails enviados: {selectedEmpresa.resumen_contacto.enviados}</div>
                     <div>
-                      Campañas: {(selectedEmpresa.resumen_contacto as any)?.num_campanas ?? 0}
-                    </div>
-                    <div>
-                      Emails enviados: {selectedEmpresa.resumen_contacto.enviados}
-                    </div>
-                    <div>
-                      Aperturas: {(selectedEmpresa.resumen_contacto as any)?.aperturas ?? selectedEmpresa.resumen_contacto.abiertos}
+                      Aperturas:{" "}
+                      {(selectedEmpresa.resumen_contacto as any)?.aperturas ??
+                        selectedEmpresa.resumen_contacto.abiertos}
                     </div>
                     <div>Clics: {selectedEmpresa.resumen_contacto.clics}</div>
-                    <div>
-                      Suprimidos: {(selectedEmpresa.resumen_contacto as any)?.suprimidos ?? 0}
-                    </div>
+                    <div>Suprimidos: {(selectedEmpresa.resumen_contacto as any)?.suprimidos ?? 0}</div>
                     {(selectedEmpresa.resumen_contacto as any)?.ultimo_evento && (
-                      <div>
-                        Último evento: {(selectedEmpresa.resumen_contacto as any)?.ultimo_evento}
-                      </div>
+                      <div>Último evento: {(selectedEmpresa.resumen_contacto as any)?.ultimo_evento}</div>
                     )}
                   </div>
                 </div>
@@ -850,15 +733,10 @@ export function Contacts() {
               {selectedEmpresa?.crm?.notas && (
                 <div>
                   <h4 className="font-medium mb-2">Notas CRM</h4>
-                  <div className="p-3 bg-muted rounded-lg text-sm">
-                    {selectedEmpresa?.crm?.notas}
-                  </div>
+                  <div className="p-3 bg-muted rounded-lg text-sm">{selectedEmpresa?.crm?.notas}</div>
                   {selectedEmpresa?.crm?.actualizado_en && (
                     <div className="text-xs text-muted-foreground mt-1">
-                      Actualizado:{" "}
-                      {new Date(
-                        selectedEmpresa.crm.actualizado_en
-                      ).toLocaleString()}
+                      Actualizado: {new Date(selectedEmpresa.crm.actualizado_en).toLocaleString()}
                     </div>
                   )}
                 </div>
@@ -868,5 +746,5 @@ export function Contacts() {
         </DialogContent>
       </Dialog>
     </div>
-  );
+  )
 }
